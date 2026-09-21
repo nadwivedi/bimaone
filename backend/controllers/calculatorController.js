@@ -105,9 +105,9 @@ const generatePdf = async (req, res) => {
       doc.image(logoPath, 52, y + 12, { height: logoSize, fit: [logoSize, logoSize] })
     }
 
-    // Brand Name: "Bima" (dark/black) + "Box" (blue #003afd) — left aligned
+    // Brand Name: "Bima" (dark/black) + "One" (blue #003afd) — left aligned
     doc.fontSize(14).font('Helvetica-Bold').fillColor('#0f172a').text('Bima', 80, y + 16, { continued: true })
-    doc.fillColor('#003afd').text('Box', { continued: false })
+    doc.fillColor('#003afd').text('One', { continued: false })
 
     // Tagline
     doc.fontSize(7).font('Helvetica').fillColor('#64748b').text('All your policies. One smart place.', 80, y + 34)

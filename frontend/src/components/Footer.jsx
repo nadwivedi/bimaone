@@ -10,7 +10,7 @@ const Footer = () => {
               <img src='/bimalogo.png' alt='BimaOne' className='h-[45px] w-auto' />
               <div className='flex flex-col'>
                 <span className='text-lg font-bold leading-none text-slate-900' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                  Bima<span style={{ color: '#003afd' }}>Box</span>
+                  Bima<span style={{ color: '#003afd' }}>One</span>
                 </span>
                 <span className='mt-0.5 text-[7px] font-medium tracking-wide text-slate-600' style={{ fontFamily: "'Inter', sans-serif" }}>
                   All your policies. One smart place.

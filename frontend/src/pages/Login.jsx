@@ -464,7 +464,7 @@ const Login = () => {
                 <img src='/bimalogo.png' alt='BimaOne' className='h-[72px] w-auto' />
                 <div className='flex flex-col'>
                   <span className='text-[26px] font-bold leading-none' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                    <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>Box</span>
+                    <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>One</span>
                   </span>
                   <span className='mt-0.5 text-[6.5px] font-medium tracking-wide' style={{ color: '#0c1f48', fontFamily: "'Inter', sans-serif" }}>All your policies. One smart place.</span>
                 </div>

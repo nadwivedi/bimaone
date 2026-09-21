@@ -303,6 +303,7 @@ const Setting = () => {
         </SettingGroup>
 
         <SettingGroup title='Manage'>
+          <SettingRow icon={ICONS.clients} color='bg-fuchsia-500' label='Leads' onClick={() => navigate('/leads')} />
           <SettingRow icon={ICONS.client} color='bg-violet-500' label='Client Names' onClick={() => navigate('/client-name')} />
           <SettingRow icon={ICONS.agent} color='bg-purple-500' label='Agent Names' onClick={() => navigate('/agent-name')} />
           {/* <SettingRow icon={ICONS.gift} color='bg-orange-500' label='Refer & Earn' value='₹99 each' to='/refer-and-earn' /> */}

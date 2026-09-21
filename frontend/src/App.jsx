@@ -19,6 +19,7 @@ import PremiumCalculator from './pages/PremiumCalculator'
 import KycPage from './pages/Kyc/KycPage'
 import KycDetail from './pages/Kyc/KycDetail'
 import Renewals from './pages/Renewals'
+import Leads from './pages/leads/Leads'
 import Reference from './pages/Reference'
 import IMD from './pages/IMD'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -68,7 +69,7 @@ function AppContent() {
               <img src='/bimalogo.png' alt='BimaOne' className='h-[50px] w-auto' />
               <div className='flex flex-col'>
                 <span className='text-[20px] font-bold leading-none' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                  <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>Box</span>
+                  <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>One</span>
                 </span>
                 <span className='mt-0.5 text-[6px] font-medium tracking-wide' style={{ color: '#0c1f48', fontFamily: "'Inter', sans-serif" }}>All your policies. One smart place.</span>
               </div>
@@ -99,6 +100,7 @@ function AppContent() {
             <Route path='/kyc' element={<ProtectedRoute><KycPage /></ProtectedRoute>} />
             <Route path='/kyc/:id' element={<ProtectedRoute><KycDetail /></ProtectedRoute>} />
             <Route path='/renewals' element={<ProtectedRoute><Renewals /></ProtectedRoute>} />
+            <Route path='/leads' element={<ProtectedRoute><Leads /></ProtectedRoute>} />
             <Route path='/pricing' element={<PricingPage />} />
             <Route path='/subscribe/:planId' element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />
             <Route path='/references' element={<Navigate to='/client-name' replace />} />
