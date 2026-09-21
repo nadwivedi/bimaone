@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { getTheme } from '../context/ThemeContext'
+import { useAuth } from '../context/AuthContext'
 
 const navIcons = {
   home: (
@@ -61,87 +61,107 @@ const navIcons = {
   ),
 }
 
-const mainNavItems = [
-  { name: 'Dashboard', path: '/dashboard', icon: navIcons.home },
-  { name: 'Search', path: '/search', icon: navIcons.search },
-  { name: 'Renewals', path: '/renewals', icon: navIcons.renewal },
-  { name: 'Leads', path: '/leads', icon: navIcons.leads },
-  { name: 'Premium', path: '/premium-calculator', icon: navIcons.premium },
-  { name: 'Client Name', path: '/client-name', icon: navIcons.client },
-  { name: 'Agent Name', path: '/agent-name', icon: navIcons.agent },
-  // { name: 'Refer & Earn', path: '/refer-and-earn', icon: navIcons.referral },
-  { name: 'Settings', path: '/setting', icon: navIcons.settings },
+const navSections = [
+  {
+    title: 'Main',
+    items: [
+      { name: 'Dashboard', path: '/dashboard', icon: navIcons.home },
+      { name: 'Search', path: '/search', icon: navIcons.search },
+      { name: 'Renewals', path: '/renewals', icon: navIcons.renewal },
+      { name: 'Leads', path: '/leads', icon: navIcons.leads },
+    ],
+  },
+  {
+    title: 'Tools',
+    items: [
+      { name: 'Premium Calculator', path: '/premium-calculator', icon: navIcons.premium },
+    ],
+  },
+  {
+    title: 'Manage',
+    items: [
+      { name: 'Client Name', path: '/client-name', icon: navIcons.client },
+      { name: 'Agent Name', path: '/agent-name', icon: navIcons.agent },
+      // { name: 'Refer & Earn', path: '/refer-and-earn', icon: navIcons.referral },
+    ],
+  },
 ]
 
-const NavLink = ({ item, isActive, children }) => (
+const NavLink = ({ item, isActive }) => (
   <Link
     to={item.path}
-    className={`group relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-xs font-semibold transition-all duration-200 ${isActive
-        ? 'bg-blue-50 text-blue-600 shadow-sm'
-        : 'text-slate-500 hover:bg-slate-50 hover:text-slate-800'
+    className={`group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 ${isActive
+        ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40'
+        : 'text-stone-400 hover:bg-white/5 hover:text-white'
       }`}
   >
-    {children}
+    <span
+      className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors ${isActive
+          ? 'bg-white/15 text-white'
+          : 'bg-white/5 text-stone-400 group-hover:text-white'
+        }`}
+    >
+      {item.icon}
+    </span>
+    <span className='truncate'>{item.name}</span>
   </Link>
 )
 
 const Sidebar = () => {
   const location = useLocation()
-  const theme = getTheme()
+  const { user } = useAuth()
+  const isActivePath = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`)
+  const userInitials = (user?.name || 'U').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 
   return (
-    <aside
-      className={`fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-slate-200/70 bg-white/90 backdrop-blur-sm lg:flex ${theme.navbar}`}
-    >
-      <div className='flex h-full flex-col'>
-        <div className='flex-none border-b border-slate-100 px-5 py-5'>
-          <Link to='/dashboard' className='flex items-center justify-center gap-1'>
-            <img src='/bimalogo.png' alt='BimaOne' className='h-[72px] w-auto' />
+    <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col bg-[#16131f] lg:flex'>
+      {/* soft glow */}
+      <div className='pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-violet-600/20 blur-3xl' />
+
+      <div className='relative flex h-full flex-col'>
+        <div className='flex-none px-5 pb-4 pt-5'>
+          <Link to='/dashboard' className='flex items-center gap-2.5'>
+            <div className='flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1'>
+              <img src='/bimalogo.png' alt='BimaOne' className='h-full w-auto' />
+            </div>
             <div className='flex flex-col'>
-              <span className='text-[26px] font-bold leading-none pt-0.5' style={{ fontFamily: "'Poppins', sans-serif" }}><span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>One</span></span>
-              <span className='mt-0.5 text-[6.5px] font-medium tracking-wide' style={{ color: '#0c1f48', fontFamily: "'Inter', sans-serif" }}>All your policies. One smart place.</span>
+              <span className='text-[22px] font-bold leading-none text-white' style={{ fontFamily: "'Poppins', sans-serif" }}>
+                Bima<span className='text-violet-400'>One</span>
+              </span>
+              <span className='mt-1 text-[9px] font-medium tracking-wide text-stone-500'>All your policies. One smart place.</span>
             </div>
           </Link>
         </div>
 
-        <div className='flex-1 overflow-y-auto px-3 py-5 scrollbar-thin'>
-          <div className='mb-8'>
-            <p className='mb-3 flex items-center gap-3 px-3 text-[11px] font-bold uppercase tracking-[0.18em] text-slate-400'>
-              <span className='h-px flex-1 bg-slate-200' />
-              <span>Navigation</span>
-              <span className='h-px flex-1 bg-slate-200' />
-            </p>
-            <nav className='space-y-1'>
-              {mainNavItems.map((item) => {
-                const isActive = location.pathname === item.path
-                return (
-                  <NavLink key={item.path} item={item} isActive={isActive}>
-                    <span
-                      className={`flex h-8 w-8 items-center justify-center rounded-lg transition-all duration-200 ${isActive
-                          ? 'bg-blue-100 text-blue-600'
-                          : 'text-slate-400 group-hover:bg-slate-100 group-hover:text-slate-600'
-                        }`}
-                    >
-                      {item.icon}
-                    </span>
-                    <span>{item.name}</span>
-                  </NavLink>
-                )
-              })}
-            </nav>
-          </div>
+        <div className='mx-5 h-px bg-white/10' />
+
+        <div className='flex-1 space-y-6 overflow-y-auto px-3 py-5 [&::-webkit-scrollbar]:hidden'>
+          {navSections.map((section) => (
+            <div key={section.title}>
+              <p className='mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500'>{section.title}</p>
+              <nav className='space-y-1'>
+                {section.items.map((item) => (
+                  <NavLink key={item.path} item={item} isActive={isActivePath(item.path)} />
+                ))}
+              </nav>
+            </div>
+          ))}
         </div>
 
-        <div className='flex-none border-t border-slate-100 p-4'>
-          <div className='flex items-center gap-3 rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50 px-4 py-3'>
-            <div className='flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-sm font-bold text-blue-600'>
-              BB
+        <div className='flex-none space-y-2 p-3'>
+          <NavLink item={{ name: 'Settings', path: '/setting', icon: navIcons.settings }} isActive={isActivePath('/setting')} />
+          <Link
+            to='/setting'
+            className='flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-3 ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/10'
+          >
+            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-xs font-bold text-white'>
+              {userInitials}
             </div>
-            <div className='flex-1 min-w-0'>
-              <p className='truncate text-sm font-semibold text-slate-700'>BimaOne</p>
-              <p className='truncate text-[11px] text-slate-400'>v1.0.0</p>
+            <div className='min-w-0 flex-1'>
+              <p className='truncate text-sm font-semibold text-white'>{user?.name || 'My Account'}</p>
+              <p className='truncate text-[11px] text-stone-400'>{user?.email || user?.mobile || 'BimaOne'}</p>
             </div>
-          </div>
+          </Link>
         </div>
       </div>
     </aside>
