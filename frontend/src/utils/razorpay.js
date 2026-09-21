@@ -22,7 +22,7 @@ export const openRazorpayCheckout = async ({
   amount,
   currency = 'INR',
   key_id,
-  name = 'BimaBox',
+  name = 'BimaOne',
   description = 'Subscription Plan Purchase',
   image = '/bimalogo.png',
   prefill = {},

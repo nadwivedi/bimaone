@@ -7,7 +7,7 @@ const Footer = () => {
         <div className='grid grid-cols-1 md:grid-cols-3 gap-10'>
           <div className='space-y-4'>
             <div className='flex items-center gap-1.5'>
-              <img src='/bimalogo.png' alt='BimaBox' className='h-[45px] w-auto' />
+              <img src='/bimalogo.png' alt='BimaOne' className='h-[45px] w-auto' />
               <div className='flex flex-col'>
                 <span className='text-lg font-bold leading-none text-slate-900' style={{ fontFamily: "'Poppins', sans-serif" }}>
                   Bima<span style={{ color: '#003afd' }}>Box</span>
@@ -57,7 +57,7 @@ const Footer = () => {
         </div>
 
         <div className='mt-12 pt-6 border-t border-slate-400 flex flex-col md:flex-row items-center justify-between gap-4'>
-          <p className='text-xs text-slate-600 font-medium'>&copy; 2025 BimaBox. All rights reserved.</p>
+          <p className='text-xs text-slate-600 font-medium'>&copy; 2025 BimaOne. All rights reserved.</p>
           <div className='flex items-center gap-4'>
             <a
               href='https://www.instagram.com/bimabox.in/'

@@ -16,7 +16,7 @@ const TermsAndConditions = () => {
       bg: 'from-blue-50/50',
       title: 'Acceptance of Terms',
       content: [
-        'By accessing or using BimaBox, you confirm that you are at least 18 years of age or have parental/guardian consent.',
+        'By accessing or using BimaOne, you confirm that you are at least 18 years of age or have parental/guardian consent.',
         'By using our services, you agree to be bound by these Terms and Conditions and our Privacy Policy.',
         'If you do not agree to these terms, please discontinue use of the platform immediately.',
         'We reserve the right to update these terms at any time. Continued use after changes constitutes acceptance.',
@@ -34,7 +34,7 @@ const TermsAndConditions = () => {
       bg: 'from-emerald-50/50',
       title: 'Use of the Platform',
       content: [
-        'BimaBox is a vehicle insurance and document management tool for personal and professional use.',
+        'BimaOne is a vehicle insurance and document management tool for personal and professional use.',
         'You are solely responsible for the accuracy of information you enter into the system.',
         'You may not use the platform to upload unlawful, fraudulent, or misleading information.',
         'You agree not to attempt to gain unauthorized access to our systems, servers, or databases.',
@@ -72,9 +72,9 @@ const TermsAndConditions = () => {
       bg: 'from-orange-50/50',
       title: 'Intellectual Property',
       content: [
-        'All content, design, logos, and software on BimaBox are the intellectual property of BimaBox and its licensors.',
+        'All content, design, logos, and software on BimaOne are the intellectual property of BimaOne and its licensors.',
         'You may not copy, reproduce, distribute, or create derivative works without explicit written permission.',
-        'The BimaBox name and logo are registered trademarks and may not be used without authorization.',
+        'The BimaOne name and logo are registered trademarks and may not be used without authorization.',
         'User-submitted data remains your property. By submitting data, you grant us a limited license to process it to provide our services.',
       ],
     },
@@ -90,9 +90,9 @@ const TermsAndConditions = () => {
       bg: 'from-rose-50/50',
       title: 'Limitation of Liability',
       content: [
-        'BimaBox is provided "as is" without warranties of any kind, express or implied.',
+        'BimaOne is provided "as is" without warranties of any kind, express or implied.',
         'We do not guarantee that the service will be uninterrupted, error-free, or completely secure.',
-        'BimaBox is not liable for any direct, indirect, incidental, or consequential damages arising from use of the platform.',
+        'BimaOne is not liable for any direct, indirect, incidental, or consequential damages arising from use of the platform.',
         'Insurance decisions should always be made in consultation with a licensed insurance professional.',
         'We are not responsible for any penalties arising from missed renewals or incorrect data entry.',
       ],
@@ -130,7 +130,7 @@ const TermsAndConditions = () => {
             </div>
             <div>
               <h1 className='text-2xl font-black text-slate-900'>Terms &amp; Conditions</h1>
-              <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400'>BimaBox · Last Updated June 2025</p>
+              <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400'>BimaOne · Last Updated June 2025</p>
             </div>
           </div>
           <div className='mt-3 flex items-start gap-2.5 rounded-2xl bg-amber-50 border border-amber-200 px-4 py-3'>
@@ -138,7 +138,7 @@ const TermsAndConditions = () => {
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' />
             </svg>
             <p className='text-xs text-amber-700 leading-relaxed font-medium'>
-              Please read these Terms and Conditions carefully before using BimaBox. By using our platform, you agree to be bound by these terms.
+              Please read these Terms and Conditions carefully before using BimaOne. By using our platform, you agree to be bound by these terms.
             </p>
           </div>
         </div>
@@ -171,7 +171,7 @@ const TermsAndConditions = () => {
         {/* Agreement Box */}
         <div className='mt-6 rounded-[28px] bg-gradient-to-br from-indigo-600 to-purple-700 p-5 shadow-xl shadow-indigo-500/25'>
           <p className='text-xs font-bold text-indigo-100 uppercase tracking-wider mb-1'>Agreement</p>
-          <p className='text-white font-black text-base mb-1'>By using BimaBox, you agree</p>
+          <p className='text-white font-black text-base mb-1'>By using BimaOne, you agree</p>
           <p className='text-indigo-200 text-xs mb-3'>to all the terms and conditions stated above.</p>
           <a
             href='mailto:mybimabox@gmail.com'
@@ -185,7 +185,7 @@ const TermsAndConditions = () => {
         </div>
 
         <p className='text-center text-[10px] text-slate-400 font-medium mt-6'>
-          © 2025 BimaBox. All rights reserved.
+          © 2025 BimaOne. All rights reserved.
         </p>
       </div>
     </div>

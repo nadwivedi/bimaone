@@ -98,16 +98,16 @@ const ContactUs = () => {
 
   const faqs = [
     {
-      q: 'How do I renew my vehicle insurance through BimaBox?',
-      a: 'BimaBox sends you renewal reminders. You can manage records in the app, but actual insurance purchase/renewal must be done through a licensed insurer or broker.',
+      q: 'How do I renew my vehicle insurance through BimaOne?',
+      a: 'BimaOne sends you renewal reminders. You can manage records in the app, but actual insurance purchase/renewal must be done through a licensed insurer or broker.',
     },
     {
-      q: 'Is my data safe on BimaBox?',
+      q: 'Is my data safe on BimaOne?',
       a: 'Yes. We use SSL/TLS encryption and follow strict data security practices. Your data is never sold to third parties. See our Privacy Policy for details.',
     },
     {
-      q: 'Can I use BimaBox for multiple vehicles?',
-      a: 'Absolutely! BimaBox is designed to manage any number of vehicle records — insurance, tax, PUC, fitness, GPS and more.',
+      q: 'Can I use BimaOne for multiple vehicles?',
+      a: 'Absolutely! BimaOne is designed to manage any number of vehicle records — insurance, tax, PUC, fitness, GPS and more.',
     },
     {
       q: 'How do I delete my account?',
@@ -129,7 +129,7 @@ const ContactUs = () => {
             </div>
             <div>
               <h1 className='text-2xl font-black text-slate-900'>Contact Us</h1>
-              <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400'>BimaBox Support Team</p>
+              <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400'>BimaOne Support Team</p>
             </div>
           </div>
           <p className='text-sm text-slate-500 leading-relaxed mt-3'>
@@ -209,7 +209,7 @@ const ContactUs = () => {
             <h2 className='text-sm font-black text-slate-800'>Our Location</h2>
           </div>
           <div className='px-5 py-4'>
-            <p className='text-sm font-bold text-slate-800'>BimaBox</p>
+            <p className='text-sm font-bold text-slate-800'>BimaOne</p>
             <p className='text-xs text-slate-500 mt-1 leading-relaxed'>Raipur, Chhattisgarh, India</p>
             <div className='flex items-center gap-2 mt-3'>
               <div className='h-1.5 w-1.5 rounded-full bg-emerald-500' />
@@ -285,7 +285,7 @@ const ContactUs = () => {
         </div>
 
         <p className='text-center text-[10px] text-slate-400 font-medium mt-6'>
-          © 2025 BimaBox. All rights reserved.
+          © 2025 BimaOne. All rights reserved.
         </p>
       </div>
     </div>

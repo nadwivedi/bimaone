@@ -78,9 +78,9 @@ const ReferralPage = () => {
 
   const handleShare = async () => {
     if (!referralInfo?.shareLink) return
-    const text = `Join BimaBox and manage all your vehicle documents easily! Use my referral code: ${referralInfo.referralCode}\n\n${referralInfo.shareLink}`
+    const text = `Join BimaOne and manage all your vehicle documents easily! Use my referral code: ${referralInfo.referralCode}\n\n${referralInfo.shareLink}`
     if (navigator.share) {
-      try { await navigator.share({ title: 'BimaBox Referral', text }) } catch { }
+      try { await navigator.share({ title: 'BimaOne Referral', text }) } catch { }
     } else {
       try {
         await navigator.clipboard.writeText(text)

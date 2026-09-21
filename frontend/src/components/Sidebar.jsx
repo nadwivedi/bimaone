@@ -90,7 +90,7 @@ const Sidebar = () => {
       <div className='flex h-full flex-col'>
         <div className='flex-none border-b border-slate-100 px-5 py-5'>
           <Link to='/dashboard' className='flex items-center justify-center gap-1'>
-            <img src='/bimalogo.png' alt='BimaBox' className='h-[72px] w-auto' />
+            <img src='/bimalogo.png' alt='BimaOne' className='h-[72px] w-auto' />
             <div className='flex flex-col'>
               <span className='text-[26px] font-bold leading-none pt-0.5' style={{ fontFamily: "'Poppins', sans-serif" }}><span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>Box</span></span>
               <span className='mt-0.5 text-[6.5px] font-medium tracking-wide' style={{ color: '#0c1f48', fontFamily: "'Inter', sans-serif" }}>All your policies. One smart place.</span>
@@ -132,7 +132,7 @@ const Sidebar = () => {
               BB
             </div>
             <div className='flex-1 min-w-0'>
-              <p className='truncate text-sm font-semibold text-slate-700'>BimaBox</p>
+              <p className='truncate text-sm font-semibold text-slate-700'>BimaOne</p>
               <p className='truncate text-[11px] text-slate-400'>v1.0.0</p>
             </div>
           </div>

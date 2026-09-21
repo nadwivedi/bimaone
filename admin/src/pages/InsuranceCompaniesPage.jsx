@@ -14,14 +14,14 @@ function InsuranceCompaniesPage({ apiFetch }) {
 
   const notifyCompaniesUpdated = (data) => {
     try {
-      localStorage.setItem('bimabox_insurance_companies', JSON.stringify({
+      localStorage.setItem('bimaone_insurance_companies', JSON.stringify({
         date: new Date().toISOString().split('T')[0],
         timestamp: Date.now(),
         data: data
       }))
       window.dispatchEvent(new CustomEvent('insurance_companies_updated', { detail: data }))
       if (typeof BroadcastChannel !== 'undefined') {
-        const bc = new BroadcastChannel('bimabox_insurance_companies_channel')
+        const bc = new BroadcastChannel('bimaone_insurance_companies_channel')
         bc.postMessage({ type: 'insurance_companies_updated', data: data })
         bc.close()
       }

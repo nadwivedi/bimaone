@@ -4,13 +4,13 @@
  * Provides optimistic instant UI loads via localStorage caching combined with
  * Stale-While-Revalidate background fetching and cross-tab event broadcasting.
  *
- * Cache key: bimabox_product_types
+ * Cache key: bimaone_product_types
  * Cache shape: { date: "YYYY-MM-DD", timestamp: 123456789, data: [...productTypes] }
  */
 
-const CACHE_KEY = 'bimabox_product_types'
+const CACHE_KEY = 'bimaone_product_types'
 const EVENT_NAME = 'product_types_updated'
-const CHANNEL_NAME = 'bimabox_product_types_channel'
+const CHANNEL_NAME = 'bimaone_product_types_channel'
 
 const DEFAULT_FALLBACK_PRODUCTS = [
   { name: 'GCV' }, { name: 'GCV-3W' }, { name: 'Pvt. Car' }, { name: 'Taxi' },

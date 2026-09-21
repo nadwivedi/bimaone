@@ -284,54 +284,54 @@ const DashboardContent = () => {
   }
 
   return (
-    <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f0f9ff,_#f8fafc_45%,_#ffffff_100%)]'>
+    <div className='min-h-screen bg-[radial-gradient(circle_at_top_left,_#f5f3ff,_#faf7f2_45%,_#fffdf9_100%)]'>
       <main className='px-2 pt-3 pb-32 lg:px-8 lg:pt-4'>
         <section className='w-full'>
           <div className='max-w-7xl mx-auto'>
 
-            <div className='rounded-[32px] border border-slate-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(15,23,42,0.25)] md:p-5 lg:p-6'>
+            <div className='rounded-[28px] border border-stone-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(68,64,60,0.25)] md:p-5 lg:p-6'>
               <div className='mb-6 grid grid-cols-3 gap-4'>
                 <button
                   type='button'
                   onClick={() => navigate('/rto-documents')}
-                  className='flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-blue-100 bg-blue-50/50 p-4 transition-all hover:border-blue-300 hover:bg-blue-100/50 hover:shadow-xl group'
+                  className='flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-violet-100 bg-violet-50/50 p-4 transition-all hover:border-violet-300 hover:bg-violet-100/50 hover:shadow-xl group'
                 >
-                  <div className='flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-blue-600 text-white shadow-lg shadow-blue-200 group-hover:scale-110 transition-transform'>
+                  <div className='flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-violet-600 text-white shadow-lg shadow-violet-200 group-hover:scale-110 transition-transform'>
                     <svg className='h-5 w-5 md:h-6 md:w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
                     </svg>
                   </div>
-                  <span className='text-[10px] md:text-sm font-bold text-blue-900'>RTO Documents</span>
+                  <span className='text-[10px] md:text-sm font-bold text-violet-900'>RTO Documents</span>
                 </button>
 
                 <button
                   type='button'
                   onClick={() => navigate('/kyc')}
-                  className='flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-emerald-100 bg-emerald-50/50 p-4 transition-all hover:border-emerald-300 hover:bg-emerald-100/50 hover:shadow-xl group'
+                  className='flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-orange-100 bg-orange-50/50 p-4 transition-all hover:border-orange-300 hover:bg-orange-100/50 hover:shadow-xl group'
                 >
-                  <div className='flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-emerald-600 text-white shadow-lg shadow-emerald-200 group-hover:scale-110 transition-transform'>
+                  <div className='flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-orange-600 text-white shadow-lg shadow-orange-200 group-hover:scale-110 transition-transform'>
                     <svg className='h-5 w-5 md:h-6 md:w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2' />
                     </svg>
                   </div>
-                  <span className='text-[10px] md:text-sm font-bold text-emerald-900'>KYC</span>
+                  <span className='text-[10px] md:text-sm font-bold text-orange-900'>KYC</span>
                 </button>
 
                 <button
                   type='button'
                   onClick={() => setShowUploadOptions(true)}
-                  className='flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-slate-100 bg-slate-50/50 p-4 transition-all hover:border-slate-300 hover:bg-slate-100/50 hover:shadow-xl group'
+                  className='flex flex-col items-center justify-center gap-2 rounded-2xl border-2 border-stone-100 bg-stone-50/50 p-4 transition-all hover:border-stone-300 hover:bg-stone-100/50 hover:shadow-xl group'
                 >
-                  <div className='flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-slate-900 text-white shadow-lg shadow-slate-200 group-hover:scale-110 transition-transform'>
+                  <div className='flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl bg-stone-900 text-white shadow-lg shadow-stone-200 group-hover:scale-110 transition-transform'>
                     <svg className='h-5 w-5 md:h-6 md:w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12' />
                     </svg>
                   </div>
-                  <span className='text-[10px] md:text-sm font-bold text-slate-900'>Upload Insurance</span>
+                  <span className='text-[10px] md:text-sm font-bold text-stone-900'>Upload Insurance</span>
                 </button>
               </div>
 
-              <h2 className='mb-6 text-lg font-black text-slate-900'>Expiring Soon</h2>
+              <h2 className='mb-6 flex items-center gap-2 text-lg font-black text-stone-900 before:h-5 before:w-1.5 before:rounded-full before:bg-gradient-to-b before:from-violet-500 before:to-fuchsia-500 before:content-[""]'>Expiring Soon</h2>
 
               {(() => {
                 const filteredDocs = realExpiringDocs.filter(doc => 
@@ -344,19 +344,19 @@ const DashboardContent = () => {
                     <div className='lg:hidden space-y-3'>
                       {loadingDocs ? (
                         <div className='text-center py-8'>
-                          <div className='animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto'></div>
-                          <p className='text-xs text-slate-500 mt-2 font-bold uppercase tracking-widest'>Scanning Documents...</p>
+                          <div className='animate-spin h-8 w-8 border-4 border-violet-600 border-t-transparent rounded-full mx-auto'></div>
+                          <p className='text-xs text-stone-500 mt-2 font-bold uppercase tracking-widest'>Scanning Documents...</p>
                         </div>
                       ) : filteredDocs.length === 0 ? (
-                        <div className='text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200'>
-                          <p className='text-sm text-slate-500 font-bold'>No documents expiring soon.</p>
+                        <div className='text-center py-12 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200'>
+                          <p className='text-sm text-stone-500 font-bold'>No documents expiring soon.</p>
                         </div>
                       ) : (
                         filteredDocs.map((doc) => (
                           <div
                             key={doc.id}
                             onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
-                            className='group relative overflow-hidden rounded-xl border-2 border-slate-200 bg-white p-3 shadow-sm hover:border-blue-400 transition-all cursor-pointer'
+                            className='group relative overflow-hidden rounded-xl border-2 border-stone-200 bg-white p-3 shadow-sm hover:border-violet-400 transition-all cursor-pointer'
                           >
                             <div className='flex items-start gap-3'>
                               <div className={`flex h-10 w-10 items-center justify-center rounded-xl bg-${doc.color}-50 text-${doc.color}-600`}>
@@ -368,9 +368,9 @@ const DashboardContent = () => {
                                 {doc.type === 'Permit' && <svg className='h-6 w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' /></svg>}
                               </div>
                               <div className='min-w-0 flex-1'>
-                                {doc.insuredName && <p className='text-sm font-black text-slate-900 truncate leading-tight'>{doc.insuredName}</p>}
-                                <p className='text-[10px] font-medium text-slate-500 mt-0.5'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</p>
-                                <p className='text-[10px] font-mono text-slate-400'>{doc.vehicleNumber}</p>
+                                {doc.insuredName && <p className='text-sm font-black text-stone-900 truncate leading-tight'>{doc.insuredName}</p>}
+                                <p className='text-[10px] font-medium text-stone-500 mt-0.5'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</p>
+                                <p className='text-[10px] font-mono text-stone-400'>{doc.vehicleNumber}</p>
                               </div>
                               <div className='text-right shrink-0'>
                                 <p className={`text-[11px] font-black ${
@@ -378,7 +378,7 @@ const DashboardContent = () => {
                                 }`}>
                                   {doc.daysLeft < 0 ? 'Expired' : doc.daysLeft === 0 ? 'Today' : `${doc.daysLeft}d left`}
                                 </p>
-                                <p className='text-[10px] text-slate-400'>{doc.validTo}</p>
+                                <p className='text-[10px] text-stone-400'>{doc.validTo}</p>
                               </div>
                             </div>
                           </div>
@@ -388,13 +388,13 @@ const DashboardContent = () => {
 
                     <div className='hidden lg:block'>
                       {loadingDocs ? (
-                        <div className='text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200'>
-                          <div className='animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto'></div>
-                          <p className='text-xs text-slate-500 mt-2 font-bold uppercase tracking-widest'>Scanning Documents...</p>
+                        <div className='text-center py-12 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200'>
+                          <div className='animate-spin h-8 w-8 border-4 border-violet-600 border-t-transparent rounded-full mx-auto'></div>
+                          <p className='text-xs text-stone-500 mt-2 font-bold uppercase tracking-widest'>Scanning Documents...</p>
                         </div>
                       ) : filteredDocs.length === 0 ? (
-                        <div className='text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200'>
-                          <p className='text-sm text-slate-500 font-bold'>No documents expiring soon.</p>
+                        <div className='text-center py-12 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200'>
+                          <p className='text-sm text-stone-500 font-bold'>No documents expiring soon.</p>
                         </div>
                       ) : (
                         <div className='grid grid-cols-4 gap-4'>
@@ -404,7 +404,7 @@ const DashboardContent = () => {
                               <div
                                 key={doc.id}
                                 onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
-                                className='group relative overflow-hidden rounded-xl border border-slate-150 bg-slate-50/30 p-4 transition-all duration-300 hover:scale-[1.02] hover:bg-white hover:border-blue-300 hover:shadow-[0_20px_50px_-20px_rgba(59,130,246,0.15)] cursor-pointer'
+                                className='group relative overflow-hidden rounded-xl border border-stone-150 bg-stone-50/30 p-4 transition-all duration-300 hover:scale-[1.02] hover:bg-white hover:border-violet-300 hover:shadow-[0_20px_50px_-20px_rgba(139,92,246,0.15)] cursor-pointer'
                               >
                                 <div className={`absolute top-0 left-0 right-0 h-1 ${colors.strip}`} />
 
@@ -419,9 +419,9 @@ const DashboardContent = () => {
                                       {doc.type === 'Permit' && <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' /></svg>}
                                     </div>
                                     <div>
-                                      {doc.insuredName && <p className='text-sm font-black text-slate-800 group-hover:text-blue-600 transition-colors leading-tight'>{doc.insuredName}</p>}
-                                      <p className='text-[10px] font-semibold text-slate-500 mt-0.5'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</p>
-                                      <p className='text-[10px] font-mono font-bold text-slate-500 uppercase'>{doc.vehicleNumber}</p>
+                                      {doc.insuredName && <p className='text-sm font-black text-stone-800 group-hover:text-violet-600 transition-colors leading-tight'>{doc.insuredName}</p>}
+                                      <p className='text-[10px] font-semibold text-stone-500 mt-0.5'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</p>
+                                      <p className='text-[10px] font-mono font-bold text-stone-500 uppercase'>{doc.vehicleNumber}</p>
                                     </div>
                                   </div>
                                   <span className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-md ${
@@ -435,14 +435,14 @@ const DashboardContent = () => {
                                   </span>
                                 </div>
 
-                                <div className='mt-4 pt-3 border-t border-slate-100/80 flex flex-col gap-1 text-[11px] text-slate-500'>
+                                <div className='mt-4 pt-3 border-t border-stone-100/80 flex flex-col gap-1 text-[11px] text-stone-500'>
                                   <div className='flex justify-between'>
-                                    <span className='font-medium text-slate-400'>Valid From:</span>
-                                    <span className='font-semibold text-slate-700'>{doc.validFrom}</span>
+                                    <span className='font-medium text-stone-400'>Valid From:</span>
+                                    <span className='font-semibold text-stone-700'>{doc.validFrom}</span>
                                   </div>
                                   <div className='flex justify-between'>
-                                    <span className='font-medium text-slate-400'>Valid To:</span>
-                                    <span className='font-semibold text-slate-700'>{doc.validTo}</span>
+                                    <span className='font-medium text-stone-400'>Valid To:</span>
+                                    <span className='font-semibold text-stone-700'>{doc.validTo}</span>
                                   </div>
                                 </div>
                               </div>
@@ -456,11 +456,11 @@ const DashboardContent = () => {
               })()}
             </div>
 
-            <div className='mt-6 rounded-[32px] border border-slate-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(15,23,42,0.25)] md:p-5 lg:p-6'>
-              <h2 className='mb-6 text-lg font-black text-slate-900'>Recently Added</h2>
+            <div className='mt-6 rounded-[28px] border border-stone-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(68,64,60,0.25)] md:p-5 lg:p-6'>
+              <h2 className='mb-6 flex items-center gap-2 text-lg font-black text-stone-900 before:h-5 before:w-1.5 before:rounded-full before:bg-gradient-to-b before:from-violet-500 before:to-fuchsia-500 before:content-[""]'>Recently Added</h2>
               {recentDocs.length === 0 ? (
-                <div className='rounded-2xl border-2 border-dashed border-slate-200 bg-slate-50 py-12 text-center'>
-                  <p className='text-sm font-bold text-slate-500'>No recently added documents.</p>
+                <div className='rounded-2xl border-2 border-dashed border-stone-200 bg-stone-50 py-12 text-center'>
+                  <p className='text-sm font-bold text-stone-500'>No recently added documents.</p>
                 </div>
               ) : (
                 <>
@@ -468,22 +468,22 @@ const DashboardContent = () => {
                     {recentDocs.map((doc) => {
                       const dotColor = ({ emerald: '#10B981', amber: '#F59E0B', indigo: '#6366F1', rose: '#F43F5E', blue: '#3B82F6', teal: '#14B8A6' })[doc.color] || '#3B82F6'
                       return (
-                        <div key={doc.id} onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)} className='rounded-xl border border-slate-200 bg-white px-4 py-2.5 shadow-[0_4px_16px_-6px_rgba(15,23,42,0.08)] transition-all hover:border-blue-300 hover:shadow-[0_8px_24px_-8px_rgba(59,130,246,0.18)] cursor-pointer'>
+                        <div key={doc.id} onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)} className='rounded-xl border border-stone-200 bg-white px-4 py-2.5 shadow-[0_4px_16px_-6px_rgba(68,64,60,0.08)] transition-all hover:border-violet-300 hover:shadow-[0_8px_24px_-8px_rgba(139,92,246,0.18)] cursor-pointer'>
                           <div className='flex items-start gap-3'>
                             <div className='h-2 w-2 shrink-0 rounded-full mt-1' style={{ backgroundColor: dotColor }} />
                             <div className='min-w-0 flex-1'>
-                              {doc.insuredName && <p className='text-sm font-black text-slate-800 leading-tight'>{doc.insuredName}</p>}
-                              <p className='font-mono text-[11px] text-slate-400'>{doc.vehicleNumber}</p>
-                              <p className='text-[11px] font-medium text-slate-500 mt-0.5'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</p>
+                              {doc.insuredName && <p className='text-sm font-black text-stone-800 leading-tight'>{doc.insuredName}</p>}
+                              <p className='font-mono text-[11px] text-stone-400'>{doc.vehicleNumber}</p>
+                              <p className='text-[11px] font-medium text-stone-500 mt-0.5'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</p>
                             </div>
-                            <p className='whitespace-nowrap text-[11px] font-semibold text-blue-600 shrink-0'>{timeAgo(doc.createdAt)}</p>
+                            <p className='whitespace-nowrap text-[11px] font-semibold text-violet-600 shrink-0'>{timeAgo(doc.createdAt)}</p>
                           </div>
-                          <div className='mt-2.5 flex items-center gap-4 border-t border-slate-100 pt-2.5'>
-                            <div className='text-[10px] text-slate-400'>
-                              <span className='font-semibold text-slate-500'>From:</span> {doc.validFrom}
+                          <div className='mt-2.5 flex items-center gap-4 border-t border-stone-100 pt-2.5'>
+                            <div className='text-[10px] text-stone-400'>
+                              <span className='font-semibold text-stone-500'>From:</span> {doc.validFrom}
                             </div>
-                            <div className='text-[10px] text-slate-400'>
-                              <span className='font-semibold text-slate-500'>To:</span> {doc.validTo}
+                            <div className='text-[10px] text-stone-400'>
+                              <span className='font-semibold text-stone-500'>To:</span> {doc.validTo}
                             </div>
                           </div>
                         </div>
@@ -492,24 +492,24 @@ const DashboardContent = () => {
                   </div>
 
                   <div className='hidden lg:block'>
-                    <div className='overflow-hidden rounded-2xl border border-slate-100 bg-white'>
+                    <div className='overflow-hidden rounded-2xl border border-stone-100 bg-white'>
                       <table className='w-full text-left'>
                         <thead>
-                          <tr className='border-b border-slate-100 bg-slate-50/50'>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Insured</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Vehicle</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Document</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Valid From</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Valid To</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right'>Added</th>
+                          <tr className='border-b border-stone-100 bg-stone-50/50'>
+                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Insured</th>
+                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Vehicle</th>
+                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Document</th>
+                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Valid From</th>
+                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Valid To</th>
+                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400 text-right'>Added</th>
                           </tr>
                         </thead>
-                        <tbody className='divide-y divide-slate-50'>
+                        <tbody className='divide-y divide-stone-50'>
                           {recentDocs.map((doc) => (
-                            <tr key={doc.id} onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)} className='transition-colors hover:bg-slate-50/50 group cursor-pointer'>
-                              <td className='px-6 py-3 text-sm font-black text-slate-800'>{doc.insuredName || '\u2014'}</td>
+                            <tr key={doc.id} onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)} className='transition-colors hover:bg-stone-50/50 group cursor-pointer'>
+                              <td className='px-6 py-3 text-sm font-black text-stone-800'>{doc.insuredName || '\u2014'}</td>
                               <td className='px-6 py-3'>
-                                <span className='font-mono text-xs font-bold text-slate-600'>{doc.vehicleNumber}</span>
+                                <span className='font-mono text-xs font-bold text-stone-600'>{doc.vehicleNumber}</span>
                               </td>
                               <td className='px-6 py-3'>
                                 <div className='flex items-center gap-3'>
@@ -521,13 +521,13 @@ const DashboardContent = () => {
                                     {doc.type === 'GPS' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' /></svg>}
                                     {doc.type === 'Permit' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' /></svg>}
                                   </div>
-                                  <span className='text-sm font-bold text-slate-700'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</span>
+                                  <span className='text-sm font-bold text-stone-700'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</span>
                                 </div>
                               </td>
-                              <td className='px-6 py-3 text-xs font-medium text-slate-500'>{doc.validFrom}</td>
-                              <td className='px-6 py-3 text-xs font-medium text-slate-500'>{doc.validTo}</td>
+                              <td className='px-6 py-3 text-xs font-medium text-stone-500'>{doc.validFrom}</td>
+                              <td className='px-6 py-3 text-xs font-medium text-stone-500'>{doc.validTo}</td>
                               <td className='px-6 py-3 text-right'>
-                                <span className='rounded-lg bg-blue-50 px-2 py-1 text-[10px] font-black uppercase text-blue-600'>{timeAgo(doc.createdAt)}</span>
+                                <span className='rounded-lg bg-violet-50 px-2 py-1 text-[10px] font-black uppercase text-violet-600'>{timeAgo(doc.createdAt)}</span>
                               </td>
                             </tr>
                           ))}
@@ -588,8 +588,8 @@ const DashboardContent = () => {
         >
           <div className='bg-white rounded-2xl shadow-2xl max-w-md w-full p-6'>
             <div className='flex justify-between items-center mb-6'>
-              <h2 className='text-xl font-bold text-slate-900'>Upload Insurance</h2>
-              <button onClick={() => setShowUploadOptions(false)} className='text-slate-400 hover:text-slate-600 p-1 rounded-lg hover:bg-slate-100 transition cursor-pointer'>
+              <h2 className='text-xl font-bold text-stone-900'>Upload Insurance</h2>
+              <button onClick={() => setShowUploadOptions(false)} className='text-stone-400 hover:text-stone-600 p-1 rounded-lg hover:bg-stone-100 transition cursor-pointer'>
                 <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
                 </svg>
@@ -599,16 +599,16 @@ const DashboardContent = () => {
               <button
                 type='button'
                 onClick={() => fileInputRef.current?.click()}
-                className='w-full flex items-center gap-4 p-4 rounded-xl border-2 border-blue-200 bg-blue-50 hover:border-blue-400 hover:bg-blue-100 transition-all group text-left'
+                className='w-full flex items-center gap-4 p-4 rounded-xl border-2 border-violet-200 bg-violet-50 hover:border-violet-400 hover:bg-violet-100 transition-all group text-left'
               >
-                <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-indigo-600 text-white shadow-lg group-hover:scale-110 transition-transform'>
+                <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-white shadow-lg group-hover:scale-110 transition-transform'>
                   <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 10V3L4 14h7v7l9-11h-7z' />
                   </svg>
                 </div>
                 <div>
-                  <p className='text-base font-black text-slate-900'>AI Upload</p>
-                  <p className='text-xs text-slate-500 font-medium mt-0.5'>Upload document &amp; auto-fill details</p>
+                  <p className='text-base font-black text-stone-900'>AI Upload</p>
+                  <p className='text-xs text-stone-500 font-medium mt-0.5'>Upload document &amp; auto-fill details</p>
                 </div>
               </button>
               <input
@@ -633,24 +633,24 @@ const DashboardContent = () => {
                   setInitialExtractionFile(null)
                   setShowAddInsuranceModal(true)
                 }}
-                className='w-full flex items-center gap-4 p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-slate-400 hover:bg-slate-50 transition-all group text-left'
+                className='w-full flex items-center gap-4 p-4 rounded-xl border-2 border-stone-200 bg-white hover:border-stone-400 hover:bg-stone-50 transition-all group text-left'
               >
-                <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-slate-600 to-slate-800 text-white shadow-lg group-hover:scale-110 transition-transform'>
+                <div className='flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-stone-600 to-stone-800 text-white shadow-lg group-hover:scale-110 transition-transform'>
                   <svg className='w-6 h-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' />
                   </svg>
                 </div>
                 <div>
-                  <p className='text-base font-black text-slate-900'>Manual Upload</p>
-                  <p className='text-xs text-slate-500 font-medium mt-0.5'>Fill insurance details manually</p>
+                  <p className='text-base font-black text-stone-900'>Manual Upload</p>
+                  <p className='text-xs text-stone-500 font-medium mt-0.5'>Fill insurance details manually</p>
                 </div>
               </button>
-              <div className={`hidden md:flex flex-col items-center gap-2 border-2 border-dashed rounded-xl p-5 text-center transition-colors ${isDragOver ? 'border-blue-400 bg-blue-50' : 'border-slate-200 bg-transparent'}`}>
-                <svg className='w-8 h-8 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className={`hidden md:flex flex-col items-center gap-2 border-2 border-dashed rounded-xl p-5 text-center transition-colors ${isDragOver ? 'border-violet-400 bg-violet-50' : 'border-stone-200 bg-transparent'}`}>
+                <svg className='w-8 h-8 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12' />
                 </svg>
-                <p className='text-sm font-semibold text-slate-600'>Drag &amp; drop your insurance document here</p>
-                <p className='text-xs text-slate-400'>PDF or Image (max 15MB)</p>
+                <p className='text-sm font-semibold text-stone-600'>Drag &amp; drop your insurance document here</p>
+                <p className='text-xs text-stone-400'>PDF or Image (max 15MB)</p>
               </div>
             </div>
           </div>
@@ -661,13 +661,13 @@ const DashboardContent = () => {
         <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4'>
           <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm'>
             <div className='text-center mb-6'>
-              <div className='w-14 h-14 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                <svg className='w-7 h-7 text-indigo-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='w-14 h-14 bg-fuchsia-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                <svg className='w-7 h-7 text-fuchsia-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z' />
                 </svg>
               </div>
-              <h3 className='text-lg font-bold text-slate-800'>Almost done!</h3>
-              <p className='text-sm text-slate-500 mt-1'>Please enter your mobile number to complete registration</p>
+              <h3 className='text-lg font-bold text-stone-800'>Almost done!</h3>
+              <p className='text-sm text-stone-500 mt-1'>Please enter your mobile number to complete registration</p>
             </div>
             <input
               ref={promptRef}
@@ -676,14 +676,14 @@ const DashboardContent = () => {
               onChange={(e) => { setPromptMobile(e.target.value.replace(/\D/g, '').slice(0, 10)) }}
               onKeyDown={(e) => { if (e.key === 'Enter') handleMobileSubmit() }}
               placeholder='10-digit mobile number'
-              className='w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500 transition-all text-sm text-center font-medium tracking-widest'
+              className='w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-fuchsia-500/20 focus:border-fuchsia-500 transition-all text-sm text-center font-medium tracking-widest'
               disabled={submittingMobile}
             />
             <button
               type='button'
               onClick={handleMobileSubmit}
               disabled={submittingMobile || promptMobile.length !== 10}
-              className='w-full mt-4 px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-blue-600 text-white rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-50 cursor-pointer'
+              className='w-full mt-4 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-50 cursor-pointer'
             >
               {submittingMobile ? 'Saving...' : 'Continue'}
             </button>
@@ -695,13 +695,13 @@ const DashboardContent = () => {
         <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-4'>
           <div className='bg-white rounded-2xl shadow-2xl p-6 w-full max-w-sm'>
             <div className='text-center mb-6'>
-              <div className='w-14 h-14 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4'>
-                <svg className='w-7 h-7 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <div className='w-14 h-14 bg-violet-100 rounded-full flex items-center justify-center mx-auto mb-4'>
+                <svg className='w-7 h-7 text-violet-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                   <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
                 </svg>
               </div>
-              <h3 className='text-lg font-bold text-slate-800'>Set a password</h3>
-              <p className='text-sm text-slate-500 mt-1'>Add a password so you can login with your email too</p>
+              <h3 className='text-lg font-bold text-stone-800'>Set a password</h3>
+              <p className='text-sm text-stone-500 mt-1'>Add a password so you can login with your email too</p>
             </div>
             <div className='space-y-3'>
               <div className='relative'>
@@ -712,10 +712,10 @@ const DashboardContent = () => {
                   onChange={(e) => setPasswordInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSetPassword() }}
                   placeholder='New password (min. 6 characters)'
-                  className='w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-center font-medium'
+                  className='w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all text-sm text-center font-medium'
                   disabled={submittingPassword}
                 />
-                <button type='button' onClick={() => setShowPass(!showPass)} className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer'>
+                <button type='button' onClick={() => setShowPass(!showPass)} className='absolute right-3 top-1/2 -transtone-y-1/2 text-stone-400 hover:text-stone-600 cursor-pointer'>
                   {showPass ? (
                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21' /></svg>
                   ) : (
@@ -730,10 +730,10 @@ const DashboardContent = () => {
                   onChange={(e) => setConfirmPasswordInput(e.target.value)}
                   onKeyDown={(e) => { if (e.key === 'Enter') handleSetPassword() }}
                   placeholder='Confirm password'
-                  className='w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm text-center font-medium'
+                  className='w-full px-4 py-3 bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-500 transition-all text-sm text-center font-medium'
                   disabled={submittingPassword}
                 />
-                <button type='button' onClick={() => setShowConfirmPass(!showConfirmPass)} className='absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer'>
+                <button type='button' onClick={() => setShowConfirmPass(!showConfirmPass)} className='absolute right-3 top-1/2 -transtone-y-1/2 text-stone-400 hover:text-stone-600 cursor-pointer'>
                   {showConfirmPass ? (
                     <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21' /></svg>
                   ) : (
@@ -746,7 +746,7 @@ const DashboardContent = () => {
               type='button'
               onClick={handleSetPassword}
               disabled={submittingPassword || !passwordInput || passwordInput.length < 6 || passwordInput !== confirmPasswordInput}
-              className='w-full mt-4 px-4 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-50 cursor-pointer'
+              className='w-full mt-4 px-4 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white rounded-xl font-semibold hover:shadow-lg transition disabled:opacity-50 cursor-pointer'
             >
               {submittingPassword ? 'Saving...' : 'Set Password'}
             </button>
@@ -754,7 +754,7 @@ const DashboardContent = () => {
               type='button'
               onClick={() => { localStorage.setItem('passwordPromptDismissedAt', new Date().toISOString()); setShowPasswordPrompt(false) }}
               disabled={submittingPassword}
-              className='w-full mt-2 px-4 py-2.5 text-sm font-semibold text-slate-500 hover:text-slate-700 transition-colors cursor-pointer rounded-xl'
+              className='w-full mt-2 px-4 py-2.5 text-sm font-semibold text-stone-500 hover:text-stone-700 transition-colors cursor-pointer rounded-xl'
             >
               Later
             </button>

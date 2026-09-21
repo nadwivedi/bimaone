@@ -61,7 +61,7 @@ function DashboardPage({ apiFetch }) {
         <div className="panel-header panel-header-row">
           <div>
             <h2>Dashboard</h2>
-            <p className="section-text">A quick snapshot of what's happening across Bimabox right now.</p>
+            <p className="section-text">A quick snapshot of what's happening across BimaOne right now.</p>
           </div>
           <div className="toolbar">
             {stats?.generatedAt ? (

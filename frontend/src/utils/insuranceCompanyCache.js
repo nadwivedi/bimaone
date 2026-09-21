@@ -4,13 +4,13 @@
  * Provides optimistic instant UI loads via localStorage caching combined with
  * Stale-While-Revalidate background fetching and cross-tab event broadcasting.
  *
- * Cache key: bimabox_insurance_companies
+ * Cache key: bimaone_insurance_companies
  * Cache shape: { date: "YYYY-MM-DD", timestamp: 123456789, data: [...companies] }
  */
 
-const CACHE_KEY = 'bimabox_insurance_companies'
+const CACHE_KEY = 'bimaone_insurance_companies'
 const EVENT_NAME = 'insurance_companies_updated'
-const CHANNEL_NAME = 'bimabox_insurance_companies_channel'
+const CHANNEL_NAME = 'bimaone_insurance_companies_channel'
 
 /** Returns today's date string in YYYY-MM-DD format (local time). */
 const todayStr = () => {

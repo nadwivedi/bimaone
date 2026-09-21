@@ -14,14 +14,14 @@ function ProductTypesPage({ apiFetch }) {
 
   const notifyProductTypesUpdated = (data) => {
     try {
-      localStorage.setItem('bimabox_product_types', JSON.stringify({
+      localStorage.setItem('bimaone_product_types', JSON.stringify({
         date: new Date().toISOString().split('T')[0],
         timestamp: Date.now(),
         data: data
       }))
       window.dispatchEvent(new CustomEvent('product_types_updated', { detail: data }))
       if (typeof BroadcastChannel !== 'undefined') {
-        const bc = new BroadcastChannel('bimabox_product_types_channel')
+        const bc = new BroadcastChannel('bimaone_product_types_channel')
         bc.postMessage({ type: 'product_types_updated', data: data })
         bc.close()
       }

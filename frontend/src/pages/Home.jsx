@@ -105,7 +105,7 @@ const Home = () => {
           <div className='text-center mb-14'>
             <h2 className='text-3xl md:text-4xl font-black text-slate-900'>Everything You Need</h2>
             <p className='text-slate-500 mt-3 max-w-xl mx-auto'>
-              From insurance to permits, BimaBox simplifies every aspect of vehicle document management.
+              From insurance to permits, BimaOne simplifies every aspect of vehicle document management.
             </p>
           </div>
           <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
@@ -130,7 +130,7 @@ const Home = () => {
         <div className='max-w-3xl mx-auto text-center'>
           <h2 className='text-3xl md:text-4xl font-black text-slate-900'>Ready to Simplify Your Vehicle Management?</h2>
           <p className='text-slate-500 mt-4 max-w-lg mx-auto'>
-            Join hundreds of users who trust BimaBox to keep their vehicle documents organized and never miss a renewal.
+            Join hundreds of users who trust BimaOne to keep their vehicle documents organized and never miss a renewal.
           </p>
           <Link
             to={`/login${location.search}`}

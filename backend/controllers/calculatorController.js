@@ -63,10 +63,10 @@ const generatePdf = async (req, res) => {
 
     const quoteId = data.quoteId || `BBQ-${Math.floor(100000 + Math.random() * 900000)}`
     const dateStr = data.date || new Date().toLocaleDateString('en-IN', { day: '2-digit', month: 'long', year: 'numeric' })
-    const producerName = data.producerName || 'Bimabox Agent'
+    const producerName = data.producerName || 'BimaOne Agent'
     const producerContact = data.producerContact || 'N/A'
     const producerEmail = data.producerEmail || 'N/A'
-    const insuranceCompany = data.insuranceCompany || 'BIMABOX'
+    const insuranceCompany = data.insuranceCompany || 'BIMAONE'
     const insuranceCompanyId = data.insuranceCompanyId || null
     const canBrand = await userHasQuotationBranding(req.user?._id || req.userId)
     const businessPictureBuffer = canBrand ? await resolveImageBuffer(data.businessPicture) : null

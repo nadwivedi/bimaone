@@ -107,7 +107,7 @@ const ResultBox = ({
       <!DOCTYPE html>
       <html>
       <head>
-        <title>Quotation ${quoteId} – BIMABOX</title>
+        <title>Quotation ${quoteId} – BIMAONE</title>
         <style>
           @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap');
           * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -134,7 +134,7 @@ const ResultBox = ({
         <div class='container'>
           <div class='header'>
             <h1>🏷️ Insurance Quotation</h1>
-            <p>BIMABOX — Indian Motor Tariff Rates (WEF 1st June 2022)</p>
+            <p>BIMAONE — Indian Motor Tariff Rates (WEF 1st June 2022)</p>
             <div class='badge'>${quoteId}  |  ${dateStr}</div>
           </div>
           <div class='section'>
@@ -290,7 +290,7 @@ const ResultBox = ({
         idv: parseFloat(idv) || 0,
         ncb,
         odDiscount: result.odDiscountVal,
-        producerName: user?.name || 'Bimabox Agent',
+        producerName: user?.name || 'BimaOne Agent',
         producerContact: user?.mobile || 'N/A',
         producerEmail: user?.email || 'N/A',
         businessName: user?.businessName || '',

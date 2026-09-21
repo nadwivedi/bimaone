@@ -60,7 +60,7 @@ const ForceEmailVerificationModal = () => {
     try {
       const response = await axios.post(`${BACKEND_URL}/api/auth/verify-email`, { otp }, { withCredentials: true })
       if (response.data.success) {
-        toast.success('Email verified successfully! Welcome to BimaBox.')
+        toast.success('Email verified successfully! Welcome to BimaOne.')
         if (response.data.data?.user) {
           setUser(response.data.data.user)
         } else {
@@ -123,7 +123,7 @@ const ForceEmailVerificationModal = () => {
           <p className='text-xs text-slate-500 mt-1.5'>We sent a 6-digit verification OTP to</p>
           <p className='text-sm font-bold text-blue-600 mt-0.5'>{user?.email}</p>
           <p className='text-[11px] text-amber-600 font-semibold bg-amber-50 rounded-xl p-2.5 mt-3 border border-amber-200'>
-            🔒 Email verification is mandatory to use BimaBox.
+            🔒 Email verification is mandatory to use BimaOne.
           </p>
         </div>
 

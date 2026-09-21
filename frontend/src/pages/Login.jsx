@@ -461,7 +461,7 @@ const Login = () => {
           <div className='text-center mb-6'>
             <div className='mb-4'>
               <Link to='/' className='inline-flex items-center gap-1'>
-                <img src='/bimalogo.png' alt='BimaBox' className='h-[72px] w-auto' />
+                <img src='/bimalogo.png' alt='BimaOne' className='h-[72px] w-auto' />
                 <div className='flex flex-col'>
                   <span className='text-[26px] font-bold leading-none' style={{ fontFamily: "'Poppins', sans-serif" }}>
                     <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>Box</span>
@@ -491,9 +491,9 @@ const Login = () => {
                 </div>
 
                 {mode === 'login' ? (
-                  <p className='text-slate-500 text-xs'>Enter your credentials to access BimaBox</p>
+                  <p className='text-slate-500 text-xs'>Enter your credentials to access BimaOne</p>
                 ) : (
-                  <p className='text-slate-500 text-xs'>Create your BimaBox account</p>
+                  <p className='text-slate-500 text-xs'>Create your BimaOne account</p>
                 )}
 
                 {formData.referralCode && (

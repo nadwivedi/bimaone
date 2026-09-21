@@ -50,7 +50,7 @@ const SubscribePage = () => {
         amount,
         currency,
         key_id,
-        name: 'BimaBox',
+        name: 'BimaOne',
         description: `${plan.name} ${duration}-Month Subscription`,
         prefill: {
           name: user?.name || '',

@@ -150,7 +150,7 @@ function WhatsAppPage({ apiFetch }) {
                   <div style={{ fontSize: '48px', color: '#10b981', marginBottom: '16px' }}>✓</div>
                   <h3>Your WhatsApp is successfully linked!</h3>
                   <p className="section-text" style={{ maxWidth: '400px', margin: '8px auto 0' }}>
-                    BimaBox will now send automated reminders for document expiries to your customers.
+                    BimaOne will now send automated reminders for document expiries to your customers.
                   </p>
                 </div>
               ) : session.qrCodeDataUrl ? (

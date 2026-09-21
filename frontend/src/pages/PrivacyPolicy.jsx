@@ -18,7 +18,7 @@ const PrivacyPolicy = () => {
       content: [
         'Personal Information: Name, email address, mobile number provided during registration.',
         'Vehicle Data: Vehicle registration numbers, owner details, insurance records, tax, PUC, fitness, and GPS information you enter into the app.',
-        'Usage Data: Information about how you use BimaBox, including pages visited, features used, and time spent.',
+        'Usage Data: Information about how you use BimaOne, including pages visited, features used, and time spent.',
         'Device Information: Browser type, operating system, IP address, and other technical identifiers.',
       ],
     },
@@ -34,7 +34,7 @@ const PrivacyPolicy = () => {
       bg: 'from-emerald-50/50',
       title: 'How We Use Your Information',
       content: [
-        'To provide, operate, and maintain the BimaBox platform and all its features.',
+        'To provide, operate, and maintain the BimaOne platform and all its features.',
         'To send renewal reminders and important notifications about your vehicle documents.',
         'To improve our services based on usage patterns and user feedback.',
         'To communicate with you about updates, new features, and support requests.',
@@ -130,11 +130,11 @@ const PrivacyPolicy = () => {
             </div>
             <div>
               <h1 className='text-2xl font-black text-slate-900'>Privacy Policy</h1>
-              <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400'>BimaBox · Last Updated June 2025</p>
+              <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400'>BimaOne · Last Updated June 2025</p>
             </div>
           </div>
           <p className='text-sm text-slate-500 leading-relaxed mt-3'>
-            At BimaBox, we are committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information when you use our platform.
+            At BimaOne, we are committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information when you use our platform.
           </p>
         </div>
 
@@ -176,7 +176,7 @@ const PrivacyPolicy = () => {
         </div>
 
         <p className='text-center text-[10px] text-slate-400 font-medium mt-6'>
-          © 2025 BimaBox. All rights reserved.
+          © 2025 BimaOne. All rights reserved.
         </p>
       </div>
     </div>

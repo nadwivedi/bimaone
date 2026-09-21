@@ -183,7 +183,7 @@ function AppSecure() {
         <div className="sidebar-brand">
           <div className="sidebar-brand-mark">BB</div>
           <div className="sidebar-brand-text">
-            <p className="eyebrow">Bimabox Admin</p>
+            <p className="eyebrow">BimaOne Admin</p>
             <p className="sidebar-brand-email">{loginState.admin?.email || ''}</p>
           </div>
           <button type="button" className="sidebar-close" aria-label="Close menu" onClick={() => setSidebarOpen(false)}>
@@ -279,7 +279,7 @@ function AppSecure() {
           <button type="button" className="topbar-burger" aria-label="Open menu" onClick={() => setSidebarOpen(true)}>
             <MenuIcon />
           </button>
-          <p className="topbar-title">Bimabox Admin</p>
+          <p className="topbar-title">BimaOne Admin</p>
         </div>
 
         <Routes>

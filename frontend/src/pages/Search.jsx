@@ -349,17 +349,17 @@ const Search = () => {
   }
 
   return (
-    <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f0f9ff,_#f8fafc_45%,_#ffffff_100%)]'>
+    <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f5f3ff,_#faf7f2_45%,_#fffdf9_100%)]'>
       <main className='px-2 pt-3 pb-32 lg:px-8 lg:pt-4'>
         <section className='w-full'>
           <div className='max-w-6xl mx-auto'>
-            <div className='rounded-[32px] border border-slate-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(15,23,42,0.25)] md:p-5 lg:p-6'>
+            <div className='rounded-[32px] border border-stone-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(68,64,60,0.25)] md:p-5 lg:p-6'>
 
               {/* Header */}
               <div className='mb-6 flex items-center justify-between'>
                 <div>
-                  <h1 className='text-lg md:text-2xl font-black text-slate-900'>Search {filterType === 'Tax' ? 'Road Tax' : filterType}</h1>
-                  <p className='text-[8px] md:text-xs font-bold text-slate-400 uppercase tracking-[0.15em] mt-0.5'>Browse all {filterType === 'Tax' ? 'road tax' : filterType.toLowerCase()} records</p>
+                  <h1 className='text-lg md:text-2xl font-black text-stone-900'>Search {filterType === 'Tax' ? 'Road Tax' : filterType}</h1>
+                  <p className='text-[8px] md:text-xs font-bold text-stone-400 uppercase tracking-[0.15em] mt-0.5'>Browse all {filterType === 'Tax' ? 'road tax' : filterType.toLowerCase()} records</p>
                 </div>
                 {activeFilterCount > 0 && (
                   <button
@@ -381,14 +381,14 @@ const Search = () => {
                   <select
                     value={filterType}
                     onChange={(e) => setFilterType(e.target.value)}
-                    className='appearance-none rounded-xl border-2 border-slate-200 bg-white py-2.5 pl-3 pr-8 text-xs font-black text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all cursor-pointer'
+                    className='appearance-none rounded-xl border-2 border-stone-200 bg-white py-2.5 pl-3 pr-8 text-xs font-black text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all cursor-pointer'
                   >
                     {DOCUMENT_TYPES.map(t => (
                       <option key={t.value} value={t.value}>{t.label}</option>
                     ))}
                   </select>
                   <div className='pointer-events-none absolute inset-y-0 right-2 flex items-center'>
-                    <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                     </svg>
                   </div>
@@ -397,9 +397,9 @@ const Search = () => {
                 <div className='relative flex-1'>
                   <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
                     {loading ? (
-                      <div className='animate-spin h-4 w-4 border-2 border-blue-500 border-t-transparent rounded-full' />
+                      <div className='animate-spin h-4 w-4 border-2 border-violet-500 border-t-transparent rounded-full' />
                     ) : (
-                      <svg className='w-4 h-4 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <svg className='w-4 h-4 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                       </svg>
                     )}
@@ -409,7 +409,7 @@ const Search = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder='Search by name, vehicle number...'
-                    className='w-full rounded-xl border-2 border-slate-200 bg-white py-2.5 pl-9 pr-4 text-xs font-black text-slate-900 placeholder:text-[10px] md:placeholder:text-xs placeholder:text-slate-400 placeholder:font-semibold focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all uppercase'
+                    className='w-full rounded-xl border-2 border-stone-200 bg-white py-2.5 pl-9 pr-4 text-xs font-black text-stone-900 placeholder:text-[10px] md:placeholder:text-xs placeholder:text-stone-400 placeholder:font-semibold focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all uppercase'
                   />
                 </div>
 
@@ -418,8 +418,8 @@ const Search = () => {
                   <button
                     onClick={() => setShowFilterPanel(prev => !prev)}
                     className={`relative flex items-center justify-center w-10 h-10 rounded-xl border-2 transition-all ${showFilterPanel || activeFilterCount > 0
-                        ? 'border-blue-500 bg-blue-500 text-white shadow-lg shadow-blue-200'
-                        : 'border-slate-200 bg-white text-slate-500 hover:border-blue-400 hover:text-blue-500 hover:shadow-md'
+                        ? 'border-violet-500 bg-violet-500 text-white shadow-lg shadow-violet-200'
+                        : 'border-stone-200 bg-white text-stone-500 hover:border-violet-400 hover:text-violet-500 hover:shadow-md'
                       }`}
                     title='Filter'
                   >
@@ -447,13 +447,13 @@ const Search = () => {
                           onClick={(e) => e.stopPropagation()}
                           className={`
                             bg-white lg:bg-white/80 lg:backdrop-blur-xl
-                            rounded-2xl border border-slate-200 shadow-2xl shadow-slate-300/50
+                            rounded-2xl border border-stone-200 shadow-2xl shadow-stone-300/50
                             overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150
                             w-[88vw] lg:w-[30rem] max-h-[85vh] lg:max-h-[90vh] flex flex-col
                           `}
                         >
                           {/* Panel Header */}
-                           <div className='flex items-center justify-between px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white'>
+                           <div className='flex items-center justify-between px-4 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white'>
                             <div className='flex items-center gap-2'>
                               <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z' />
@@ -487,14 +487,14 @@ const Search = () => {
                               <>
                                 {/* Insurance Company */}
                                 <div>
-                                  <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                     Insurance Company
                                   </label>
                                   <div className='relative'>
                                     <select
                                       value={filterCompany}
                                       onChange={(e) => setFilterCompany(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer'
+                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
                                     >
                                       <option value=''>All Companies</option>
                                       {companiesList.map(c => (
@@ -502,15 +502,15 @@ const Search = () => {
                                       ))}
                                     </select>
                                     <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                       </svg>
                                     </div>
                                   </div>
                                   {filterCompany && (
                                     <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-blue-600 truncate max-w-[200px]'>{companyNameById(filterCompany)}</span>
-                                      <button onClick={() => setFilterCompany('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{companyNameById(filterCompany)}</span>
+                                      <button onClick={() => setFilterCompany('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                         <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -521,14 +521,14 @@ const Search = () => {
 
                                 {/* Product Type */}
                                 <div>
-                                  <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                     Product Type
                                   </label>
                                   <div className='relative'>
                                     <select
                                       value={filterProductType}
                                       onChange={(e) => setFilterProductType(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer'
+                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
                                     >
                                        <option value=''>All Product Types</option>
                                        {productTypesList.map(p => {
@@ -537,15 +537,15 @@ const Search = () => {
                                        })}
                                     </select>
                                     <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                       </svg>
                                     </div>
                                   </div>
                                   {filterProductType && (
                                     <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-blue-600 truncate max-w-[200px]'>{filterProductType}</span>
-                                      <button onClick={() => setFilterProductType('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{filterProductType}</span>
+                                      <button onClick={() => setFilterProductType('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                         <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -556,14 +556,14 @@ const Search = () => {
 
                                 {/* Policy Type */}
                                 <div>
-                                  <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                     Policy Type
                                   </label>
                                   <div className='relative'>
                                     <select
                                       value={filterPolicyType}
                                       onChange={(e) => setFilterPolicyType(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer'
+                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
                                     >
                                       <option value=''>All Policy Types</option>
                                       {POLICY_TYPES.map(p => (
@@ -571,15 +571,15 @@ const Search = () => {
                                       ))}
                                     </select>
                                     <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                       </svg>
                                     </div>
                                   </div>
                                   {filterPolicyType && (
                                     <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-blue-600 truncate max-w-[200px]'>{filterPolicyType}</span>
-                                      <button onClick={() => setFilterPolicyType('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{filterPolicyType}</span>
+                                      <button onClick={() => setFilterPolicyType('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                         <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -590,14 +590,14 @@ const Search = () => {
 
                                 {/* Client Name */}
                                 <div>
-                                  <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                     Client Name
                                   </label>
                                   <div className='relative'>
                                     <select
                                       value={filterReference}
                                       onChange={(e) => setFilterReference(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer'
+                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
                                     >
                                       <option value=''>All Client Names</option>
                                       {referencesList.map((r) => (
@@ -605,15 +605,15 @@ const Search = () => {
                                       ))}
                                     </select>
                                     <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                       </svg>
                                     </div>
                                   </div>
                                   {filterReference && (
                                     <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-blue-600 truncate max-w-[200px]'>{referenceNameById(filterReference)}</span>
-                                      <button onClick={() => setFilterReference('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{referenceNameById(filterReference)}</span>
+                                      <button onClick={() => setFilterReference('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                         <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -624,14 +624,14 @@ const Search = () => {
 
                                 {/* Agent name */}
                                 <div>
-                                  <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                     Agent name (IMD)
                                   </label>
                                   <div className='relative'>
                                     <select
                                       value={filterImd}
                                       onChange={(e) => setFilterImd(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/10 transition-all cursor-pointer'
+                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/10 transition-all cursor-pointer'
                                     >
                                       <option value=''>All Agent names</option>
                                       {imdList.map((r) => (
@@ -639,7 +639,7 @@ const Search = () => {
                                       ))}
                                     </select>
                                     <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                       </svg>
                                     </div>
@@ -647,7 +647,7 @@ const Search = () => {
                                   {filterImd && (
                                     <div className='mt-1.5 flex items-center justify-between'>
                                       <span className='text-[10px] font-bold text-purple-600 truncate max-w-[200px]'>{imdNameById(filterImd)}</span>
-                                      <button onClick={() => setFilterImd('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                      <button onClick={() => setFilterImd('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                         <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -658,21 +658,21 @@ const Search = () => {
 
                                 {/* Claim Status */}
                                 <div>
-                                  <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                     Claim Status
                                   </label>
                                   <div className='relative'>
                                     <select
                                       value={filterClaimStatus}
                                       onChange={(e) => setFilterClaimStatus(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer'
+                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer'
                                     >
                                       <option value=''>All — Any Claim</option>
                                       <option value='raised'>Claim Raised</option>
                                       <option value='not_raised'>No Claim</option>
                                     </select>
                                     <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                       </svg>
                                     </div>
@@ -680,7 +680,7 @@ const Search = () => {
                                   {filterClaimStatus && (
                                     <div className='mt-1.5 flex items-center justify-between'>
                                       <span className='text-[10px] font-bold text-teal-600 truncate max-w-[200px]'>{filterClaimStatus === 'raised' ? 'Claim Raised' : 'No Claim'}</span>
-                                      <button onClick={() => setFilterClaimStatus('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                      <button onClick={() => setFilterClaimStatus('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                         <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -691,14 +691,14 @@ const Search = () => {
 
                                 {/* Financial Year */}
                                 <div>
-                                  <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                     Financial Year
                                   </label>
                                   <div className='relative'>
                                     <select
                                       value={filterFinancialYear}
                                       onChange={(e) => setFilterFinancialYear(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer'
+                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer'
                                     >
                                       <option value=''>All Financial Years</option>
                                       {availableFinancialYears.map((y) => (
@@ -706,7 +706,7 @@ const Search = () => {
                                       ))}
                                     </select>
                                     <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                       </svg>
                                     </div>
@@ -714,7 +714,7 @@ const Search = () => {
                                   {filterFinancialYear && (
                                     <div className='mt-1.5 flex items-center justify-between'>
                                       <span className='text-[10px] font-bold text-teal-600 truncate max-w-[200px]'>FY {filterFinancialYear}-{String(Number(filterFinancialYear) + 1).slice(2)}</span>
-                                      <button onClick={() => setFilterFinancialYear('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                      <button onClick={() => setFilterFinancialYear('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                         <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -727,14 +727,14 @@ const Search = () => {
 
                             {/* Validity */}
                             <div>
-                              <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                              <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                 Validity Period
                               </label>
                               <div className='relative'>
                                 <select
                                   value={filterValidity}
                                   onChange={(e) => setFilterValidity(e.target.value)}
-                                  className='w-full appearance-none rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all cursor-pointer'
+                                  className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
                                 >
                                   <option value=''>All — Any Validity</option>
                                   <option value='expired'>❌ Expired</option>
@@ -744,17 +744,17 @@ const Search = () => {
                                   <option value='60'>✅ Expires in 60 Days</option>
                                 </select>
                                 <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                  <svg className='w-3.5 h-3.5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                  <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
                                   </svg>
                                 </div>
                               </div>
                               {filterValidity && (
                                 <div className='mt-1.5 flex items-center justify-between'>
-                                  <span className='text-[10px] font-bold text-blue-600 truncate max-w-[200px]'>
+                                  <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>
                                     {filterValidity === 'expired' ? 'Expired' : `Expires in ${filterValidity} Days`}
                                   </span>
-                                  <button onClick={() => setFilterValidity('')} className='text-slate-400 hover:text-rose-500 transition-colors ml-1'>
+                                  <button onClick={() => setFilterValidity('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
                                     <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                     </svg>
@@ -765,7 +765,7 @@ const Search = () => {
 
                             {/* Policy Issue Date */}
                             <div>
-                              <label className='block text-[10px] font-black text-slate-500 uppercase tracking-wider mb-1.5'>
+                              <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
                                 Policy Issue Date
                               </label>
                               <div className='flex gap-2'>
@@ -774,12 +774,12 @@ const Search = () => {
                                     type='date'
                                     value={filterDateFrom}
                                     onChange={(e) => setFilterDateFrom(e.target.value)}
-                                    className='w-full rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 px-3 text-xs font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all'
+                                    className='w-full rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 px-3 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all'
                                   />
                                   {filterDateFrom && (
                                     <div className='mt-1 flex items-center justify-between'>
-                                      <span className='text-[9px] font-bold text-blue-600'>From</span>
-                                      <button onClick={() => setFilterDateFrom('')} className='text-slate-400 hover:text-rose-500 transition-colors'>
+                                      <span className='text-[9px] font-bold text-violet-600'>From</span>
+                                      <button onClick={() => setFilterDateFrom('')} className='text-stone-400 hover:text-rose-500 transition-colors'>
                                         <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -792,12 +792,12 @@ const Search = () => {
                                     type='date'
                                     value={filterDateTo}
                                     onChange={(e) => setFilterDateTo(e.target.value)}
-                                    className='w-full rounded-xl border-2 border-slate-200 bg-white py-2 lg:py-2.5 px-3 text-xs font-bold text-slate-700 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/10 transition-all'
+                                    className='w-full rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 px-3 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all'
                                   />
                                   {filterDateTo && (
                                     <div className='mt-1 flex items-center justify-between'>
-                                      <span className='text-[9px] font-bold text-blue-600'>To</span>
-                                      <button onClick={() => setFilterDateTo('')} className='text-slate-400 hover:text-rose-500 transition-colors'>
+                                      <span className='text-[9px] font-bold text-violet-600'>To</span>
+                                      <button onClick={() => setFilterDateTo('')} className='text-stone-400 hover:text-rose-500 transition-colors'>
                                         <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
                                         </svg>
@@ -809,10 +809,10 @@ const Search = () => {
                             </div>
                           </div>
 
-                          <div className='flex-shrink-0 border-t border-slate-100 bg-white px-4 pb-4 pt-3 lg:px-6 lg:pb-6'>
+                          <div className='flex-shrink-0 border-t border-stone-100 bg-white px-4 pb-4 pt-3 lg:px-6 lg:pb-6'>
                             <button
                               onClick={() => setShowFilterPanel(false)}
-                              className='w-full py-2 lg:py-2.5 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-xs lg:text-sm font-bold shadow-lg shadow-blue-200 transition-all hover:shadow-xl hover:from-blue-700 hover:to-indigo-700 active:scale-95'
+                              className='w-full py-2 lg:py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs lg:text-sm font-bold shadow-lg shadow-violet-200 transition-all hover:shadow-xl hover:from-violet-700 hover:to-indigo-700 active:scale-95'
                             >
                               Apply Filters
                               {activeFilterCount > 0 && (
@@ -833,7 +833,7 @@ const Search = () => {
               {activeFilterCount > 0 && (
                 <div className='mt-3 flex flex-wrap gap-2'>
                   {filterType === 'Insurance' && filterCompany && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-blue-700 ring-1 ring-inset ring-blue-200'>
+                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-violet-50 px-2.5 py-1 text-[10px] font-bold text-violet-700 ring-1 ring-inset ring-violet-200'>
                       <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16' />
                       </svg>
@@ -967,26 +967,26 @@ const Search = () => {
 
               {/* Loading */}
               {loading && (
-                <div className='mt-6 text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200'>
-                  <div className='animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto'></div>
-                  <p className='text-xs text-slate-500 mt-2 font-bold uppercase tracking-widest'>Loading records...</p>
+                <div className='mt-6 text-center py-12 bg-stone-50/50 rounded-2xl border-2 border-dashed border-stone-200'>
+                  <div className='animate-spin h-8 w-8 border-4 border-violet-600 border-t-transparent rounded-full mx-auto'></div>
+                  <p className='text-xs text-stone-500 mt-2 font-bold uppercase tracking-widest'>Loading records...</p>
                 </div>
               )}
 
               {/* No Results */}
               {!loading && searched && records.length === 0 && (
-                <div className='mt-6 text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200'>
-                  <div className='mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-slate-50 to-slate-100 shadow-inner'>
-                    <svg className='h-10 w-10 text-slate-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <div className='mt-6 text-center py-12 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200'>
+                  <div className='mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-stone-50 to-stone-100 shadow-inner'>
+                    <svg className='h-10 w-10 text-stone-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
                     </svg>
                   </div>
-                  <h3 className='text-lg font-black text-slate-800'>No Records Found</h3>
-                  <p className='mt-1 text-xs font-semibold text-slate-400'>
+                  <h3 className='text-lg font-black text-stone-800'>No Records Found</h3>
+                  <p className='mt-1 text-xs font-semibold text-stone-400'>
                     {activeFilterCount > 0 ? 'Try adjusting your filters.' : 'Try a different search term.'}
                   </p>
                   {activeFilterCount > 0 && (
-                    <button onClick={handleClearFilters} className='mt-3 text-xs font-bold text-blue-600 hover:text-blue-700 underline underline-offset-2'>
+                    <button onClick={handleClearFilters} className='mt-3 text-xs font-bold text-violet-600 hover:text-violet-700 underline underline-offset-2'>
                       Clear all filters
                     </button>
                   )}
@@ -997,8 +997,8 @@ const Search = () => {
               {!loading && records.length > 0 && (
                 <>
                   <div className='mt-6 mb-3 flex items-center justify-between flex-wrap gap-2'>
-                    <p className='text-xs font-bold text-slate-500'>
-                      Showing <span className='text-slate-800'>{filteredRecords.length}</span> of <span className='text-slate-800'>{totalRecords}</span> results
+                    <p className='text-xs font-bold text-stone-500'>
+                      Showing <span className='text-stone-800'>{filteredRecords.length}</span> of <span className='text-stone-800'>{totalRecords}</span> results
                     </p>
                     <div className='flex items-center gap-2'>
                       {filteredRecords.length > 0 && (
@@ -1013,7 +1013,7 @@ const Search = () => {
                         </button>
                       )}
                       {activeFilterCount > 0 && (
-                        <span className='text-[10px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-lg'>
+                        <span className='text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-lg'>
                           {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
                         </span>
                       )}
@@ -1021,13 +1021,86 @@ const Search = () => {
                   </div>
 
                   {filteredRecords.length === 0 && filterValidity && (
-                    <div className='text-center py-10 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200'>
-                      <p className='text-sm font-black text-slate-400'>No records match the validity filter</p>
-                      <button onClick={() => setFilterValidity('')} className='mt-2 text-xs font-bold text-blue-600 hover:text-blue-700 underline underline-offset-2'>Clear validity filter</button>
+                    <div className='text-center py-10 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200'>
+                      <p className='text-sm font-black text-stone-400'>No records match the validity filter</p>
+                      <button onClick={() => setFilterValidity('')} className='mt-2 text-xs font-bold text-violet-600 hover:text-violet-700 underline underline-offset-2'>Clear validity filter</button>
                     </div>
                   )}
 
-                  <div className='grid gap-4 sm:grid-cols-2'>
+                  <div className='hidden md:block overflow-x-auto rounded-2xl border border-stone-200 bg-white'>
+                    <table className='w-full min-w-[720px] text-left'>
+                      <thead>
+                        <tr className='border-b border-stone-200 bg-stone-50'>
+                          <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>#</th>
+                          <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>{filterType === 'Insurance' ? 'Policy Holder / Vehicle' : 'Name / Vehicle'}</th>
+                          {filterType === 'Insurance' && <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>Company / Product</th>}
+                          {filterType === 'Insurance' && <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>Client / Agent</th>}
+                          <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>Validity (From / To)</th>
+                          {filterType === 'Insurance' && <th className='px-4 py-3 text-right text-[10px] font-black uppercase tracking-wider text-stone-400'>Premium</th>}
+                          <th className='px-4 py-3 text-right text-[10px] font-black uppercase tracking-wider text-stone-400'>Status</th>
+                        </tr>
+                      </thead>
+                      <tbody className='divide-y divide-stone-100'>
+                        {filteredRecords.map((record, idx) => {
+                          const badge = getStatusBadge(record)
+                          const recordName = record.policyHolderName || record.ownerName || record.name || 'Unknown'
+                          const days = getDaysLeft(record.validTo || record.taxTo)
+                          return (
+                            <tr
+                              key={record._id}
+                              onClick={() => navigate(`/rto-documents/${filterType}/${record._id}`)}
+                              className='cursor-pointer transition-colors odd:bg-white even:bg-stone-50/40 hover:bg-violet-50/60'
+                            >
+                              <td className='px-4 py-3 text-[11px] font-bold text-stone-400'>{idx + 1}</td>
+                              <td className='px-4 py-3'>
+                                <p className='text-sm font-black text-stone-900'>{recordName}</p>
+                                <p className='mt-0.5 font-mono text-xs font-black uppercase tracking-wider text-violet-700'>{record.vehicleNumber || 'N/A'}</p>
+                                {record.mobileNumber && <p className='text-[10px] font-bold text-stone-400'>{record.mobileNumber}</p>}
+                              </td>
+                              {filterType === 'Insurance' && (
+                                <td className='px-4 py-3'>
+                                  <p className='text-xs font-bold text-stone-700'>{recordCompanyName(record) || '—'}</p>
+                                  <p className='text-[10px] font-semibold text-stone-400'>{[record.product, record.insuranceClass].filter(Boolean).join(' · ')}</p>
+                                  {record.policyNumber && <p className='font-mono text-[10px] text-stone-400'>{record.policyNumber}</p>}
+                                </td>
+                              )}
+                              {filterType === 'Insurance' && (
+                                <td className='px-4 py-3'>
+                                  <p className='text-xs font-bold text-stone-700'>{recordReferenceName(record) || '—'}</p>
+                                  <p className='text-[10px] font-semibold text-stone-400'>{recordImdName(record)}</p>
+                                </td>
+                              )}
+                              <td className='whitespace-nowrap px-4 py-3'>
+                                <p className='text-xs font-medium text-stone-500'>
+                                  <span className='mr-1 text-[8px] font-black uppercase tracking-wider text-stone-400'>From</span>
+                                  {record.validFrom || record.taxFrom || 'N/A'}
+                                </p>
+                                <p className='mt-0.5 text-xs font-black text-stone-900'>
+                                  <span className='mr-1 text-[8px] font-black uppercase tracking-wider text-stone-400'>To</span>
+                                  {record.validTo || record.taxTo || 'N/A'}
+                                  {days !== null && <span className={`ml-1 ${days < 0 ? 'text-rose-600' : 'text-stone-400'}`}>({days}d)</span>}
+                                </p>
+                              </td>
+                              {filterType === 'Insurance' && (
+                                <td className='whitespace-nowrap px-4 py-3 text-right text-xs font-black text-emerald-700'>
+                                  {record.premium != null ? `₹${record.premium.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : '—'}
+                                </td>
+                              )}
+                              <td className='px-4 py-3 text-right'>
+                                {badge && (
+                                  <span className={`inline-block rounded-lg px-2 py-1 text-[9px] font-black uppercase leading-none tracking-wider ring-1 ring-inset ${badge.class}`}>
+                                    {badge.label}
+                                  </span>
+                                )}
+                              </td>
+                            </tr>
+                          )
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div className='grid gap-4 md:hidden'>
                     {filteredRecords.map((record) => {
                       const badge = getStatusBadge(record)
                       const recordName = record.policyHolderName || record.ownerName || record.name || 'Unknown'
@@ -1035,12 +1108,12 @@ const Search = () => {
                         <div
                           key={record._id}
                           onClick={() => navigate(`/rto-documents/${filterType}/${record._id}`)}
-                          className='group relative overflow-hidden rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-blue-500 hover:shadow-xl hover:shadow-blue-100/40 hover:-translate-y-0.5 cursor-pointer'
+                          className='group relative overflow-hidden rounded-2xl border-2 border-stone-200 bg-white p-4 shadow-sm transition-all hover:border-violet-500 hover:shadow-xl hover:shadow-violet-100/40 hover:-transtone-y-0.5 cursor-pointer'
                         >
                           <div className='flex items-start justify-between'>
                             <div className='flex-1 min-w-0'>
                               <div className='flex items-center gap-2 flex-wrap'>
-                                <h3 className='text-xs sm:text-sm font-black text-slate-900 truncate sm:overflow-visible sm:whitespace-normal max-w-[200px] sm:max-w-none'>
+                                <h3 className='text-xs sm:text-sm font-black text-stone-900 truncate sm:overflow-visible sm:whitespace-normal max-w-[200px] sm:max-w-none'>
                                   {recordName}
                                 </h3>
                                 {filterType === 'Insurance' && record.premium != null && (
@@ -1049,18 +1122,18 @@ const Search = () => {
                                   </span>
                                 )}
                               </div>
-                              <p className='text-[10px] font-black tracking-wider text-slate-400 uppercase font-mono mt-0.5'>
+                              <p className='text-[10px] font-black tracking-wider text-stone-400 uppercase font-mono mt-0.5'>
                                 {record.vehicleNumber || 'N/A'}
                               </p>
                               {record.mobileNumber && (
-                                <p className='text-[10px] font-bold text-slate-400 mt-0.5'>{record.mobileNumber}</p>
+                                <p className='text-[10px] font-bold text-stone-400 mt-0.5'>{record.mobileNumber}</p>
                               )}
                               <div className='mt-2.5 flex flex-wrap gap-1.5'>
-                                <span className='inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-[9px] font-black text-slate-600 ring-1 ring-inset ring-slate-300/50 whitespace-nowrap shadow-sm'>
+                                <span className='inline-flex items-center rounded-md bg-stone-100 px-2 py-0.5 text-[9px] font-black text-stone-600 ring-1 ring-inset ring-stone-300/50 whitespace-nowrap shadow-sm'>
                                   {filterType}
                                 </span>
                                 {filterType === 'Insurance' && recordCompanyName(record) && (
-                                  <span className='inline-flex items-center rounded-md bg-blue-50 px-2 py-0.5 text-[9px] font-black text-blue-700 ring-1 ring-inset ring-blue-700/10 whitespace-nowrap shadow-sm'>
+                                  <span className='inline-flex items-center rounded-md bg-violet-50 px-2 py-0.5 text-[9px] font-black text-violet-700 ring-1 ring-inset ring-violet-700/10 whitespace-nowrap shadow-sm'>
                                     {recordCompanyName(record)}
                                   </span>
                                 )}
@@ -1092,16 +1165,16 @@ const Search = () => {
                               </span>
                             )}
                           </div>
-                          <div className='mt-4 flex items-center justify-between border-t border-slate-100 pt-3'>
-                            <div className='flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-slate-500'>
+                          <div className='mt-4 flex items-center justify-between border-t border-stone-100 pt-3'>
+                            <div className='flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-stone-500'>
                               <span className='whitespace-nowrap'>
-                                <span className='text-[8px] font-black uppercase tracking-wider text-slate-400 mr-1'>From</span>
-                                <span className='text-slate-700 font-semibold'>{record.validFrom || record.taxFrom || 'N/A'}</span>
+                                <span className='text-[8px] font-black uppercase tracking-wider text-stone-400 mr-1'>From</span>
+                                <span className='text-stone-700 font-semibold'>{record.validFrom || record.taxFrom || 'N/A'}</span>
                               </span>
-                              <span className='text-slate-300 hidden min-[320px]:inline'>•</span>
+                              <span className='text-stone-300 hidden min-[320px]:inline'>•</span>
                               <span className='whitespace-nowrap'>
-                                <span className='text-[8px] font-black uppercase tracking-wider text-slate-400 mr-1'>To</span>
-                                <span className='font-black text-slate-900'>
+                                <span className='text-[8px] font-black uppercase tracking-wider text-stone-400 mr-1'>To</span>
+                                <span className='font-black text-stone-900'>
                                   {record.validTo || record.taxTo || 'N/A'}
                                   {(() => {
                                     const days = getDaysLeft(record.validTo || record.taxTo)
@@ -1114,16 +1187,16 @@ const Search = () => {
                               </span>
                               {filterType === 'Insurance' && record.issueDate && (
                                 <>
-                                  <span className='text-slate-300 hidden min-[320px]:inline'>•</span>
+                                  <span className='text-stone-300 hidden min-[320px]:inline'>•</span>
                                   <span className='whitespace-nowrap'>
-                                    <span className='text-[8px] font-black uppercase tracking-wider text-slate-400 mr-1'>Issued</span>
-                                    <span className='text-slate-700 font-semibold'>{record.issueDate}</span>
+                                    <span className='text-[8px] font-black uppercase tracking-wider text-stone-400 mr-1'>Issued</span>
+                                    <span className='text-stone-700 font-semibold'>{record.issueDate}</span>
                                   </span>
                                 </>
                               )}
                             </div>
                             {filterType === 'Insurance' && record.policyNumber && (
-                              <span className='hidden sm:inline-block self-start sm:self-auto -mt-1 sm:mt-0 text-[9px] font-extrabold text-slate-400 bg-slate-50 px-2 py-0.5 rounded border border-slate-150 uppercase tracking-wider truncate sm:overflow-visible sm:whitespace-normal max-w-[130px] sm:max-w-none shadow-sm'>
+                              <span className='hidden sm:inline-block self-start sm:self-auto -mt-1 sm:mt-0 text-[9px] font-extrabold text-stone-400 bg-stone-50 px-2 py-0.5 rounded border border-stone-150 uppercase tracking-wider truncate sm:overflow-visible sm:whitespace-normal max-w-[130px] sm:max-w-none shadow-sm'>
                                 {record.policyNumber}
                               </span>
                             )}
@@ -1138,11 +1211,11 @@ const Search = () => {
                       <button
                         onClick={handleLoadMore}
                         disabled={loadingMore}
-                        className='inline-flex items-center gap-2 rounded-xl bg-white border-2 border-slate-200 px-8 py-3 text-xs font-black text-slate-700 uppercase tracking-wider transition-all hover:border-blue-400 hover:text-blue-600 hover:shadow-lg hover:shadow-blue-100/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
+                        className='inline-flex items-center gap-2 rounded-xl bg-white border-2 border-stone-200 px-8 py-3 text-xs font-black text-stone-700 uppercase tracking-wider transition-all hover:border-violet-400 hover:text-violet-600 hover:shadow-lg hover:shadow-violet-100/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
                       >
                         {loadingMore ? (
                           <>
-                            <div className='animate-spin h-4 w-4 border-2 border-blue-600 border-t-transparent rounded-full'></div>
+                            <div className='animate-spin h-4 w-4 border-2 border-violet-600 border-t-transparent rounded-full'></div>
                             Loading...
                           </>
                         ) : (

@@ -65,7 +65,7 @@ function AppContent() {
           )}
           <div className='flex-1 flex justify-center'>
             <Link to='/' className='flex items-center gap-1.5'>
-              <img src='/bimalogo.png' alt='BimaBox' className='h-[50px] w-auto' />
+              <img src='/bimalogo.png' alt='BimaOne' className='h-[50px] w-auto' />
               <div className='flex flex-col'>
                 <span className='text-[20px] font-bold leading-none' style={{ fontFamily: "'Poppins', sans-serif" }}>
                   <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>Box</span>

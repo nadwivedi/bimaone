@@ -11,7 +11,7 @@ const Hero = () => {
         </div>
         <h1 className='text-3xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight'>
           What is{' '}
-          <span className='bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>BimaBox</span>
+          <span className='bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>BimaOne</span>
           ?
         </h1>
         <p className='text-base md:text-lg text-slate-500 mt-4 max-w-3xl mx-auto leading-relaxed'>

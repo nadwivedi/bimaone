@@ -55,7 +55,7 @@ const PdfPreviewModal = ({ isOpen, onClose, pdfUrl, quoteId, API_URL }) => {
         await navigator.share({
           files: [file],
           title: `Insurance Quotation ${quoteId}`,
-          text: `Here is your Bimabox insurance quotation for ${quoteId}`,
+          text: `Here is your BimaOne insurance quotation for ${quoteId}`,
         })
       } else if (navigator.share) {
         await navigator.share({
@@ -64,12 +64,12 @@ const PdfPreviewModal = ({ isOpen, onClose, pdfUrl, quoteId, API_URL }) => {
           url: fullPdfUrl,
         })
       } else {
-        const msg = `🏷️ *INSURANCE QUOTATION - BIMABOX*\n\nQuote ID: *${quoteId}*\nView/Download PDF: ${fullPdfUrl}`
+        const msg = `🏷️ *INSURANCE QUOTATION - BIMAONE*\n\nQuote ID: *${quoteId}*\nView/Download PDF: ${fullPdfUrl}`
         window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
       }
     } catch (error) {
       console.error('Share error:', error)
-      const msg = `🏷️ *INSURANCE QUOTATION - BIMABOX*\n\nQuote ID: *${quoteId}*\nView/Download PDF: ${fullPdfUrl}`
+      const msg = `🏷️ *INSURANCE QUOTATION - BIMAONE*\n\nQuote ID: *${quoteId}*\nView/Download PDF: ${fullPdfUrl}`
       window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank')
     }
   }
