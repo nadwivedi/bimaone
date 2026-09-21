@@ -14,59 +14,62 @@ const resolvePictureUrl = (picture) => {
   return `${API_URL}${picture}`
 }
 
-const PLAN_STYLES = {
-  Free: { badge: 'from-slate-600 to-slate-800', ring: 'shadow-slate-500/10', chip: 'bg-slate-100 text-slate-600 border border-slate-200' },
-  Go: { badge: 'from-blue-600 to-cyan-500', ring: 'shadow-blue-500/20', chip: 'bg-blue-50 text-blue-600 border border-blue-100' },
-  Plus: { badge: 'from-violet-600 to-indigo-600', ring: 'shadow-indigo-500/20', chip: 'bg-indigo-50 text-indigo-600 border border-indigo-100' },
-  Pro: { badge: 'from-amber-500 via-orange-500 to-rose-500', ring: 'shadow-amber-500/30', chip: 'bg-amber-50 text-amber-700 border border-amber-100' },
-}
-const getPlanStyle = (name) => PLAN_STYLES[name] || PLAN_STYLES.Free
 
-const USAGE_ICONS = {
-  ai: (
-    <svg className='h-4 w-4 text-indigo-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 10V3L4 14h7v7l9-11h-7z' />
-    </svg>
-  ),
-  manual: (
-    <svg className='h-4 w-4 text-pink-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-    </svg>
-  ),
-  client: (
-    <svg className='h-4 w-4 text-emerald-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8' />
-    </svg>
-  ),
+const ICONS = {
+  mobile: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
+  email: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+  business: 'M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+  services: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+  address: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z',
+  plan: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z',
+  ai: 'M13 10V3L4 14h7v7l9-11h-7z',
+  manual: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  clients: 'M17 20h5v-2a4 4 0 00-3-3.87M9 20H4v-2a4 4 0 013-3.87m6-1.13a4 4 0 100-8 4 4 0 000 8zm6 0a4 4 0 100-8',
+  client: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+  agent: 'M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2',
+  gift: 'M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 110-4h14a2 2 0 110 4M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7',
+  wallet: 'M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z',
+  phone: 'M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z',
+  help: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+  lock: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
+  doc: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  instagram: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z',
+  facebook: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z',
 }
 
-const UsageStat = ({ icon, label, used, limit, colorClass }) => {
-  const unlimited = !limit || limit <= 0
-  const pct = unlimited ? 100 : Math.min(100, Math.round((used / limit) * 100))
-  const near = !unlimited && pct >= 90
-  return (
-    <div className='group relative rounded-2xl bg-white p-5 border border-slate-100 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.05)] hover:shadow-[0_8px_30px_-6px_rgba(15,23,42,0.08)] transition-all duration-300 overflow-hidden'>
-      <div className='absolute top-0 left-0 w-full h-[3px] bg-gradient-to-r from-transparent via-slate-200 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300' />
-      <div className='flex items-center gap-3 mb-3'>
-        <div className={`h-8 w-8 rounded-xl flex items-center justify-center shrink-0 shadow-sm ${colorClass}`}>
-          {icon}
-        </div>
-        <span className='text-xs font-bold tracking-wider text-slate-500'>{label}</span>
-      </div>
-      <div className='flex items-baseline justify-between mb-2'>
-        <span className='text-2xl font-black text-slate-900 tracking-tight'>{used}</span>
-        <span className='text-xs font-bold text-slate-400'>{unlimited ? 'Unlimited' : `/ ${limit}`}</span>
-      </div>
-      <div className='h-2 w-full rounded-full bg-slate-100 overflow-hidden'>
-        <div
-          className={`h-full rounded-full transition-all duration-500 ease-out ${
-            near ? 'bg-gradient-to-r from-rose-500 to-red-500' : 'bg-gradient-to-r from-blue-500 to-indigo-600'
-          }`}
-          style={{ width: `${pct}%` }}
-        />
-      </div>
+const SettingGroup = ({ title, children }) => (
+  <section>
+    <p className='mb-1.5 px-4 text-[11px] font-bold uppercase tracking-wider text-stone-400'>{title}</p>
+    <div className='overflow-hidden rounded-2xl bg-white divide-y divide-stone-100 ring-1 ring-stone-200/70'>
+      {children}
     </div>
+  </section>
+)
+
+const SettingRow = ({ icon, color, label, value, to, href, onClick, external, chevron = true }) => {
+  const content = (
+    <>
+      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-white ${color}`}>
+        <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={icon} />
+        </svg>
+      </span>
+      <span className='min-w-0 flex-1 text-sm font-semibold text-stone-800'>{label}</span>
+      {value != null && value !== '' && (
+        <span className='min-w-0 max-w-[55%] truncate text-right text-sm text-stone-400'>{value}</span>
+      )}
+      {chevron && (
+        <svg className='h-4 w-4 shrink-0 text-stone-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
+        </svg>
+      )}
+    </>
   )
+  const cls = 'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-stone-50 active:bg-stone-100'
+  if (to) return <Link to={to} className={cls}>{content}</Link>
+  if (href) return <a href={href} className={cls} {...(external ? { target: '_blank', rel: 'noopener noreferrer' } : {})}>{content}</a>
+  if (onClick) return <button type='button' onClick={onClick} className={`${cls} cursor-pointer`}>{content}</button>
+  return <div className={cls}>{content}</div>
 }
 
 const Setting = () => {
@@ -204,521 +207,125 @@ const Setting = () => {
     }
   }
 
+  const planName = myPlan ? (myPlan._config?.name || myPlan.name || 'Free') : null
+  const planExpired = myPlan?.status === 'expired'
+  const planDaysLeft = myPlan?.expiryDate
+    ? Math.ceil((new Date(myPlan.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+    : null
+  const planFeatures = myPlan?._config?.features
+  const usageText = (used, limit) => (!limit || limit <= 0 ? `${used} · Unlimited` : `${used} / ${limit}`)
+
   return (
-    <div className='min-h-screen bg-slate-50/50 px-4 pb-32 pt-8 md:px-6 lg:px-8 font-sans'>
-      <div className='mx-auto max-w-6xl'>
-        {/* Header Banner */}
-        <div className='relative mb-8 overflow-hidden rounded-[32px] bg-gradient-to-r from-slate-900 to-indigo-950 p-4 md:p-5 text-white shadow-[0_20px_50px_-20px_rgba(15,23,42,0.3)]'>
-          <div className='absolute top-0 right-0 h-40 w-40 rounded-full bg-gradient-to-br from-indigo-500/20 to-purple-500/20 blur-3xl' />
-          <div className='absolute -bottom-20 -left-20 h-40 w-40 rounded-full bg-gradient-to-tr from-blue-500/20 to-indigo-500/20 blur-3xl' />
-          <div className='relative flex flex-col md:flex-row md:items-center justify-between gap-6'>
-            <div className='flex items-center gap-3'>
-              <div className='h-9 w-9 rounded-xl bg-white/10 backdrop-blur-md flex items-center justify-center shadow-inner border border-white/10'>
-                <svg className='h-5 w-5 text-indigo-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z' />
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
-                </svg>
-              </div>
-              <div>
-                <h1 className='text-lg md:text-xl font-black tracking-tight text-white'>Account Settings</h1>
-                <p className='text-indigo-200 text-[11px] md:text-xs font-semibold tracking-wide mt-0.5'>Manage your profile, preferences, and subscriptions</p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Two-column Layout */}
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-8'>
-          
-          {/* ===== Left Column – Profile Card ===== */}
-          <div className='lg:col-span-4'>
-            <div className='lg:sticky lg:top-6 space-y-6'>
-              <div className='relative overflow-hidden rounded-[32px] border border-slate-200 bg-white shadow-[0_15px_40px_-20px_rgba(15,23,42,0.15)]'>
-                {/* Visual Accent header */}
-                <div className='h-24 bg-gradient-to-r from-blue-600 via-indigo-600 to-violet-600' />
-                
-                <div className='px-6 pb-6 pt-0 text-center relative'>
-                  {/* Overlapping Avatar */}
-                  <div className='relative h-24 w-24 mx-auto -mt-12 mb-4'>
-                    <div className='h-full w-full rounded-full flex items-center justify-center overflow-hidden font-black text-slate-800 text-3xl bg-slate-100'>
-                      {user?.picture ? (
-                        <img src={resolvePictureUrl(user.picture)} alt={user.name} className='h-full w-full object-cover' />
-                      ) : (
-                        user?.name?.charAt(0) || 'U'
-                      )}
-                    </div>
-                    <span className='absolute bottom-1 right-1 flex h-4 w-4'>
-                      <span className='animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75'></span>
-                      <span className='relative inline-flex rounded-full h-4 w-4 bg-emerald-500 border-2 border-white'></span>
-                    </span>
-                  </div>
-
-                  <h2 className='text-xl font-bold text-slate-900 truncate max-w-full'>{user?.name || 'User'}</h2>
-                  <div className='inline-flex items-center gap-1.5 mt-1.5 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100'>
-                    <p className='text-[10px] font-black tracking-wider'>Active Member</p>
-                  </div>
-
-                  <button
-                    onClick={openEditModal}
-                    className='mt-4 w-full flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-3 text-sm font-bold hover:shadow-[0_8px_25px_-4px_rgba(37,99,235,0.4)] hover:-translate-y-0.5 transition-all duration-200 cursor-pointer active:translate-y-0'
-                  >
-                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' />
-                    </svg>
-                    Edit Profile
-                  </button>
-
-                  {/* Profile Details List */}
-                  <div className='mt-5 text-left space-y-2.5'>
-                    <div className='flex items-center gap-3.5 rounded-2xl bg-slate-50 p-3 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200'>
-                      <div className='h-9 w-9 rounded-xl bg-blue-50 flex items-center justify-center shrink-0 border border-blue-100'>
-                        <svg className='h-4 w-4 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z' />
-                        </svg>
-                      </div>
-                      <div className='min-w-0'>
-                        <p className='text-[10px] font-bold tracking-wider text-slate-400'>Mobile</p>
-                        <p className='text-sm font-bold text-slate-800'>{user?.mobile?.replace(/(\d{5})(\d{5})/, '$1 $2') || 'Not linked'}</p>
-                      </div>
-                    </div>
-
-                    <div className='flex items-center gap-3.5 rounded-2xl bg-slate-50 p-3 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200'>
-                      <div className='h-9 w-9 rounded-xl bg-violet-50 flex items-center justify-center shrink-0 border border-violet-100'>
-                        <svg className='h-4 w-4 text-violet-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                        </svg>
-                      </div>
-                      <div className='min-w-0 flex-1'>
-                        <div className='flex items-center justify-between gap-1'>
-                          <p className='text-[10px] font-bold tracking-wider text-slate-400'>Email Address</p>
-                          {user?.emailVerified && (
-                            <span className='inline-flex items-center gap-1 text-[10px] font-bold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200'>
-                              <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-                              </svg>
-                              Verified
-                            </span>
-                          )}
-                        </div>
-                        <p className='text-sm font-bold text-slate-800 truncate'>{user?.email || 'Not linked'}</p>
-                      </div>
-                    </div>
-
-                    {user?.businessName && (
-                      <div className='flex items-center gap-3.5 rounded-2xl bg-slate-50 p-3 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200'>
-                        <div className='h-9 w-9 rounded-xl bg-amber-50 flex items-center justify-center shrink-0 border border-amber-100'>
-                          <svg className='h-4 w-4 text-amber-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                          </svg>
-                        </div>
-                        <div className='min-w-0'>
-                          <p className='text-[10px] font-bold tracking-wider text-slate-400'>Business Name</p>
-                          <p className='text-sm font-bold text-slate-800 truncate'>{user.businessName}</p>
-                        </div>
-                      </div>
-                    )}
-
-                    {user?.modeOfBusiness?.length > 0 && (
-                      <div className='flex items-start gap-3.5 rounded-2xl bg-slate-50 p-3 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200'>
-                        <div className='h-9 w-9 rounded-xl bg-sky-50 flex items-center justify-center shrink-0 border border-sky-100'>
-                          <svg className='h-4 w-4 text-sky-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' />
-                          </svg>
-                        </div>
-                        <div className='min-w-0 flex-1'>
-                          <p className='text-[10px] font-bold tracking-wider text-slate-400 mb-1'>Services</p>
-                          <div className='flex flex-wrap gap-1.5'>
-                            {user.modeOfBusiness.map((mode) => (
-                              <span key={mode} className='inline-flex items-center rounded-lg bg-sky-100 text-sky-700 px-2 py-0.5 text-xs font-bold'>
-                                {mode}
-                              </span>
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                    )}
-
-                    {user?.address && (
-                      <div className='flex items-center gap-3.5 rounded-2xl bg-slate-50 p-3 border border-slate-100 hover:bg-slate-100/50 transition-colors duration-200'>
-                        <div className='h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center shrink-0 border border-emerald-100'>
-                          <svg className='h-4 w-4 text-emerald-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
-                          </svg>
-                        </div>
-                        <div className='min-w-0'>
-                          <p className='text-[10px] font-bold tracking-wider text-slate-400'>Address</p>
-                          <p className='text-sm font-bold text-slate-800 truncate'>{user.address}</p>
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Wallet Balance */}
-                  <div className='mt-4 rounded-2xl bg-gradient-to-r from-amber-50 to-yellow-50 border border-amber-100 p-4'>
-                    <div className='flex items-center justify-between'>
-                      <div className='flex items-center gap-2'>
-                        <div className='h-8 w-8 rounded-xl bg-amber-100 flex items-center justify-center'>
-                          <svg className='h-4 w-4 text-amber-700' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                          </svg>
-                        </div>
-                        <span className='text-xs font-bold tracking-wider text-amber-700'>Wallet Balance</span>
-                      </div>
-                      <span className='text-xl font-black text-amber-800'>₹{user?.walletBalance || 0}</span>
-                    </div>
-                    <Link
-                      to='/refer-and-earn'
-                      className='mt-2 flex items-center justify-center gap-1.5 text-[11px] font-bold text-amber-700 bg-amber-100/50 hover:bg-amber-100 rounded-xl py-2 transition-colors'
-                    >
-                      <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' />
-                      </svg>
-                      Refer & Earn – Invite friends, get ₹99 each
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* ===== Right Column – Subscription, Settings & Actions ===== */}
-          <div className='lg:col-span-8 space-y-6'>
-            
-            {/* Subscription Plan Card */}
-            <div className='rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_15px_40px_-20px_rgba(15,23,42,0.1)]'>
-              <div className='flex items-center justify-between border-b border-slate-100 pb-5 mb-5'>
-                <div className='flex items-center gap-3'>
-                  <div className='h-9 w-9 rounded-xl bg-indigo-50 flex items-center justify-center border border-indigo-100'>
-                    <svg className='h-5 w-5 text-indigo-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z' />
-                    </svg>
-                  </div>
-                  <div>
-                    <h3 className='text-sm font-bold text-slate-800 tracking-tight'>Active Subscription</h3>
-                    <p className='text-[10px] text-slate-400 font-semibold tracking-wider mt-0.5'>Billing details &amp; quotas</p>
-                  </div>
-                </div>
-                <Link
-                  to='/pricing'
-                  className='inline-flex items-center gap-1 text-xs font-bold text-indigo-600 hover:text-indigo-800 hover:-translate-y-0.5 transition-all duration-200'
-                >
-                  Explore Plans
-                  <svg className='h-3 w-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' />
-                  </svg>
-                </Link>
-              </div>
-
-              {planLoading ? (
-                <div className='animate-pulse space-y-5'>
-                  <div className='flex items-center justify-between'>
-                    <div className='h-8 w-28 rounded-full bg-slate-100' />
-                    <div className='h-8 w-24 rounded-xl bg-slate-100' />
-                  </div>
-                  <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
-                    <div className='h-24 rounded-2xl bg-slate-100' />
-                    <div className='h-24 rounded-2xl bg-slate-100' />
-                    <div className='h-24 rounded-2xl bg-slate-100' />
-                  </div>
-                </div>
-              ) : myPlan ? (
-                (() => {
-                  const planName = myPlan._config?.name || myPlan.name || 'Free'
-                  const style = getPlanStyle(planName)
-                  const isExpired = myPlan.status === 'expired'
-                  const daysLeft = myPlan.expiryDate
-                    ? Math.ceil((new Date(myPlan.expiryDate).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
-                    : null
-                  return (
-                    <div className='space-y-6'>
-                      <div className='flex flex-wrap items-center justify-between gap-4 bg-slate-50 rounded-2xl p-4 border border-slate-100'>
-                        <div className='flex items-center gap-3'>
-                          <span className={`inline-flex items-center gap-1.5 rounded-2xl bg-gradient-to-r ${style.badge} px-5 py-2.5 text-base font-black text-white shadow-lg ${style.ring}`}>
-                            {planName}
-                          </span>
-                          <span className={`inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider ${isExpired ? 'bg-rose-50 text-rose-600 border border-rose-100' : 'bg-emerald-50 text-emerald-700 border border-emerald-100'}`}>
-                            <span className={`h-2 w-2 rounded-full ${isExpired ? 'bg-rose-500 animate-pulse' : 'bg-emerald-500'}`} />
-                            {isExpired ? 'Expired' : 'Active'}
-                          </span>
-                        </div>
-                        <div className='text-left sm:text-right'>
-                          <p className='text-[10px] font-bold tracking-wider text-slate-400'>
-                            {isExpired ? 'Expired On' : myPlan.expiryDate ? 'Expiration / Renewal Date' : 'Plan Duration'}
-                          </p>
-                          <p className={`text-sm font-extrabold ${isExpired ? 'text-rose-600' : 'text-slate-800'} mt-1`}>
-                            {myPlan.expiryDate ? new Date(myPlan.expiryDate).toLocaleDateString(undefined, { year: 'numeric', month: 'long', day: 'numeric' }) : 'Never Expires'}
-                            {!isExpired && daysLeft !== null && daysLeft <= 7 && (
-                              <span className='ml-2 text-xs text-amber-600 font-bold bg-amber-50 px-2 py-0.5 rounded border border-amber-100'>({daysLeft <= 0 ? 'today' : `${daysLeft}d left`})</span>
-                            )}
-                          </p>
-                        </div>
-                      </div>
-
-                      {myPlan._config?.features && (
-                        <div className='grid grid-cols-1 sm:grid-cols-3 gap-4'>
-                          <UsageStat
-                            icon={USAGE_ICONS.ai}
-                            label='AI Documents'
-                            used={myPlan.usage?.aiDocumentsUsed || 0}
-                            limit={myPlan._config.features.aiDocuments}
-                            colorClass='bg-indigo-50 border border-indigo-100'
-                          />
-                          <UsageStat
-                            icon={USAGE_ICONS.manual}
-                            label='Manual Uploads'
-                            used={myPlan.usage?.manualDocumentsUsed || 0}
-                            limit={myPlan._config.features.manualDocuments}
-                            colorClass='bg-pink-50 border border-pink-100'
-                          />
-                          <UsageStat
-                            icon={USAGE_ICONS.client}
-                            label='Client Limit'
-                            used={myPlan.clientsUsed ?? 0}
-                            limit={myPlan._config.features.clientLimit}
-                            colorClass='bg-emerald-50 border border-emerald-100'
-                          />
-                        </div>
-                      )}
-
-                      {(isExpired || planName !== 'Pro') && (
-                        <Link
-                          to='/pricing'
-                          className='flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-indigo-600 via-indigo-700 to-violet-700 text-white py-4 text-sm font-black tracking-wide hover:shadow-[0_8px_25px_-4px_rgba(79,70,229,0.3)] hover:-translate-y-0.5 transition-all duration-200 active:translate-y-0 shadow-lg shadow-indigo-600/10'
-                        >
-                          {isExpired ? 'Renew Subsciption' : 'Upgrade Plan'}
-                        </Link>
-                      )}
-                    </div>
-                  )
-                })()
+    <div className='min-h-screen bg-stone-100/70 px-3 pb-32 pt-4 md:px-6 font-sans'>
+      <div className='mx-auto max-w-2xl space-y-6'>
+        {/* Profile header */}
+        <div className='flex flex-col items-center pt-4 text-center'>
+          <div className='relative'>
+            <div className='flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-3xl font-black text-white shadow-lg shadow-violet-500/25 ring-4 ring-white'>
+              {user?.picture ? (
+                <img src={resolvePictureUrl(user.picture)} alt={user.name} className='h-full w-full object-cover' />
               ) : (
-                <div className='text-center py-6 bg-slate-50 rounded-2xl border border-dashed border-slate-200'>
-                  <p className='text-sm font-bold text-slate-500'>No active billing profile found</p>
-                </div>
+                user?.name?.charAt(0)?.toUpperCase() || 'U'
               )}
             </div>
-
-            {/* Database Management Options */}
-            <div className='rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_15px_40px_-20px_rgba(15,23,42,0.1)]'>
-              <div className='flex items-center gap-3 border-b border-slate-100 pb-5 mb-5'>
-                <div className='h-9 w-9 rounded-xl bg-amber-50 flex items-center justify-center border border-amber-100'>
-                  <svg className='h-5 w-5 text-amber-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10' />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className='text-sm font-bold text-slate-800 tracking-tight'>Database Management</h3>
-                  <p className='text-[10px] text-slate-400 font-semibold tracking-wider mt-0.5'>Manage directory names &amp; categories</p>
-                </div>
-              </div>
-              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                <button
-                  onClick={() => navigate('/client-name')}
-                  className='group flex items-center gap-4 rounded-2xl bg-slate-50/50 hover:bg-indigo-50/20 p-4 border border-slate-100 hover:border-indigo-200 transition-all duration-300 text-left cursor-pointer'
-                >
-                  <div className='h-12 w-12 rounded-xl bg-gradient-to-br from-indigo-500 to-indigo-600 flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/10 group-hover:scale-105 transition-transform duration-200'>
-                    <svg className='h-6 w-6 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14c-4.418 0-8 2.239-8 5v1a1 1 0 001 1h14a1 1 0 001-1v-1c0-2.761-3.582-5-8-5z' />
-                    </svg>
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='text-sm font-bold text-slate-900 group-hover:text-indigo-700 transition-colors'>Client Name</p>
-                    <p className='text-[10px] font-semibold text-slate-400 mt-0.5'>List of clients linked to vehicles</p>
-                  </div>
-                  <svg className='h-4 w-4 shrink-0 text-slate-300 group-hover:text-indigo-500 group-hover:translate-x-1 transition-all' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
-                  </svg>
-                </button>
-
-                <button
-                  onClick={() => navigate('/agent-name')}
-                  className='group flex items-center gap-4 rounded-2xl bg-slate-50/50 hover:bg-purple-50/20 p-4 border border-slate-100 hover:border-purple-200 transition-all duration-300 text-left cursor-pointer'
-                >
-                  <div className='h-12 w-12 rounded-xl bg-gradient-to-br from-purple-500 to-purple-600 flex items-center justify-center shrink-0 shadow-md shadow-purple-500/10 group-hover:scale-105 transition-transform duration-200'>
-                    <svg className='h-6 w-6 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M3 7a2 2 0 012-2h14a2 2 0 012 2v11a2 2 0 01-2 2H5a2 2 0 01-2-2V7z' />
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M8 5V4a1 1 0 011-1h6a1 1 0 011 1v1M12 13a2.25 2.25 0 100-4.5 2.25 2.25 0 000 4.5zM8.5 17c.5-1.5 1.941-2.5 3.5-2.5s3 1 3.5 2.5' />
-                    </svg>
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='text-sm font-bold text-slate-900 group-hover:text-purple-700 transition-colors'>Agent Name</p>
-                    <p className='text-[10px] font-semibold text-slate-400 mt-0.5'>Manage agent IDs and names</p>
-                  </div>
-                  <svg className='h-4 w-4 shrink-0 text-slate-300 group-hover:text-purple-500 group-hover:translate-x-1 transition-all' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
-                  </svg>
-                </button>
-              </div>
-            </div>
-
-            {/* Refer & Earn */}
-            <div className='rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_15px_40px_-20px_rgba(15,23,42,0.1)]'>
-              <div className='flex items-center gap-3 border-b border-slate-100 pb-5 mb-5'>
-                <div className='h-9 w-9 rounded-xl bg-emerald-50 flex items-center justify-center border border-emerald-100'>
-                  <svg className='h-5 w-5 text-emerald-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className='text-sm font-bold text-slate-800 tracking-tight'>Refer & Earn</h3>
-                  <p className='text-[10px] text-slate-400 font-semibold tracking-wider mt-0.5'>Invite friends, earn ₹99 per referral</p>
-                </div>
-              </div>
-              <Link
-                to='/refer-and-earn'
-                className='group flex items-center justify-between rounded-2xl bg-gradient-to-r from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 p-4 border border-emerald-100 hover:border-emerald-200 transition-all duration-300'
-              >
-                <div className='flex items-center gap-3'>
-                  <div className='h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shrink-0 shadow-md shadow-emerald-500/10 group-hover:scale-105 transition-transform duration-200'>
-                    <svg className='h-6 w-6 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' />
-                    </svg>
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors'>Referral Program</p>
-                    <p className='text-[10px] font-semibold text-slate-400 mt-0.5'>Share your code & track earnings</p>
-                  </div>
-                </div>
-                <div className='flex items-center gap-2'>
-                  <span className='text-xs font-black text-emerald-600 bg-white px-3 py-1 rounded-lg border border-emerald-200 shadow-sm'>₹99 each</span>
-                  <svg className='h-4 w-4 text-slate-300 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
-                  </svg>
-                </div>
-              </Link>
-            </div>
-
-            {/* Legal, Support & Info */}
-            <div className='rounded-[32px] border border-slate-200 bg-white p-6 shadow-[0_15px_40px_-20px_rgba(15,23,42,0.1)] space-y-6'>
-              <div className='flex items-center gap-3 border-b border-slate-100 pb-5 mb-5'>
-                <div className='h-9 w-9 rounded-xl bg-rose-50 flex items-center justify-center border border-rose-100'>
-                  <svg className='h-5 w-5 text-rose-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' />
-                  </svg>
-                </div>
-                <div>
-                  <h3 className='text-sm font-bold text-slate-800 tracking-tight'>Help &amp; Documentation</h3>
-                  <p className='text-[10px] text-slate-400 font-semibold tracking-wider mt-0.5'>Support, terms &amp; legal resources</p>
-                </div>
-              </div>
-
-              <div className='grid grid-cols-1 sm:grid-cols-2 gap-4'>
-                <a href='mailto:mybimabox@gmail.com' className='group flex items-center gap-4 rounded-2xl bg-slate-50/50 hover:bg-blue-50/20 p-4 border border-slate-100 hover:border-blue-200 transition-all duration-300 text-left'>
-                  <div className='h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 flex items-center justify-center shrink-0 shadow-md shadow-blue-500/10 group-hover:scale-105 transition-transform duration-200'>
-                    <svg className='h-6 w-6 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                    </svg>
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='text-sm font-bold text-slate-900 group-hover:text-blue-700 transition-colors'>Email Helpdesk</p>
-                    <p className='text-[10px] font-semibold text-slate-400 mt-0.5'>mybimabox@gmail.com</p>
-                  </div>
-                </a>
-
-                <a href='tel:+917004534508' className='group flex items-center gap-4 rounded-2xl bg-slate-50/50 hover:bg-emerald-50/20 p-4 border border-slate-100 hover:border-emerald-200 transition-all duration-300 text-left'>
-                  <div className='h-12 w-12 rounded-xl bg-gradient-to-br from-emerald-500 to-emerald-600 flex items-center justify-center shrink-0 shadow-md shadow-emerald-500/10 group-hover:scale-105 transition-transform duration-200'>
-                    <svg className='h-6 w-6 text-white' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z' />
-                    </svg>
-                  </div>
-                  <div className='min-w-0 flex-1'>
-                    <p className='text-sm font-bold text-slate-900 group-hover:text-emerald-700 transition-colors'>Direct Hotline</p>
-                    <p className='text-[10px] font-semibold text-slate-400 mt-0.5'>+91 7004534508</p>
-                  </div>
-                </a>
-              </div>
-
-              {/* Social Channels */}
-              <div className='pt-2'>
-                <div className='flex items-center gap-2 mb-3'>
-                  <div className='h-1.5 w-1.5 rounded-full bg-slate-300' />
-                  <span className='text-[10px] font-bold tracking-wider text-slate-400'>Connect with us</span>
-                </div>
-                <div className='flex items-center gap-3'>
-                  <a
-                    href='https://www.instagram.com/bimabox.in/'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='group flex items-center justify-center h-11 w-11 rounded-2xl border border-slate-200 bg-white text-slate-500 hover:border-pink-200 hover:bg-pink-50 hover:text-pink-600 hover:shadow-lg hover:shadow-pink-500/10 hover:-translate-y-0.5 transition-all duration-200 active:scale-95'
-                    aria-label='Instagram'
-                  >
-                    <svg className='h-5 w-5' viewBox='0 0 24 24' fill='currentColor'>
-                      <path d='M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z' />
-                    </svg>
-                  </a>
-                  
-                  <a
-                    href='https://www.facebook.com/profile.php?viewas=100000686899395&id=61590698249898'
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    className='group flex items-center justify-center h-11 w-11 rounded-2xl border border-slate-200 bg-white text-slate-500 hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600 hover:shadow-lg hover:shadow-blue-500/10 hover:-translate-y-0.5 transition-all duration-200 active:scale-95'
-                    aria-label='Facebook'
-                  >
-                    <svg className='h-5 w-5' viewBox='0 0 24 24' fill='currentColor'>
-                      <path d='M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z' />
-                    </svg>
-                  </a>
-                </div>
-              </div>
-
-              {/* Legal Link Grid */}
-              <div className='grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 border-t border-slate-100 text-left'>
-                <Link
-                  to='/contact-us'
-                  className='group flex items-center justify-between rounded-2xl bg-slate-50/50 hover:bg-rose-50/20 p-3.5 border border-slate-100 hover:border-rose-200 transition-all duration-300'
-                >
-                  <div>
-                    <p className='text-xs font-bold text-slate-800 group-hover:text-rose-700 transition-colors'>Support Center</p>
-                    <p className='text-[9px] text-slate-400 mt-0.5 font-semibold'>Help &amp; contact info</p>
-                  </div>
-                  <svg className='h-4 w-4 text-slate-300 group-hover:text-rose-500 group-hover:translate-x-0.5 transition-all' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
-                  </svg>
-                </Link>
-
-                <Link
-                  to='/privacy-policy'
-                  className='group flex items-center justify-between rounded-2xl bg-slate-50/50 hover:bg-blue-50/20 p-3.5 border border-slate-100 hover:border-blue-200 transition-all duration-300'
-                >
-                  <div>
-                    <p className='text-xs font-bold text-slate-800 group-hover:text-blue-700 transition-colors'>Privacy Policy</p>
-                    <p className='text-[9px] text-slate-400 mt-0.5 font-semibold'>Security &amp; rules</p>
-                  </div>
-                  <svg className='h-4 w-4 text-slate-300 group-hover:text-blue-500 group-hover:translate-x-0.5 transition-all' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
-                  </svg>
-                </Link>
-
-                <Link
-                  to='/terms-and-conditions'
-                  className='group flex items-center justify-between rounded-2xl bg-slate-50/50 hover:bg-violet-50/20 p-3.5 border border-slate-100 hover:border-violet-200 transition-all duration-300'
-                >
-                  <div>
-                    <p className='text-xs font-bold text-slate-800 group-hover:text-violet-700 transition-colors'>Terms of Service</p>
-                    <p className='text-[9px] text-slate-400 mt-0.5 font-semibold'>Legal guidelines</p>
-                  </div>
-                  <svg className='h-4 w-4 text-slate-300 group-hover:text-violet-500 group-hover:translate-x-0.5 transition-all' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
-                  </svg>
-                </Link>
-              </div>
-            </div>
-
-            {/* Logout Card */}
-            <div>
-              <button
-                onClick={handleLogout}
-                className='group w-full flex items-center justify-center gap-3 rounded-2xl border border-rose-100 bg-rose-50/30 hover:bg-rose-50 hover:border-rose-200 py-4.5 text-xs font-black tracking-wider text-rose-600 transition-all hover:shadow-[0_8px_20px_-6px_rgba(244,63,94,0.15)] active:scale-[0.99] cursor-pointer'
-              >
-                <svg className='h-4.5 w-4.5 text-rose-600 transition-transform group-hover:translate-x-0.5 duration-200' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' />
-                </svg>
-                Sign out of BimaOne
-              </button>
-            </div>
+            <button
+              type='button'
+              onClick={openEditModal}
+              className='absolute bottom-0 right-0 flex h-8 w-8 items-center justify-center rounded-full bg-stone-900 text-white ring-4 ring-stone-100 hover:bg-violet-700 transition-colors cursor-pointer'
+              aria-label='Edit profile'
+            >
+              <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' />
+              </svg>
+            </button>
           </div>
+          <h1 className='mt-3 text-xl font-black text-stone-900'>{user?.name || 'User'}</h1>
+          <p className='text-sm text-stone-500'>{user?.email || user?.mobile || ''}</p>
+          <button
+            type='button'
+            onClick={openEditModal}
+            className='mt-3 rounded-full bg-white px-4 py-1.5 text-xs font-bold text-violet-700 ring-1 ring-stone-200 hover:bg-violet-50 transition-colors cursor-pointer'
+          >
+            Edit Profile
+          </button>
         </div>
+
+        <SettingGroup title='Account'>
+          <SettingRow icon={ICONS.mobile} color='bg-emerald-500' label='Mobile' value={user?.mobile?.replace(/(\d{5})(\d{5})/, '$1 $2') || 'Not linked'} onClick={openEditModal} />
+          <SettingRow icon={ICONS.email} color='bg-sky-500' label='Email' value={user?.email ? (user?.emailVerified ? `${user.email} ✓` : user.email) : 'Not linked'} chevron={false} />
+          <SettingRow icon={ICONS.business} color='bg-amber-500' label='Business' value={user?.businessName || 'Add'} onClick={openEditModal} />
+          {user?.modeOfBusiness?.length > 0 && (
+            <SettingRow icon={ICONS.services} color='bg-cyan-500' label='Services' value={user.modeOfBusiness.join(', ')} onClick={openEditModal} />
+          )}
+          <SettingRow icon={ICONS.address} color='bg-rose-400' label='Address' value={user?.address || 'Add'} onClick={openEditModal} />
+        </SettingGroup>
+
+        <SettingGroup title='Plan'>
+          {planLoading ? (
+            <div className='animate-pulse px-4 py-4'>
+              <div className='h-4 w-1/2 rounded bg-stone-100' />
+            </div>
+          ) : myPlan ? (
+            <>
+              <SettingRow
+                icon={ICONS.plan}
+                color='bg-violet-600'
+                label={`${planName} plan`}
+                value={planExpired
+                  ? 'Expired'
+                  : myPlan.expiryDate
+                  ? (planDaysLeft <= 0 ? 'Ends today' : `${planDaysLeft}d left`)
+                  : 'Never expires'}
+                to='/pricing'
+              />
+              {planFeatures && (
+                <>
+                  <SettingRow icon={ICONS.ai} color='bg-fuchsia-500' label='AI Documents' value={usageText(myPlan.usage?.aiDocumentsUsed || 0, planFeatures.aiDocuments)} chevron={false} />
+                  <SettingRow icon={ICONS.manual} color='bg-pink-500' label='Manual Uploads' value={usageText(myPlan.usage?.manualDocumentsUsed || 0, planFeatures.manualDocuments)} chevron={false} />
+                  <SettingRow icon={ICONS.clients} color='bg-teal-500' label='Clients' value={usageText(myPlan.clientsUsed ?? 0, planFeatures.clientLimit)} chevron={false} />
+                </>
+              )}
+              {(planExpired || planName !== 'Pro') && (
+                <Link to='/pricing' className='block px-4 py-3 text-center text-sm font-bold text-violet-600 hover:bg-violet-50 transition-colors'>
+                  {planExpired ? 'Renew Subscription' : 'Upgrade Plan'}
+                </Link>
+              )}
+            </>
+          ) : (
+            <SettingRow icon={ICONS.plan} color='bg-stone-400' label='No active plan' value='See plans' to='/pricing' />
+          )}
+        </SettingGroup>
+
+        <SettingGroup title='Manage'>
+          <SettingRow icon={ICONS.client} color='bg-violet-500' label='Client Names' onClick={() => navigate('/client-name')} />
+          <SettingRow icon={ICONS.agent} color='bg-purple-500' label='Agent Names' onClick={() => navigate('/agent-name')} />
+          <SettingRow icon={ICONS.gift} color='bg-orange-500' label='Refer & Earn' value='₹99 each' to='/refer-and-earn' />
+          <SettingRow icon={ICONS.wallet} color='bg-amber-500' label='Wallet Balance' value={`₹${user?.walletBalance || 0}`} to='/refer-and-earn' />
+        </SettingGroup>
+
+        <SettingGroup title='Support'>
+          <SettingRow icon={ICONS.email} color='bg-sky-500' label='Email Helpdesk' value='mybimabox@gmail.com' href='mailto:mybimabox@gmail.com' />
+          <SettingRow icon={ICONS.phone} color='bg-emerald-500' label='Call Us' value='+91 7004534508' href='tel:+917004534508' />
+          <SettingRow icon={ICONS.help} color='bg-stone-500' label='Support Center' to='/contact-us' />
+          <SettingRow icon={ICONS.instagram} color='bg-pink-500' label='Instagram' href='https://www.instagram.com/bimabox.in/' external />
+          <SettingRow icon={ICONS.facebook} color='bg-blue-600' label='Facebook' href='https://www.facebook.com/profile.php?viewas=100000686899395&id=61590698249898' external />
+        </SettingGroup>
+
+        <SettingGroup title='Legal'>
+          <SettingRow icon={ICONS.lock} color='bg-stone-600' label='Privacy Policy' to='/privacy-policy' />
+          <SettingRow icon={ICONS.doc} color='bg-stone-600' label='Terms of Service' to='/terms-and-conditions' />
+        </SettingGroup>
+
+        <div className='overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200/70'>
+          <button
+            type='button'
+            onClick={handleLogout}
+            className='w-full px-4 py-3.5 text-center text-sm font-bold text-rose-600 hover:bg-rose-50 transition-colors cursor-pointer'
+          >
+            Sign Out
+          </button>
+        </div>
+        <p className='pb-2 text-center text-[11px] font-semibold text-stone-400'>BimaOne</p>
       </div>
 
       {/* Edit Profile Modal */}
