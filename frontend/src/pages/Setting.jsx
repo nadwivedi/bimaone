@@ -217,11 +217,11 @@ const Setting = () => {
 
   return (
     <div className='min-h-screen bg-stone-100/70 px-3 pb-32 pt-4 md:px-6 font-sans'>
-      <div className='mx-auto max-w-2xl space-y-6 lg:grid lg:max-w-6xl lg:grid-cols-3 lg:items-start lg:gap-6 lg:space-y-0'>
+      <div className='mx-auto max-w-2xl space-y-6 lg:hidden'>
         {/* Left column: profile + account */}
-        <div className='space-y-6 lg:sticky lg:top-6'>
+        <div className='space-y-6'>
         {/* Profile header */}
-        <div className='flex flex-col items-center pt-4 text-center lg:rounded-2xl lg:bg-white lg:px-4 lg:py-6 lg:ring-1 lg:ring-stone-200/70'>
+        <div className='flex flex-col items-center pt-4 text-center'>
           <div className='relative'>
             <div className='flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-3xl font-black text-white shadow-lg shadow-violet-500/25 ring-4 ring-white'>
               {user?.picture ? (
@@ -264,7 +264,7 @@ const Setting = () => {
         </div>
 
         {/* Right column: plan, manage, support, legal */}
-        <div className='space-y-6 lg:col-span-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0'>
+        <div className='space-y-6'>
 
         <SettingGroup title='Plan'>
           {planLoading ? (
@@ -302,7 +302,7 @@ const Setting = () => {
           )}
         </SettingGroup>
 
-        <SettingGroup title='Manage' className='lg:hidden'>
+        <SettingGroup title='Manage'>
           <SettingRow icon={ICONS.client} color='bg-violet-500' label='Client Names' onClick={() => navigate('/client-name')} />
           <SettingRow icon={ICONS.agent} color='bg-purple-500' label='Agent Names' onClick={() => navigate('/agent-name')} />
           {/* <SettingRow icon={ICONS.gift} color='bg-orange-500' label='Refer & Earn' value='₹99 each' to='/refer-and-earn' /> */}
@@ -322,7 +322,7 @@ const Setting = () => {
           <SettingRow icon={ICONS.doc} color='bg-stone-600' label='Terms of Service' to='/terms-and-conditions' />
         </SettingGroup>
 
-        <div className='overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200/70 lg:col-span-2'>
+        <div className='overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200/70'>
           <button
             type='button'
             onClick={handleLogout}
@@ -331,7 +331,181 @@ const Setting = () => {
             Sign Out
           </button>
         </div>
-        <p className='pb-2 text-center lg:col-span-2 text-[11px] font-semibold text-stone-400'>BimaOne</p>
+        <p className='pb-2 text-center text-[11px] font-semibold text-stone-400'>BimaOne</p>
+        </div>
+      </div>
+
+      {/* ===== Desktop layout ===== */}
+      <div className='mx-auto hidden max-w-6xl space-y-6 lg:block'>
+        {/* Profile hero */}
+        <div className='overflow-hidden rounded-3xl bg-white ring-1 ring-stone-200/70'>
+          <div className='flex items-center justify-between gap-6 px-8 py-6'>
+            <div className='flex items-center gap-5'>
+              <div className='flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl bg-gradient-to-br from-violet-500 to-fuchsia-500 text-3xl font-black text-white shadow-lg shadow-violet-500/20'>
+                {user?.picture ? (
+                  <img src={resolvePictureUrl(user.picture)} alt={user.name} className='h-full w-full object-cover' />
+                ) : (
+                  user?.name?.charAt(0)?.toUpperCase() || 'U'
+                )}
+              </div>
+              <div>
+                <h1 className='text-2xl font-black text-stone-900'>{user?.name || 'User'}</h1>
+                <div className='mt-1 flex flex-wrap items-center gap-2 text-sm text-stone-500'>
+                  {user?.email && <span>{user.email}</span>}
+                  {user?.emailVerified && (
+                    <span className='rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700 ring-1 ring-inset ring-emerald-200'>Verified</span>
+                  )}
+                  {user?.businessName && (
+                    <>
+                      <span className='text-stone-300'>•</span>
+                      <span className='font-semibold text-violet-700'>{user.businessName}</span>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+            <button
+              type='button'
+              onClick={openEditModal}
+              className='flex items-center gap-2 rounded-xl bg-stone-900 px-5 py-2.5 text-sm font-bold text-white hover:bg-violet-700 transition-colors cursor-pointer'
+            >
+              <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' />
+              </svg>
+              Edit Profile
+            </button>
+          </div>
+
+          {/* Plan + usage strip */}
+          <div className='grid grid-cols-4 divide-x divide-stone-100 border-t border-stone-100 bg-stone-50/60'>
+            <div className='px-6 py-5'>
+              <p className='text-[11px] font-bold uppercase tracking-wider text-stone-400'>Current Plan</p>
+              {planLoading ? (
+                <div className='mt-2 h-6 w-24 animate-pulse rounded bg-stone-200' />
+              ) : (
+                <>
+                  <p className='mt-1 text-xl font-black text-stone-900'>{planName || 'No plan'}</p>
+                  <p className={`text-xs font-semibold ${planExpired ? 'text-orange-600' : 'text-stone-500'}`}>
+                    {!myPlan
+                      ? 'No active subscription'
+                      : planExpired
+                      ? 'Expired'
+                      : myPlan.expiryDate
+                      ? (planDaysLeft <= 0 ? 'Ends today' : `${planDaysLeft} days left`)
+                      : 'Never expires'}
+                  </p>
+                  {(!myPlan || planExpired || planName !== 'Pro') && (
+                    <Link to='/pricing' className='mt-2 inline-block text-xs font-bold text-violet-600 hover:text-violet-800'>
+                      {planExpired ? 'Renew now →' : 'Upgrade →'}
+                    </Link>
+                  )}
+                </>
+              )}
+            </div>
+            {[
+              { label: 'AI Documents', icon: ICONS.ai, color: 'bg-fuchsia-500', used: myPlan?.usage?.aiDocumentsUsed || 0, limit: planFeatures?.aiDocuments },
+              { label: 'Manual Uploads', icon: ICONS.manual, color: 'bg-pink-500', used: myPlan?.usage?.manualDocumentsUsed || 0, limit: planFeatures?.manualDocuments },
+              { label: 'Clients', icon: ICONS.clients, color: 'bg-teal-500', used: myPlan?.clientsUsed ?? 0, limit: planFeatures?.clientLimit },
+            ].map((u) => {
+              const unlimited = !u.limit || u.limit <= 0
+              const pct = unlimited ? 100 : Math.min(100, Math.round((u.used / u.limit) * 100))
+              return (
+                <div key={u.label} className='px-6 py-5'>
+                  <div className='flex items-center gap-2'>
+                    <span className={`flex h-6 w-6 items-center justify-center rounded-md text-white ${u.color}`}>
+                      <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={u.icon} />
+                      </svg>
+                    </span>
+                    <p className='text-[11px] font-bold uppercase tracking-wider text-stone-400'>{u.label}</p>
+                  </div>
+                  <p className='mt-2 text-xl font-black text-stone-900'>
+                    {planLoading ? '…' : u.used}
+                    <span className='ml-1 text-xs font-bold text-stone-400'>{unlimited ? '· Unlimited' : `/ ${u.limit}`}</span>
+                  </p>
+                  <div className='mt-2 h-1.5 w-full overflow-hidden rounded-full bg-stone-200'>
+                    <div className={`h-full rounded-full ${pct >= 90 && !unlimited ? 'bg-orange-500' : 'bg-violet-500'}`} style={{ width: `${planLoading ? 0 : pct}%` }} />
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </div>
+
+        <div className='grid grid-cols-3 items-start gap-6'>
+          {/* Personal details */}
+          <div className='col-span-2 rounded-3xl bg-white p-6 ring-1 ring-stone-200/70'>
+            <div className='mb-5 flex items-center justify-between'>
+              <div>
+                <h2 className='text-base font-black text-stone-900'>Personal Details</h2>
+                <p className='text-xs text-stone-400'>Your contact and business information</p>
+              </div>
+              <button type='button' onClick={openEditModal} className='text-sm font-bold text-violet-600 hover:text-violet-800 cursor-pointer'>Edit</button>
+            </div>
+            <div className='grid grid-cols-2 gap-3'>
+              {[
+                { label: 'Full Name', value: user?.name, icon: ICONS.client, color: 'bg-violet-500' },
+                { label: 'Mobile', value: user?.mobile?.replace(/(\d{5})(\d{5})/, '$1 $2'), icon: ICONS.mobile, color: 'bg-emerald-500' },
+                { label: 'Email', value: user?.email, icon: ICONS.email, color: 'bg-sky-500' },
+                { label: 'Business', value: user?.businessName, icon: ICONS.business, color: 'bg-amber-500' },
+                { label: 'Services', value: user?.modeOfBusiness?.join(', '), icon: ICONS.services, color: 'bg-cyan-500' },
+                { label: 'Address', value: user?.address, icon: ICONS.address, color: 'bg-rose-400' },
+              ].map((f) => (
+                <div key={f.label} className='flex items-center gap-3 rounded-2xl bg-stone-50 px-4 py-3.5 ring-1 ring-inset ring-stone-100'>
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-white ${f.color}`}>
+                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={f.icon} />
+                    </svg>
+                  </span>
+                  <div className='min-w-0'>
+                    <p className='text-[11px] font-bold uppercase tracking-wider text-stone-400'>{f.label}</p>
+                    {f.value ? (
+                      <p className='truncate text-sm font-semibold text-stone-800' title={f.value}>{f.value}</p>
+                    ) : (
+                      <button type='button' onClick={openEditModal} className='text-sm font-semibold text-violet-600 hover:text-violet-800 cursor-pointer'>+ Add</button>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Support, legal, sign out */}
+          <div className='space-y-6'>
+            <SettingGroup title='Support'>
+              <SettingRow icon={ICONS.email} color='bg-sky-500' label='Email Helpdesk' href='mailto:mybimabox@gmail.com' />
+              <SettingRow icon={ICONS.phone} color='bg-emerald-500' label='Call Us' value='7004534508' href='tel:+917004534508' />
+              <SettingRow icon={ICONS.help} color='bg-stone-500' label='Support Center' to='/contact-us' />
+            </SettingGroup>
+
+            <SettingGroup title='Legal'>
+              <SettingRow icon={ICONS.lock} color='bg-stone-600' label='Privacy Policy' to='/privacy-policy' />
+              <SettingRow icon={ICONS.doc} color='bg-stone-600' label='Terms of Service' to='/terms-and-conditions' />
+            </SettingGroup>
+
+            <div className='flex items-center justify-between rounded-2xl bg-white px-4 py-3 ring-1 ring-stone-200/70'>
+              <span className='text-[11px] font-bold uppercase tracking-wider text-stone-400'>Follow us</span>
+              <div className='flex gap-2'>
+                <a href='https://www.instagram.com/bimabox.in/' target='_blank' rel='noopener noreferrer' aria-label='Instagram' className='flex h-8 w-8 items-center justify-center rounded-lg bg-pink-500 text-white hover:opacity-90'>
+                  <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={ICONS.instagram} /></svg>
+                </a>
+                <a href='https://www.facebook.com/profile.php?viewas=100000686899395&id=61590698249898' target='_blank' rel='noopener noreferrer' aria-label='Facebook' className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white hover:opacity-90'>
+                  <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={ICONS.facebook} /></svg>
+                </a>
+              </div>
+            </div>
+
+            <button
+              type='button'
+              onClick={handleLogout}
+              className='flex w-full items-center justify-center gap-2 rounded-2xl bg-white py-3 text-sm font-bold text-rose-600 ring-1 ring-stone-200/70 hover:bg-rose-50 transition-colors cursor-pointer'
+            >
+              <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1' />
+              </svg>
+              Sign Out
+            </button>
+          </div>
         </div>
       </div>
 
