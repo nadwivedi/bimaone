@@ -37,8 +37,8 @@ const ICONS = {
   facebook: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z',
 }
 
-const SettingGroup = ({ title, children }) => (
-  <section>
+const SettingGroup = ({ title, children, className = '' }) => (
+  <section className={className}>
     <p className='mb-1.5 px-4 text-[11px] font-bold uppercase tracking-wider text-stone-400'>{title}</p>
     <div className='overflow-hidden rounded-2xl bg-white divide-y divide-stone-100 ring-1 ring-stone-200/70'>
       {children}
@@ -302,11 +302,11 @@ const Setting = () => {
           )}
         </SettingGroup>
 
-        <SettingGroup title='Manage'>
+        <SettingGroup title='Manage' className='lg:hidden'>
           <SettingRow icon={ICONS.client} color='bg-violet-500' label='Client Names' onClick={() => navigate('/client-name')} />
           <SettingRow icon={ICONS.agent} color='bg-purple-500' label='Agent Names' onClick={() => navigate('/agent-name')} />
-          <SettingRow icon={ICONS.gift} color='bg-orange-500' label='Refer & Earn' value='₹99 each' to='/refer-and-earn' />
-          <SettingRow icon={ICONS.wallet} color='bg-amber-500' label='Wallet Balance' value={`₹${user?.walletBalance || 0}`} to='/refer-and-earn' />
+          {/* <SettingRow icon={ICONS.gift} color='bg-orange-500' label='Refer & Earn' value='₹99 each' to='/refer-and-earn' /> */}
+          {/* <SettingRow icon={ICONS.wallet} color='bg-amber-500' label='Wallet Balance' value={`₹${user?.walletBalance || 0}`} to='/refer-and-earn' /> */}
         </SettingGroup>
 
         <SettingGroup title='Support'>

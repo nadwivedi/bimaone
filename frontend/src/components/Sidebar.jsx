@@ -63,7 +63,7 @@ const mainNavItems = [
   { name: 'Premium', path: '/premium-calculator', icon: navIcons.premium },
   { name: 'Client Name', path: '/client-name', icon: navIcons.client },
   { name: 'Agent Name', path: '/agent-name', icon: navIcons.agent },
-  { name: 'Refer & Earn', path: '/refer-and-earn', icon: navIcons.referral },
+  // { name: 'Refer & Earn', path: '/refer-and-earn', icon: navIcons.referral },
   { name: 'Settings', path: '/setting', icon: navIcons.settings },
 ]
 
