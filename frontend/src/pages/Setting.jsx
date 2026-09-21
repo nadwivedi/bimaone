@@ -217,9 +217,11 @@ const Setting = () => {
 
   return (
     <div className='min-h-screen bg-stone-100/70 px-3 pb-32 pt-4 md:px-6 font-sans'>
-      <div className='mx-auto max-w-2xl space-y-6'>
+      <div className='mx-auto max-w-2xl space-y-6 lg:grid lg:max-w-6xl lg:grid-cols-3 lg:items-start lg:gap-6 lg:space-y-0'>
+        {/* Left column: profile + account */}
+        <div className='space-y-6 lg:sticky lg:top-6'>
         {/* Profile header */}
-        <div className='flex flex-col items-center pt-4 text-center'>
+        <div className='flex flex-col items-center pt-4 text-center lg:rounded-2xl lg:bg-white lg:px-4 lg:py-6 lg:ring-1 lg:ring-stone-200/70'>
           <div className='relative'>
             <div className='flex h-24 w-24 items-center justify-center overflow-hidden rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-3xl font-black text-white shadow-lg shadow-violet-500/25 ring-4 ring-white'>
               {user?.picture ? (
@@ -259,6 +261,10 @@ const Setting = () => {
           )}
           <SettingRow icon={ICONS.address} color='bg-rose-400' label='Address' value={user?.address || 'Add'} onClick={openEditModal} />
         </SettingGroup>
+        </div>
+
+        {/* Right column: plan, manage, support, legal */}
+        <div className='space-y-6 lg:col-span-2 lg:grid lg:grid-cols-2 lg:items-start lg:gap-6 lg:space-y-0'>
 
         <SettingGroup title='Plan'>
           {planLoading ? (
@@ -316,7 +322,7 @@ const Setting = () => {
           <SettingRow icon={ICONS.doc} color='bg-stone-600' label='Terms of Service' to='/terms-and-conditions' />
         </SettingGroup>
 
-        <div className='overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200/70'>
+        <div className='overflow-hidden rounded-2xl bg-white ring-1 ring-stone-200/70 lg:col-span-2'>
           <button
             type='button'
             onClick={handleLogout}
@@ -325,7 +331,8 @@ const Setting = () => {
             Sign Out
           </button>
         </div>
-        <p className='pb-2 text-center text-[11px] font-semibold text-stone-400'>BimaOne</p>
+        <p className='pb-2 text-center lg:col-span-2 text-[11px] font-semibold text-stone-400'>BimaOne</p>
+        </div>
       </div>
 
       {/* Edit Profile Modal */}
