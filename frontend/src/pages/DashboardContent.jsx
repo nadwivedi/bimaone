@@ -42,6 +42,15 @@ const colorMap = {
   }
 }
 
+const DOC_ICON_PATHS = {
+  Insurance: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+  Tax: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+  PUC: 'M13 10V3L4 14h7v7l9-11h-7z',
+  Fitness: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2',
+  GPS: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z',
+  Permit: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+}
+
 const DashboardContent = () => {
   const navigate = useNavigate()
   const { user, setUser } = useAuth()
@@ -457,85 +466,76 @@ const DashboardContent = () => {
             </div>
 
             <div className='mt-6 rounded-[28px] border border-stone-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(68,64,60,0.25)] md:p-5 lg:p-6'>
-              <h2 className='mb-6 flex items-center gap-2 text-lg font-black text-stone-900 before:h-5 before:w-1.5 before:rounded-full before:bg-gradient-to-b before:from-violet-500 before:to-fuchsia-500 before:content-[""]'>Recently Added</h2>
+              <div className='mb-5 flex items-center justify-between gap-3'>
+                <div className='flex items-center gap-2.5'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-stone-900 text-white'>
+                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
+                    </svg>
+                  </div>
+                  <div>
+                    <h2 className='text-base font-black leading-tight text-stone-900'>Recently Added</h2>
+                    <p className='text-[10px] font-semibold text-stone-400'>Latest documents across all types</p>
+                  </div>
+                </div>
+                <button
+                  type='button'
+                  onClick={() => navigate('/search')}
+                  className='flex items-center gap-1 rounded-full bg-stone-100 px-3 py-1.5 text-[11px] font-bold text-stone-600 hover:bg-violet-50 hover:text-violet-700 transition-colors'
+                >
+                  View all
+                  <svg className='h-3 w-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5l7 7-7 7' />
+                  </svg>
+                </button>
+              </div>
+
               {recentDocs.length === 0 ? (
                 <div className='rounded-2xl border-2 border-dashed border-stone-200 bg-stone-50 py-12 text-center'>
                   <p className='text-sm font-bold text-stone-500'>No recently added documents.</p>
                 </div>
               ) : (
-                <>
-                  <div className='space-y-3 lg:hidden'>
-                    {recentDocs.map((doc) => {
-                      const dotColor = ({ emerald: '#10B981', amber: '#F59E0B', indigo: '#6366F1', rose: '#F43F5E', blue: '#3B82F6', teal: '#14B8A6' })[doc.color] || '#3B82F6'
-                      return (
-                        <div key={doc.id} onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)} className='rounded-xl border border-stone-200 bg-white px-4 py-2.5 shadow-[0_4px_16px_-6px_rgba(68,64,60,0.08)] transition-all hover:border-violet-300 hover:shadow-[0_8px_24px_-8px_rgba(139,92,246,0.18)] cursor-pointer'>
-                          <div className='flex items-start gap-3'>
-                            <div className='h-2 w-2 shrink-0 rounded-full mt-1' style={{ backgroundColor: dotColor }} />
-                            <div className='min-w-0 flex-1'>
-                              {doc.insuredName && <p className='text-sm font-black text-stone-800 leading-tight'>{doc.insuredName}</p>}
-                              <p className='font-mono text-[11px] text-stone-400'>{doc.vehicleNumber}</p>
-                              <p className='text-[11px] font-medium text-stone-500 mt-0.5'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</p>
-                            </div>
-                            <p className='whitespace-nowrap text-[11px] font-semibold text-violet-600 shrink-0'>{timeAgo(doc.createdAt)}</p>
-                          </div>
-                          <div className='mt-2.5 flex items-center gap-4 border-t border-stone-100 pt-2.5'>
-                            <div className='text-[10px] text-stone-400'>
-                              <span className='font-semibold text-stone-500'>From:</span> {doc.validFrom}
-                            </div>
-                            <div className='text-[10px] text-stone-400'>
-                              <span className='font-semibold text-stone-500'>To:</span> {doc.validTo}
+                <div className='-mx-4 flex snap-x snap-mandatory gap-3 overflow-x-auto px-4 pb-2 [&::-webkit-scrollbar]:hidden md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:pb-0 lg:grid-cols-5'>
+                  {recentDocs.map((doc) => {
+                    const colors = colorMap[doc.color] || colorMap.blue
+                    return (
+                      <button
+                        key={doc.id}
+                        type='button'
+                        onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
+                        className='group flex w-[68%] shrink-0 snap-start flex-col overflow-hidden rounded-2xl border border-stone-200 bg-white text-left transition-all hover:-translate-y-1 hover:border-stone-300 hover:shadow-[0_16px_32px_-18px_rgba(68,64,60,0.45)] sm:w-[42%] md:w-auto'
+                      >
+                        {/* coloured band */}
+                        <div className={`flex items-center justify-between px-3.5 py-2 text-white ${colors.strip}`}>
+                          <span className='flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider'>
+                            <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d={DOC_ICON_PATHS[doc.type] || DOC_ICON_PATHS.Permit} />
+                            </svg>
+                            {doc.type === 'Tax' ? 'Road Tax' : doc.type}
+                          </span>
+                          <span className='text-[10px] font-bold text-white/85'>{timeAgo(doc.createdAt)}</span>
+                        </div>
+
+                        <div className='flex flex-1 flex-col px-3.5 pb-3.5 pt-3'>
+                          <p className='truncate text-sm font-black text-stone-900 group-hover:text-violet-700 transition-colors' title={doc.insuredName}>
+                            {doc.insuredName || 'Unnamed'}
+                          </p>
+                          <span className='mt-1.5 self-start rounded-md border border-stone-300 bg-amber-50 px-1.5 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider text-stone-800'>
+                            {doc.vehicleNumber}
+                          </span>
+
+                          <div className='mt-auto pt-3'>
+                            <div className='rounded-xl bg-stone-50 px-2.5 py-2 ring-1 ring-inset ring-stone-100'>
+                              <p className='text-[9px] font-black uppercase tracking-wider text-stone-400'>Valid till</p>
+                              <p className='text-xs font-black text-stone-800'>{doc.validTo}</p>
+                              <p className='text-[10px] font-medium text-stone-400'>from {doc.validFrom}</p>
                             </div>
                           </div>
                         </div>
-                      )
-                    })}
-                  </div>
-
-                  <div className='hidden lg:block'>
-                    <div className='overflow-hidden rounded-2xl border border-stone-100 bg-white'>
-                      <table className='w-full text-left'>
-                        <thead>
-                          <tr className='border-b border-stone-100 bg-stone-50/50'>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Insured</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Vehicle</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Document</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Valid From</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400'>Valid To</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-stone-400 text-right'>Added</th>
-                          </tr>
-                        </thead>
-                        <tbody className='divide-y divide-stone-50'>
-                          {recentDocs.map((doc) => (
-                            <tr key={doc.id} onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)} className='transition-colors hover:bg-stone-50/50 group cursor-pointer'>
-                              <td className='px-6 py-3 text-sm font-black text-stone-800'>{doc.insuredName || '\u2014'}</td>
-                              <td className='px-6 py-3'>
-                                <span className='font-mono text-xs font-bold text-stone-600'>{doc.vehicleNumber}</span>
-                              </td>
-                              <td className='px-6 py-3'>
-                                <div className='flex items-center gap-3'>
-                                  <div className={`flex h-8 w-8 items-center justify-center rounded-lg bg-${doc.color}-50 text-${doc.color}-600`}>
-                                    {doc.type === 'Insurance' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' /></svg>}
-                                    {doc.type === 'Tax' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>}
-                                    {doc.type === 'PUC' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 10V3L4 14h7v7l9-11h-7z' /></svg>}
-                                    {doc.type === 'Fitness' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' /></svg>}
-                                    {doc.type === 'GPS' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' /><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' /></svg>}
-                                    {doc.type === 'Permit' && <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' /></svg>}
-                                  </div>
-                                  <span className='text-sm font-bold text-stone-700'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</span>
-                                </div>
-                              </td>
-                              <td className='px-6 py-3 text-xs font-medium text-stone-500'>{doc.validFrom}</td>
-                              <td className='px-6 py-3 text-xs font-medium text-stone-500'>{doc.validTo}</td>
-                              <td className='px-6 py-3 text-right'>
-                                <span className='rounded-lg bg-violet-50 px-2 py-1 text-[10px] font-black uppercase text-violet-600'>{timeAgo(doc.createdAt)}</span>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </>
+                      </button>
+                    )
+                  })}
+                </div>
               )}
             </div>
           </div>
