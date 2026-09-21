@@ -356,15 +356,44 @@ const Search = () => {
             <div className='rounded-[32px] border border-stone-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(68,64,60,0.25)] md:p-5 lg:p-6'>
 
               {/* Header */}
-              <div className='mb-6 flex items-center justify-between'>
-                <div>
-                  <h1 className='text-lg md:text-2xl font-black text-stone-900'>Search {filterType === 'Tax' ? 'Road Tax' : filterType}</h1>
-                  <p className='text-[8px] md:text-xs font-bold text-stone-400 uppercase tracking-[0.15em] mt-0.5'>Browse all {filterType === 'Tax' ? 'road tax' : filterType.toLowerCase()} records</p>
+              <div className='mb-4 flex items-center justify-between gap-3 border-b border-dashed border-stone-200 pb-3'>
+                <div className='flex items-center gap-2.5'>
+                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-stone-900 text-white'>
+                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+                    </svg>
+                  </div>
+                  <div>
+                    <h1 className='text-sm md:text-base font-black leading-tight text-stone-900'>Search {filterType === 'Tax' ? 'Road Tax' : filterType}</h1>
+                    <p className='text-[10px] font-semibold text-stone-400'>Browse, filter &amp; export records</p>
+                  </div>
+                </div>
+                <span className='shrink-0 rounded-full bg-violet-50 px-3 py-1 text-[11px] font-black text-violet-700 ring-1 ring-inset ring-violet-200'>
+                  {loading ? '…' : totalRecords} records
+                </span>
+              </div>
+
+              {/* Document Type Tabs */}
+              <div className='mb-3 flex items-center gap-2'>
+                <div className='flex min-w-0 gap-1 overflow-x-auto rounded-xl bg-stone-100 p-1'>
+                  {DOCUMENT_TYPES.map(t => (
+                    <button
+                      key={t.value}
+                      type='button'
+                      onClick={() => setFilterType(t.value)}
+                      className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-black transition-all ${filterType === t.value
+                        ? 'bg-white text-violet-700 shadow-sm ring-1 ring-stone-200'
+                        : 'text-stone-500 hover:text-stone-800'
+                        }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
                 </div>
                 {activeFilterCount > 0 && (
                   <button
                     onClick={handleClearFilters}
-                    className='text-xs font-bold text-rose-500 hover:text-rose-700 transition-colors flex items-center gap-1'
+                    className='ml-auto shrink-0 text-xs font-bold text-rose-500 hover:text-rose-700 transition-colors flex items-center gap-1 px-2'
                   >
                     <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M6 18L18 6M6 6l12 12' />
@@ -376,24 +405,6 @@ const Search = () => {
 
               {/* Search Bar + Filter Icon */}
               <div className='flex gap-2 items-center relative'>
-                {/* Type Selector */}
-                <div className='relative shrink-0'>
-                  <select
-                    value={filterType}
-                    onChange={(e) => setFilterType(e.target.value)}
-                    className='appearance-none rounded-xl border-2 border-stone-200 bg-white py-2.5 pl-3 pr-8 text-xs font-black text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all cursor-pointer'
-                  >
-                    {DOCUMENT_TYPES.map(t => (
-                      <option key={t.value} value={t.value}>{t.label}</option>
-                    ))}
-                  </select>
-                  <div className='pointer-events-none absolute inset-y-0 right-2 flex items-center'>
-                    <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                    </svg>
-                  </div>
-                </div>
-
                 <div className='relative flex-1'>
                   <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
                     {loading ? (
@@ -409,7 +420,7 @@ const Search = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder='Search by name, vehicle number...'
-                    className='w-full rounded-xl border-2 border-stone-200 bg-white py-2.5 pl-9 pr-4 text-xs font-black text-stone-900 placeholder:text-[10px] md:placeholder:text-xs placeholder:text-stone-400 placeholder:font-semibold focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all uppercase'
+                    className='w-full rounded-2xl border-2 border-stone-200 bg-stone-50/60 py-3 pl-9 pr-4 text-xs focus:bg-white font-black text-stone-900 placeholder:text-[10px] md:placeholder:text-xs placeholder:text-stone-400 placeholder:font-semibold focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all uppercase'
                   />
                 </div>
 
@@ -417,7 +428,7 @@ const Search = () => {
                 <div className='relative' ref={filterPanelRef}>
                   <button
                     onClick={() => setShowFilterPanel(prev => !prev)}
-                    className={`relative flex items-center justify-center w-10 h-10 rounded-xl border-2 transition-all ${showFilterPanel || activeFilterCount > 0
+                    className={`relative flex items-center justify-center w-11 h-11 rounded-2xl border-2 transition-all ${showFilterPanel || activeFilterCount > 0
                         ? 'border-violet-500 bg-violet-500 text-white shadow-lg shadow-violet-200'
                         : 'border-stone-200 bg-white text-stone-500 hover:border-violet-400 hover:text-violet-500 hover:shadow-md'
                       }`}
@@ -996,9 +1007,9 @@ const Search = () => {
               {/* Results */}
               {!loading && records.length > 0 && (
                 <>
-                  <div className='mt-6 mb-3 flex items-center justify-between flex-wrap gap-2'>
+                  <div className='mt-5 mb-3 flex items-center justify-between flex-wrap gap-2 rounded-2xl bg-stone-50 px-3 py-2 ring-1 ring-inset ring-stone-200/70'>
                     <p className='text-xs font-bold text-stone-500'>
-                      Showing <span className='text-stone-800'>{filteredRecords.length}</span> of <span className='text-stone-800'>{totalRecords}</span> results
+                      Showing <span className='font-black text-violet-700'>{filteredRecords.length}</span> of <span className='font-black text-stone-800'>{totalRecords}</span> results
                     </p>
                     <div className='flex items-center gap-2'>
                       {filteredRecords.length > 0 && (
@@ -1027,35 +1038,46 @@ const Search = () => {
                     </div>
                   )}
 
-                  <div className='hidden md:block overflow-x-auto rounded-2xl border border-stone-200 bg-white'>
+                  <div className='hidden md:block overflow-x-auto rounded-2xl border border-stone-200 bg-white shadow-[0_12px_32px_-20px_rgba(68,64,60,0.35)]'>
                     <table className='w-full min-w-[720px] text-left'>
                       <thead>
-                        <tr className='border-b border-stone-200 bg-stone-50'>
-                          <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>#</th>
-                          <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>{filterType === 'Insurance' ? 'Policy Holder / Vehicle' : 'Name / Vehicle'}</th>
-                          {filterType === 'Insurance' && <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>Company / Product</th>}
-                          {filterType === 'Insurance' && <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>Client / Agent</th>}
-                          <th className='px-4 py-3 text-[10px] font-black uppercase tracking-wider text-stone-400'>Validity (From / To)</th>
-                          {filterType === 'Insurance' && <th className='px-4 py-3 text-right text-[10px] font-black uppercase tracking-wider text-stone-400'>Premium</th>}
-                          <th className='px-4 py-3 text-right text-[10px] font-black uppercase tracking-wider text-stone-400'>Status</th>
+                        <tr className='bg-violet-950'>
+                          <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-300'>#</th>
+                          <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>{filterType === 'Insurance' ? 'Policy Holder / Vehicle' : 'Name / Vehicle'}</th>
+                          {filterType === 'Insurance' && <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>Company / Product</th>}
+                          {filterType === 'Insurance' && <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>Client / Agent</th>}
+                          <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>Validity (From / To)</th>
+                          {filterType === 'Insurance' && <th className='px-4 py-3.5 text-right text-[10px] font-black uppercase tracking-wider text-violet-100'>Premium</th>}
+                          <th className='px-4 py-3.5 text-right text-[10px] font-black uppercase tracking-wider text-violet-100'>Status</th>
                         </tr>
                       </thead>
                       <tbody className='divide-y divide-stone-100'>
                         {filteredRecords.map((record, idx) => {
                           const badge = getStatusBadge(record)
                           const recordName = record.policyHolderName || record.ownerName || record.name || 'Unknown'
+                          const initials = recordName.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
                           const days = getDaysLeft(record.validTo || record.taxTo)
                           return (
                             <tr
                               key={record._id}
                               onClick={() => navigate(`/rto-documents/${filterType}/${record._id}`)}
-                              className='cursor-pointer transition-colors odd:bg-white even:bg-stone-50/40 hover:bg-violet-50/60'
+                              className='group cursor-pointer transition-colors hover:bg-violet-50/50'
                             >
-                              <td className='px-4 py-3 text-[11px] font-bold text-stone-400'>{idx + 1}</td>
+                              <td className='relative px-4 py-3 text-[11px] font-bold text-stone-400'>
+                                <span className='absolute inset-y-0 left-0 w-1 bg-violet-500 opacity-0 transition-opacity group-hover:opacity-100' />
+                                {idx + 1}
+                              </td>
                               <td className='px-4 py-3'>
-                                <p className='text-sm font-black text-stone-900'>{recordName}</p>
-                                <p className='mt-0.5 font-mono text-xs font-black uppercase tracking-wider text-violet-700'>{record.vehicleNumber || 'N/A'}</p>
-                                {record.mobileNumber && <p className='text-[10px] font-bold text-stone-400'>{record.mobileNumber}</p>}
+                                <div className='flex items-center gap-3'>
+                                  <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 text-[11px] font-black text-violet-700'>
+                                    {initials || '?'}
+                                  </div>
+                                  <div className='min-w-0'>
+                                    <p className='text-sm font-black text-stone-900 group-hover:text-violet-700 transition-colors'>{recordName}</p>
+                                    <span className='mt-1 inline-block rounded-md border border-stone-300 bg-amber-50 px-1.5 py-0.5 font-mono text-[11px] font-black uppercase tracking-wider text-stone-800'>{record.vehicleNumber || 'N/A'}</span>
+                                    {record.mobileNumber && <p className='mt-0.5 text-[10px] font-bold text-stone-400'>{record.mobileNumber}</p>}
+                                  </div>
+                                </div>
                               </td>
                               {filterType === 'Insurance' && (
                                 <td className='px-4 py-3'>
@@ -1088,7 +1110,8 @@ const Search = () => {
                               )}
                               <td className='px-4 py-3 text-right'>
                                 {badge && (
-                                  <span className={`inline-block rounded-lg px-2 py-1 text-[9px] font-black uppercase leading-none tracking-wider ring-1 ring-inset ${badge.class}`}>
+                                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-wider ring-1 ring-inset ${badge.class}`}>
+                                    <span className='h-1.5 w-1.5 rounded-full bg-current' />
                                     {badge.label}
                                   </span>
                                 )}
