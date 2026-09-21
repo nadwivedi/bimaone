@@ -1,7 +1,7 @@
 import {
   ICON_PATHS, INSURANCE_TYPES, LEAD_STATUSES, LOST_REASONS, PRIORITIES, SOURCES,
   addDays, focusNextOnEnter, formatDate, formatTime, inputCls, isClosedStatus, labelCls,
-  priorityInfo, statusInfo, toISODate, todayISO, typeInfo,
+  normalizeStatus, priorityInfo, statusInfo, toISODate, todayISO, typeInfo,
 } from './leadUtils'
 
 export const Icon = ({ d, className = 'h-4 w-4', strokeWidth = 2 }) => (
@@ -182,19 +182,34 @@ export const LeadDetail = ({ leads: L, lead }) => {
         <div className='rounded-xl bg-amber-50/60 px-3 py-2 text-sm text-stone-700 ring-1 ring-inset ring-amber-100'>{lead.notes}</div>
       )}
 
-      {!closed ? (
-        <div className='grid grid-cols-3 gap-2'>
-          <button type='button' onClick={() => L.openFollowUp(lead)} className='rounded-xl bg-stone-900 py-2 text-xs font-bold text-white hover:bg-violet-700'>Log Follow-up</button>
-          <button type='button' onClick={() => L.updateStatus(lead, 'converted')} className='rounded-xl bg-emerald-50 py-2 text-xs font-bold text-emerald-700 ring-1 ring-inset ring-emerald-200 hover:bg-emerald-100'>Converted</button>
-          <button type='button' onClick={() => L.openLost(lead)} className='rounded-xl bg-stone-50 py-2 text-xs font-bold text-stone-600 ring-1 ring-inset ring-stone-200 hover:bg-stone-100'>Lost</button>
+      {/* Change status right from the details view. Lost always asks for a reason. */}
+      <div className='rounded-2xl bg-stone-50 p-3 ring-1 ring-inset ring-stone-100'>
+        <p className='mb-2 text-[11px] font-bold uppercase tracking-wider text-stone-500'>Lead Status</p>
+        <div className='flex flex-wrap gap-1.5'>
+          {LEAD_STATUSES.map((st) => {
+            const current = normalizeStatus(lead.status) === st.value
+            return (
+              <button
+                key={st.value}
+                type='button'
+                disabled={current}
+                onClick={() => (st.value === 'lost' ? L.openLost(lead) : L.updateStatus(lead, st.value))}
+                className={`rounded-full px-3 py-1.5 text-xs font-bold ring-1 ring-inset transition-all ${current ? `${st.cls} ring-2 cursor-default` : 'bg-white text-stone-500 ring-stone-200 hover:ring-stone-300 hover:text-stone-800'}`}
+              >
+                {current && '✓ '}{st.short}
+              </button>
+            )
+          })}
         </div>
-      ) : (
-        <div className='flex items-center justify-between rounded-xl bg-stone-50 px-3 py-2.5'>
-          <span className={`text-sm font-bold ${lead.status === 'converted' ? 'text-emerald-700' : 'text-stone-600'}`}>
-            {lead.status === 'converted' ? '✓ Converted' : `Lost${lead.lostReason ? ` · ${lead.lostReason}` : ''}`}
-          </span>
-          <button type='button' onClick={() => L.updateStatus(lead, 'in_progress')} className='text-xs font-bold text-violet-600 hover:text-violet-800'>Reopen</button>
-        </div>
+        {lead.status === 'lost' && lead.lostReason && (
+          <p className='mt-2 text-xs text-stone-500'>Lost reason: <span className='font-semibold text-stone-700'>{lead.lostReason}</span></p>
+        )}
+      </div>
+
+      {!closed && (
+        <button type='button' onClick={() => L.openFollowUp(lead)} className='w-full rounded-xl bg-stone-900 py-2.5 text-sm font-bold text-white hover:bg-violet-700'>
+          Log Follow-up
+        </button>
       )}
 
       <div>

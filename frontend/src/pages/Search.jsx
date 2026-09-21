@@ -219,6 +219,16 @@ const Search = () => {
     return () => document.removeEventListener('mousedown', handleClick)
   }, [showFilterPanel])
 
+  // Close filter panel on Esc
+  useEffect(() => {
+    if (!showFilterPanel) return
+    const handleKey = (e) => {
+      if (e.key === 'Escape') setShowFilterPanel(false)
+    }
+    document.addEventListener('keydown', handleKey)
+    return () => document.removeEventListener('keydown', handleKey)
+  }, [showFilterPanel])
+
   const handleLoadMore = () => {
     fetchRecords(page + 1, true, searchQuery, filterType, filterCompany, filterProductType, filterPolicyType, filterValidity, filterDateFrom, filterDateTo, filterReference, filterImd, filterClaimStatus, filterFinancialYear)
   }
