@@ -456,7 +456,7 @@ const DashboardContent = () => {
                 <thead>
                   <tr className='bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500'>
                     <th className='px-6 py-3'>Document</th>
-                    <th className='px-6 py-3'>Vehicle &amp; Client</th>
+                    <th className='px-6 py-3'>Client &amp; Vehicle</th>
                     <th className='px-6 py-3'>Valid To</th>
                     <th className='px-6 py-3' />
                   </tr>
@@ -476,10 +476,10 @@ const DashboardContent = () => {
                           </div>
                         </td>
                         <td className='px-6 py-3.5'>
+                          <p className='mb-1 max-w-[260px] truncate text-sm font-semibold text-slate-800' title={d.name}>{d.name || '—'}</p>
                           <span className='inline-block rounded-md border-2 border-slate-800 bg-amber-300 px-2 py-0.5 font-mono text-xs font-bold tracking-widest text-slate-900'>
                             {d.vehicleNumber}
                           </span>
-                          <p className='mt-1 max-w-[260px] truncate text-sm font-medium text-slate-700' title={d.name}>{d.name || '—'}</p>
                         </td>
                         <td className='px-6 py-3.5'>
                           <p className='text-sm font-semibold text-slate-800'>{d.validTo || '—'}</p>
@@ -509,10 +509,10 @@ const DashboardContent = () => {
                           <Svg d={t.icon} className='h-5 w-5' />
                         </span>
                         <span className='min-w-0 flex-1'>
+                          <span className='mb-0.5 block truncate text-sm font-semibold text-slate-800'>{d.name || '—'}</span>
                           <span className='inline-block rounded border-2 border-slate-800 bg-amber-300 px-1.5 font-mono text-[11px] font-bold tracking-wider text-slate-900'>
                             {d.vehicleNumber}
                           </span>
-                          <span className='mt-0.5 block truncate text-sm font-semibold text-slate-800'>{d.name || '—'}</span>
                           <span className='block text-xs text-slate-500'>{t.label}</span>
                         </span>
                         <span className='shrink-0 text-right'>
