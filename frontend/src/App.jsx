@@ -70,7 +70,7 @@ function AppContent() {
           )}
           <div className='flex-1 flex justify-center'>
             <Link to='/' className='flex items-center'>
-              <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-10 w-auto' />
+              <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-12 w-auto' />
             </Link>
           </div>
           {location.pathname !== '/' && <div className='w-12' />}

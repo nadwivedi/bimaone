@@ -54,6 +54,8 @@ const ICON = {
   eye: 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z',
   edit: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
   trash: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+  check: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z',
+  clock: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
   warn: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
 }
 
@@ -79,6 +81,15 @@ const dueText = (days) => {
 const formatPremium = (value) => (
   value != null && value !== '' ? `₹${Number(value).toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '—'
 )
+
+// Mirrors each type's expiringDays on the backend so the card count and its filter agree.
+const EXPIRING_WINDOW = { Insurance: '60', Tax: '15' }
+
+const STAT_TONES = {
+  emerald: { card: 'from-emerald-50 to-teal-50 border-emerald-200', icon: 'bg-emerald-600', value: 'text-emerald-700' },
+  amber: { card: 'from-amber-50 to-orange-50 border-amber-200', icon: 'bg-amber-500', value: 'text-amber-700' },
+  rose: { card: 'from-rose-50 to-pink-50 border-rose-200', icon: 'bg-rose-600', value: 'text-rose-700' },
+}
 
 const FILTER_TONES = {
   blue: { wrap: 'from-blue-50 to-sky-50 border-blue-200', badge: 'bg-blue-600' },
@@ -130,6 +141,8 @@ const Search = () => {
   const [editingRecord, setEditingRecord] = useState(null)
   const [deletingRecord, setDeletingRecord] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [typeStats, setTypeStats] = useState(null)
+  const [statsVersion, setStatsVersion] = useState(0)
 
   // Filter state
   const [showFilterPanel, setShowFilterPanel] = useState(false)
@@ -209,6 +222,16 @@ const Search = () => {
       setLoadingMore(false)
     }
   }, [])
+
+  useEffect(() => {
+    let cancelled = false
+    setTypeStats(null)
+    axios
+      .get(`${API_URL}${API_ENDPOINTS[filterType]}/statistics`, { withCredentials: true })
+      .then((res) => { if (!cancelled && res.data?.success) setTypeStats(res.data.data) })
+      .catch(() => {})
+    return () => { cancelled = true }
+  }, [filterType, statsVersion])
 
   // Fetch references list
   useEffect(() => {
@@ -422,6 +445,7 @@ const Search = () => {
   const openRecord = (record) => setViewingRecord({ type: filterType, id: record._id })
 
   const refetch = () => {
+    setStatsVersion((v) => v + 1)
     fetchRecords(1, false, inputValue, filterType, filterCompany, filterProductType, filterPolicyType, filterValidity, filterDateFrom, filterDateTo, filterReference, filterImd, filterClaimStatus, filterFinancialYear)
   }
 
@@ -472,138 +496,165 @@ const Search = () => {
     }
   }
 
-  const RowActions = ({ record, compact = false }) => (
-    <div className={`flex items-center ${compact ? 'gap-1.5' : 'justify-end gap-1.5'}`}>
-      <button
-        type='button'
-        onClick={(e) => { e.stopPropagation(); openRecord(record) }}
-        className='inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'
-        title='View'
-      >
-        <Svg d={ICON.eye} className='h-3.5 w-3.5' />
-        View
-      </button>
-      <button
-        type='button'
-        onClick={(e) => startEdit(e, record)}
-        className='inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'
-        title='Edit'
-      >
-        <Svg d={ICON.edit} className='h-3.5 w-3.5' />
-        Edit
-      </button>
-      <button
-        type='button'
-        onClick={(e) => startDelete(e, record)}
-        className='inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600'
-        title='Delete'
-      >
-        <Svg d={ICON.trash} className='h-3.5 w-3.5' />
-        {compact ? 'Delete' : <span className='sr-only'>Delete</span>}
-      </button>
+  const IconAction = ({ icon, label, onClick, danger = false }) => (
+    <button
+      type='button'
+      onClick={onClick}
+      title={label}
+      aria-label={label}
+      className={`flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition ${danger ? 'hover:bg-rose-50 hover:text-rose-600' : 'hover:bg-blue-50 hover:text-blue-700'}`}
+    >
+      <Svg d={icon} className='h-4 w-4' />
+    </button>
+  )
+
+  const RowActions = ({ record }) => (
+    <div className='flex items-center justify-end gap-0.5'>
+      <IconAction icon={ICON.eye} label='View' onClick={(e) => { e.stopPropagation(); openRecord(record) }} />
+      <IconAction icon={ICON.edit} label='Edit' onClick={(e) => startEdit(e, record)} />
+      <IconAction icon={ICON.trash} label='Delete' danger onClick={(e) => startDelete(e, record)} />
     </div>
   )
 
-  const exportButton = (
-    <button
-      type='button'
-      onClick={() => (!features.excelDownload ? setShowUpgradePopup(true) : handleExport())}
-      disabled={!filteredRecords.length}
-      className='inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50'
-    >
-      <Svg d={ICON.download} className='h-4 w-4' />
-      Export Excel
-    </button>
-  )
+  const showResults = !loading && records.length > 0
+  const showEmpty = !loading && searched && records.length === 0
+
+  const statCards = [
+    { key: '', label: 'Active', value: typeStats?.active, icon: ICON.check, tone: STAT_TONES.emerald },
+    { key: EXPIRING_WINDOW[filterType] || '30', label: 'Expiring Soon', value: typeStats?.expiringSoon, icon: ICON.clock, tone: STAT_TONES.amber },
+    { key: 'expired', label: 'Expired', value: typeStats?.expired, icon: ICON.warn, tone: STAT_TONES.rose },
+  ]
 
   return (
     <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
       <main className='w-full space-y-4 px-3 pt-4 pb-32 md:space-y-5 lg:px-8 lg:pt-6 lg:pb-10'>
-        {/* Search panel */}
-        <section className='rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200 md:p-5'>
-          <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
-            <div className='flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1 [&::-webkit-scrollbar]:hidden'>
+        {/* Search card */}
+        <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
+          <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-4 pt-4 text-white md:px-6'>
+            <div className='flex items-start justify-between gap-3'>
+              <div>
+                <h1 className='text-lg font-bold md:text-2xl'>Search Records</h1>
+                <p className='text-xs text-slate-300 md:text-sm'>Find any policy or document in seconds</p>
+              </div>
+              <div className='flex shrink-0 items-center gap-2'>
+                <span className='rounded-full bg-white/15 px-3 py-1 text-xs font-semibold ring-1 ring-inset ring-white/20'>
+                  {loading ? '…' : totalRecords} records
+                </span>
+                <button
+                  type='button'
+                  onClick={() => (!features.excelDownload ? setShowUpgradePopup(true) : handleExport())}
+                  disabled={!filteredRecords.length}
+                  title='Export to Excel'
+                  className='hidden items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-white/20 transition hover:bg-white/25 disabled:cursor-not-allowed disabled:opacity-40 sm:inline-flex'
+                >
+                  <Svg d={ICON.download} className='h-4 w-4' />
+                  Export Excel
+                </button>
+              </div>
+            </div>
+
+            <div className='-mx-1 mt-4 flex gap-1 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden'>
               {DOCUMENT_TYPES.map((t) => (
                 <button
                   key={t.value}
                   type='button'
                   onClick={() => setFilterType(t.value)}
-                  className={`shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold transition ${filterType === t.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                  className={`shrink-0 rounded-t-lg px-4 py-2 text-sm font-semibold transition ${filterType === t.value ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
                 >
                   {t.label}
                 </button>
               ))}
             </div>
-            <div className='hidden items-center gap-2 md:flex'>
-              <span className='rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-200'>
-                {loading ? '…' : totalRecords} records
-              </span>
-              {exportButton}
-            </div>
           </div>
 
-          <div className='mt-3 flex gap-2'>
-            <label className='relative block flex-1'>
-              <span className='pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400'>
-                {loading ? (
-                  <span className='h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-r-transparent' />
-                ) : (
-                  <Svg d={ICON.search} className='h-5 w-5' />
-                )}
-              </span>
-              <input
-                type='text'
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder={isInsurance ? 'Search by policy holder, vehicle number, mobile or policy number' : `Search ${typeLabel} by name, vehicle number or mobile`}
-                className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 text-[15px] font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
-              />
-            </label>
-            <button
-              type='button'
-              onClick={() => setShowFilterPanel(true)}
-              className={`relative inline-flex shrink-0 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold transition md:px-4 ${activeFilterCount > 0 ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-700/20' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}
-            >
-              <Svg d={ICON.filter} className='h-5 w-5' />
-              <span className='hidden sm:inline'>Filters</span>
-              {activeFilterCount > 0 && (
-                <span className='flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-blue-700'>{activeFilterCount}</span>
-              )}
-            </button>
-          </div>
+          <div className='p-3 md:p-5'>
+            <div className='rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 p-3 md:p-4'>
+              <div className='flex gap-2'>
+                <label className='relative block flex-1'>
+                  <span className='pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400'>
+                    {loading ? (
+                      <span className='h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-r-transparent' />
+                    ) : (
+                      <Svg d={ICON.search} className='h-5 w-5' />
+                    )}
+                  </span>
+                  <input
+                    type='search'
+                    value={inputValue}
+                    onChange={(e) => setInputValue(e.target.value)}
+                    placeholder={isInsurance ? 'Search name, vehicle, mobile or policy number' : `Search ${typeLabel} by name, vehicle or mobile`}
+                    className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-3 text-[15px] font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+                  />
+                </label>
+                <button
+                  type='button'
+                  onClick={() => setShowFilterPanel(true)}
+                  className='inline-flex shrink-0 items-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-3.5 text-sm font-semibold text-white shadow-md shadow-blue-700/20 transition hover:from-blue-800 hover:to-blue-700 md:px-5'
+                >
+                  <Svg d={ICON.filter} className='h-4 w-4' />
+                  <span className='hidden sm:inline'>Filters</span>
+                  {activeFilterCount > 0 && (
+                    <span className='flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-blue-700'>{activeFilterCount}</span>
+                  )}
+                </button>
+              </div>
 
-          {activeChips.length > 0 && (
-            <div className='mt-3 flex flex-wrap items-center gap-2'>
-              {activeChips.map((c) => (
-                <span key={c.key} className='inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 py-1 pl-3 pr-1.5 text-xs font-semibold text-blue-800'>
-                  {c.label}
-                  <button type='button' onClick={c.clear} className='rounded-full p-0.5 text-blue-500 transition hover:bg-blue-100 hover:text-blue-800' aria-label={`Remove ${c.label}`}>
-                    <Svg d={ICON.close} className='h-3.5 w-3.5' strokeWidth={2.5} />
+              {activeChips.length > 0 && (
+                <div className='mt-3 flex flex-wrap items-center gap-2'>
+                  {activeChips.map((c) => (
+                    <span key={c.key} className='inline-flex items-center gap-1 rounded-full border border-blue-200 bg-white py-1 pl-3 pr-1 text-xs font-semibold text-blue-800 shadow-sm'>
+                      {c.label}
+                      <button type='button' onClick={c.clear} className='rounded-full p-0.5 text-blue-400 transition hover:bg-blue-50 hover:text-blue-800' aria-label={`Remove ${c.label}`}>
+                        <Svg d={ICON.close} className='h-3.5 w-3.5' strokeWidth={2.5} />
+                      </button>
+                    </span>
+                  ))}
+                  <button type='button' onClick={handleClearFilters} className='px-1 text-xs font-semibold text-rose-600 hover:text-rose-700'>
+                    Clear all
                   </button>
-                </span>
-              ))}
-              <button type='button' onClick={handleClearFilters} className='text-xs font-semibold text-rose-600 hover:text-rose-700'>
-                Clear all
-              </button>
+                </div>
+              )}
             </div>
-          )}
-
-          <div className='mt-3 flex items-center justify-between md:hidden'>
-            <span className='text-xs font-medium text-slate-500'>{loading ? 'Searching…' : `${totalRecords} records`}</span>
-            {exportButton}
           </div>
+        </section>
+
+        {/* Stats for the selected type */}
+        <section className='grid grid-cols-3 gap-2.5 md:gap-4'>
+          {statCards.map((s) => {
+            const selected = filterValidity === s.key && (s.key !== '' || activeFilterCount === 0)
+            return (
+              <button
+                key={s.label}
+                type='button'
+                onClick={() => setFilterValidity(s.key)}
+                className={`rounded-xl border-2 bg-gradient-to-r p-3 text-left transition hover:shadow-md md:p-4 ${s.tone.card} ${selected && s.key ? 'ring-2 ring-slate-400 ring-offset-2' : ''}`}
+              >
+                <div className='flex flex-col gap-2 md:flex-row md:items-center md:gap-3'>
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white md:h-11 md:w-11 ${s.tone.icon}`}>
+                    <Svg d={s.icon} className='h-5 w-5' />
+                  </span>
+                  <div className='min-w-0'>
+                    <p className={`text-xl font-bold leading-none md:text-2xl ${s.tone.value}`}>{s.value ?? '…'}</p>
+                    <p className='mt-1 truncate text-xs font-semibold text-slate-700 md:text-sm'>{s.label} {typeLabel}</p>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
         </section>
 
         {/* Results */}
         <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
-          {loading ? (
+          {loading && (
             <div className='flex flex-col items-center gap-3 py-20'>
               <div className='h-9 w-9 animate-spin rounded-full border-4 border-blue-600 border-r-transparent' />
               <p className='text-sm text-slate-400'>Loading records…</p>
             </div>
-          ) : searched && records.length === 0 ? (
+          )}
+
+          {showEmpty && (
             <div className='flex flex-col items-center gap-2 px-6 py-20 text-center'>
-              <span className='flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400'>
+              <span className='flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-500'>
                 <Svg d={ICON.search} className='h-7 w-7' />
               </span>
               <p className='font-semibold text-slate-800'>No records found</p>
@@ -614,26 +665,21 @@ const Search = () => {
                 </button>
               )}
             </div>
-          ) : (
-            <>
-              <div className='flex items-center justify-between border-b border-slate-100 px-4 py-3 md:px-6'>
-                <p className='text-sm text-slate-500'>
-                  Showing <span className='font-semibold text-slate-800'>{filteredRecords.length}</span> of{' '}
-                  <span className='font-semibold text-slate-800'>{totalRecords}</span> {typeLabel} records
-                </p>
-              </div>
+          )}
 
+          {showResults && (
+            <>
               {/* Desktop table */}
               <div className='hidden overflow-x-auto md:block'>
                 <table className='w-full min-w-[760px] text-left'>
                   <thead>
-                    <tr className='bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500'>
-                      <th className='px-6 py-3'>{isInsurance ? 'Policy Holder' : 'Owner'} &amp; Vehicle</th>
-                      {isInsurance && <th className='px-6 py-3'>Company &amp; Policy</th>}
-                      {isInsurance && <th className='px-6 py-3'>Client &amp; Agent</th>}
-                      <th className='px-6 py-3'>Validity</th>
+                    <tr className='bg-gradient-to-r from-slate-50 to-blue-50 text-xs font-semibold uppercase tracking-wide text-slate-500'>
+                      <th className='px-6 py-3'>{isInsurance ? 'Policy Holder' : 'Owner'}</th>
+                      {isInsurance && <th className='px-6 py-3'>Company</th>}
+                      {isInsurance && <th className='px-6 py-3'>Client / Agent</th>}
+                      <th className='px-6 py-3'>Valid To</th>
                       {isInsurance && <th className='px-6 py-3 text-right'>Premium</th>}
-                      <th className='px-6 py-3 text-right'>Actions</th>
+                      <th className='w-32 px-6 py-3' />
                     </tr>
                   </thead>
                   <tbody className='divide-y divide-slate-100'>
@@ -641,36 +687,36 @@ const Search = () => {
                       const name = record.policyHolderName || record.ownerName || record.name || ''
                       const due = dueText(getDaysLeft(record.validTo || record.taxTo))
                       return (
-                        <tr key={record._id} onClick={() => openRecord(record)} className='cursor-pointer transition hover:bg-slate-50'>
+                        <tr key={record._id} onClick={() => openRecord(record)} className='cursor-pointer transition hover:bg-blue-50/40'>
                           <td className='px-6 py-3.5'>
                             <p className='mb-1 max-w-[240px] truncate text-sm font-semibold text-slate-800' title={name}>{name || '—'}</p>
-                            <Plate value={record.vehicleNumber} />
-                            {record.mobileNumber && <p className='text-xs text-slate-500'>{record.mobileNumber}</p>}
+                            <div className='flex items-center gap-2'>
+                              <Plate value={record.vehicleNumber} />
+                              {record.mobileNumber && <span className='text-xs text-slate-400'>{record.mobileNumber}</span>}
+                            </div>
                           </td>
                           {isInsurance && (
                             <td className='px-6 py-3.5'>
-                              <p className='max-w-[220px] truncate text-sm font-medium text-slate-800'>{recordCompanyName(record) || '—'}</p>
-                              <p className='text-xs text-slate-500'>{[record.product, record.insuranceClass].filter(Boolean).join(' · ') || '—'}</p>
-                              {record.policyNumber && <p className='font-mono text-[11px] text-slate-400'>{record.policyNumber}</p>}
+                              <p className='max-w-[220px] truncate text-sm text-slate-700' title={recordCompanyName(record)}>{recordCompanyName(record) || '—'}</p>
+                              <p className='max-w-[220px] truncate text-xs text-slate-400'>{[record.product, record.insuranceClass].filter(Boolean).join(' · ')}</p>
                             </td>
                           )}
                           {isInsurance && (
                             <td className='px-6 py-3.5'>
-                              <p className='text-sm font-medium text-slate-800'>{recordReferenceName(record) || '—'}</p>
-                              <p className='text-xs text-slate-500'>{recordImdName(record)}</p>
+                              <p className='max-w-[180px] truncate text-sm text-slate-700'>{recordReferenceName(record) || '—'}</p>
+                              <p className='max-w-[180px] truncate text-xs text-slate-400'>{recordImdName(record)}</p>
                             </td>
                           )}
                           <td className='whitespace-nowrap px-6 py-3.5'>
-                            <p className='text-xs text-slate-500'>From {record.validFrom || record.taxFrom || '—'}</p>
-                            <p className='text-sm font-semibold text-slate-800'>To {record.validTo || record.taxTo || '—'}</p>
-                            <p className={`text-xs font-semibold ${due.cls}`}>{due.text}</p>
+                            <p className='text-sm font-semibold text-slate-800'>{record.validTo || record.taxTo || '—'}</p>
+                            {due.text && <p className={`text-xs font-semibold ${due.cls}`}>{due.text}</p>}
                           </td>
                           {isInsurance && (
                             <td className='whitespace-nowrap px-6 py-3.5 text-right text-sm font-semibold text-emerald-700'>
                               {formatPremium(record.premium)}
                             </td>
                           )}
-                          <td className='px-6 py-3.5'>
+                          <td className='px-4 py-3.5'>
                             <RowActions record={record} />
                           </td>
                         </tr>
@@ -687,52 +733,67 @@ const Search = () => {
                   const due = dueText(getDaysLeft(record.validTo || record.taxTo))
                   const company = isInsurance ? recordCompanyName(record) : ''
                   return (
-                    <li key={record._id} className='px-4 py-3'>
-                      <button type='button' onClick={() => openRecord(record)} className='flex w-full items-start gap-3 text-left active:bg-slate-50'>
-                        <span className='min-w-0 flex-1'>
-                          <span className='mb-0.5 block truncate text-sm font-semibold text-slate-800'>{name || '—'}</span>
-                          <Plate value={record.vehicleNumber} small />
-                          {company && <span className='block truncate text-xs text-slate-500'>{company}{record.product ? ` · ${record.product}` : ''}</span>}
-                          {record.mobileNumber && <span className='block text-xs text-slate-400'>{record.mobileNumber}</span>}
-                        </span>
-                        <span className='shrink-0 text-right'>
-                          <span className='block text-xs font-semibold text-slate-700'>{record.validTo || record.taxTo || '—'}</span>
-                          <span className={`block text-[11px] font-semibold ${due.cls}`}>{due.text}</span>
-                          {isInsurance && record.premium != null && (
-                            <span className='mt-1 block text-xs font-semibold text-emerald-700'>{formatPremium(record.premium)}</span>
-                          )}
+                    <li key={record._id} className='flex items-start gap-2 px-4 py-3'>
+                      <button type='button' onClick={() => openRecord(record)} className='min-w-0 flex-1 text-left'>
+                        <span className='mb-0.5 block truncate text-sm font-semibold text-slate-800'>{name || '—'}</span>
+                        <Plate value={record.vehicleNumber} small />
+                        {company && <span className='mt-0.5 block truncate text-xs text-slate-500'>{company}</span>}
+                        <span className='mt-1 block text-xs text-slate-600'>
+                          {record.validTo || record.taxTo || '—'}
+                          {due.text && <span className={`ml-1.5 font-semibold ${due.cls}`}>{due.text}</span>}
                         </span>
                       </button>
-                      <div className='mt-2.5 border-t border-dashed border-slate-100 pt-2.5'>
-                        <RowActions record={record} compact />
+                      <div className='flex shrink-0 flex-col items-end'>
+                        {isInsurance && record.premium != null && (
+                          <span className='mb-1 text-xs font-semibold text-emerald-700'>{formatPremium(record.premium)}</span>
+                        )}
+                        <div className='flex'>
+                          <IconAction icon={ICON.edit} label='Edit' onClick={(e) => startEdit(e, record)} />
+                          <IconAction icon={ICON.trash} label='Delete' danger onClick={(e) => startDelete(e, record)} />
+                        </div>
                       </div>
                     </li>
                   )
                 })}
               </ul>
 
-              {!filterMode && hasMore && (
-                <div className='border-t border-slate-100 p-4 text-center'>
+              {/* Footer */}
+              <div className='flex flex-col items-center justify-between gap-3 border-t border-slate-100 bg-gray-50 px-4 py-3 sm:flex-row md:px-6'>
+                <p className='text-xs text-slate-500'>
+                  Showing <span className='font-semibold text-slate-700'>{filteredRecords.length}</span> of{' '}
+                  <span className='font-semibold text-slate-700'>{totalRecords}</span> {typeLabel} records
+                </p>
+                <div className='flex items-center gap-2'>
                   <button
                     type='button'
-                    onClick={handleLoadMore}
-                    disabled={loadingMore}
-                    className='inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50'
+                    onClick={() => (!features.excelDownload ? setShowUpgradePopup(true) : handleExport())}
+                    className='inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-50 sm:hidden'
                   >
-                    {loadingMore ? (
-                      <>
-                        <span className='h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-r-transparent' />
-                        Loading…
-                      </>
-                    ) : (
-                      <>
-                        <Svg d={ICON.chevronDown} className='h-4 w-4' />
-                        Load more
-                      </>
-                    )}
+                    <Svg d={ICON.download} className='h-4 w-4' />
+                    Export
                   </button>
+                  {!filterMode && hasMore && (
+                    <button
+                      type='button'
+                      onClick={handleLoadMore}
+                      disabled={loadingMore}
+                      className='inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-4 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-700/20 transition hover:from-blue-800 hover:to-blue-700 disabled:cursor-not-allowed disabled:opacity-50'
+                    >
+                      {loadingMore ? (
+                        <>
+                          <span className='h-3.5 w-3.5 animate-spin rounded-full border-2 border-white border-r-transparent' />
+                          Loading…
+                        </>
+                      ) : (
+                        <>
+                          <Svg d={ICON.chevronDown} className='h-3.5 w-3.5' />
+                          Load more
+                        </>
+                      )}
+                    </button>
+                  )}
                 </div>
-              )}
+              </div>
             </>
           )}
         </section>
@@ -806,6 +867,7 @@ const Search = () => {
                   <option value=''>Any validity</option>
                   <option value='expired'>Expired</option>
                   <option value='7'>Expires in 7 days</option>
+                  <option value='15'>Expires in 15 days</option>
                   <option value='30'>Expires in 30 days</option>
                   <option value='45'>Expires in 45 days</option>
                   <option value='60'>Expires in 60 days</option>
