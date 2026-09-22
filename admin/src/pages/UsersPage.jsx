@@ -225,7 +225,7 @@ function UsersPage({ apiFetch }) {
       const result = await apiFetch(`/api/auth/admin/access-user/${user._id}`, {
         method: 'POST',
       })
-      const redirectUrl = result.data?.redirectUrl || 'https://bimabox.in'
+      const redirectUrl = result.data?.redirectUrl || 'https://bimaone.in'
       window.open(redirectUrl, '_blank')
     } catch (error) {
       console.error('Error accessing user:', error)

@@ -2,6 +2,7 @@ import PublicLayout from '../components/PublicLayout'
 import CtaBanner from '../components/CtaBanner'
 import Icon from '../components/Icon'
 import { TONES } from '../data/features'
+import usePageMeta from '../hooks/usePageMeta'
 
 const numbers = [
   { value: '2020', label: 'Founded', icon: 'star', tone: 'blue' },
@@ -23,7 +24,14 @@ const values = [
   { icon: 'users', title: 'Here to help', description: 'Real people on WhatsApp and phone whenever you need help.', tone: 'violet' },
 ]
 
-const About = () => (
+const About = () => {
+  usePageMeta({
+    title: 'About BimaOne – Insurance Agent Software Since 2020',
+    description: 'BimaOne is insurance agent software and insurance management software built in 2020 for Indian insurance agents. Six years of making insurance agents’ work easy.',
+    path: '/about',
+  })
+
+  return (
   <PublicLayout>
     <div className='bg-slate-50'>
       {/* Header */}
@@ -33,7 +41,7 @@ const About = () => (
           <span className='inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200 ring-1 ring-inset ring-white/20'>About BimaOne</span>
           <h1 className='mt-4 text-3xl font-bold leading-tight tracking-tight md:text-5xl'>Insurance agent software, made for insurance agents</h1>
           <p className='mt-4 text-sm leading-relaxed text-slate-300 md:text-lg'>
-            Developed in 2020 with one goal — to make the work of an insurance agent easy. For 6 years we have been serving agents across India.
+            BimaOne is insurance management software developed in 2020 with one goal — to make the work of an insurance agent easy. For 6 years we have been serving agents across India.
           </p>
         </div>
       </section>
@@ -133,6 +141,7 @@ const About = () => (
       <CtaBanner />
     </div>
   </PublicLayout>
-)
+  )
+}
 
 export default About

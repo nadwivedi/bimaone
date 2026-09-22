@@ -532,7 +532,7 @@ const accessUser = async (req, res) => {
       success: true,
       data: {
         userId: user._id,
-        redirectUrl: process.env.MAIN_APP_URL || 'https://bimabox.in',
+        redirectUrl: process.env.MAIN_APP_URL || 'https://bimaone.in',
       },
     })
   } catch (error) {

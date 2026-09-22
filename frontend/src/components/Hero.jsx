@@ -25,11 +25,11 @@ const Hero = () => (
           Insurance agent software · since 2020
         </span>
         <h1 className='mt-5 text-3xl font-bold leading-tight tracking-tight md:text-5xl'>
-          Never miss a renewal.{' '}
-          <span className='bg-gradient-to-r from-sky-300 to-emerald-300 bg-clip-text text-transparent'>Grow your insurance business.</span>
+          Insurance agent software to{' '}
+          <span className='bg-gradient-to-r from-sky-300 to-emerald-300 bg-clip-text text-transparent'>never miss a renewal</span>
         </h1>
         <p className='mx-auto mt-4 max-w-xl text-base leading-relaxed text-slate-300 md:text-lg lg:mx-0'>
-          BimaOne keeps every policy, client document and renewal date in one place — with AI upload and automatic WhatsApp reminders.
+          BimaOne is the insurance management software that keeps every policy, client document and renewal date in one place — with AI upload and automatic WhatsApp reminders.
         </p>
 
         <div className='mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start'>

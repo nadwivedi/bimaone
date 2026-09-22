@@ -5,6 +5,7 @@ import Hero from '../components/Hero'
 import CtaBanner from '../components/CtaBanner'
 import Icon from '../components/Icon'
 import { highlightFeatures, TONES, TONE_ORDER } from '../data/features'
+import usePageMeta from '../hooks/usePageMeta'
 
 const stats = [
   { value: '6+', label: 'Years serving agents', icon: 'star', tone: 'blue' },
@@ -26,7 +27,36 @@ const reasons = [
   { icon: 'phone', title: 'Any device', text: 'Phone, tablet or computer' },
 ]
 
-const SectionTitle = ({ eyebrow, title, subtitle }) => (
+const faqs = [
+  {
+    q: 'What is insurance agent software?',
+    a: 'Insurance agent software helps agents manage their clients, policies and renewals digitally. BimaOne stores every policy and client document, reminds you before expiry and sends automated WhatsApp reminders to your clients.',
+  },
+  {
+    q: 'How is BimaOne different from other insurance management software?',
+    a: 'BimaOne is insurance management software made only for Indian insurance agents. Along with policy and renewal tracking it handles RTO documents (tax, PUC, fitness, permit, GPS), client KYC, leads and premium quotations — all from your phone or computer.',
+  },
+  {
+    q: 'Can BimaOne read my policy PDFs automatically?',
+    a: 'Yes. Upload a policy PDF or photo and BimaOne uses AI to fill in the policy number, dates, premium and vehicle details, so you never type them by hand.',
+  },
+  {
+    q: 'Does it send renewal reminders on WhatsApp?',
+    a: 'Yes. Automated WhatsApp renewal reminders are included in every plan, so your clients are reminded before their policy or document expires.',
+  },
+  {
+    q: 'How much does BimaOne cost?',
+    a: 'Plans start at ₹899 per year, with Standard at ₹1,999 and Premium at ₹4,999 per year. All prices include GST.',
+  },
+]
+
+const HOME_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+}
+
+const SectionTitle =({ eyebrow, title, subtitle }) => (
   <div className='mx-auto mb-8 max-w-2xl text-center md:mb-12'>
     <span className='inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-200'>{eyebrow}</span>
     <h2 className='mt-3 text-2xl font-bold tracking-tight text-slate-900 md:text-4xl'>{title}</h2>
@@ -37,6 +67,13 @@ const SectionTitle = ({ eyebrow, title, subtitle }) => (
 const Home = () => {
   const location = useLocation()
   const navigate = useNavigate()
+
+  usePageMeta({
+    title: 'BimaOne – Insurance Agent Software & Insurance Management Software in India',
+    description: 'BimaOne is insurance agent software and insurance management software for Indian agents. Track policies, renewals, leads, RTO documents and send automated WhatsApp reminders.',
+    path: '/',
+    jsonLd: HOME_JSON_LD,
+  })
 
   useEffect(() => {
     const params = new URLSearchParams(location.search)
@@ -77,8 +114,8 @@ const Home = () => {
           <div className='mx-auto max-w-6xl'>
             <SectionTitle
               eyebrow='Features'
-              title='Everything an agent needs, in one app'
-              subtitle='From policies to renewals to client documents — BimaOne is built around your daily work.'
+              title='Insurance management software built for agents'
+              subtitle='From policies to renewals to client documents — everything an insurance agent needs, in one app.'
             />
             <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
               {highlightFeatures.map((f, i) => {
@@ -151,6 +188,28 @@ const Home = () => {
                   </div>
                 ))}
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ */}
+        <section className='px-4 pb-16 md:px-8 md:pb-24'>
+          <div className='mx-auto max-w-3xl'>
+            <SectionTitle eyebrow='FAQ' title='Questions about our insurance agent software' />
+            <div className='divide-y divide-slate-200 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
+              {faqs.map((f, i) => (
+                <details key={f.q} className='group px-5 md:px-6' open={i === 0}>
+                  <summary className='flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left text-sm font-semibold text-slate-900 md:text-base [&::-webkit-details-marker]:hidden'>
+                    <h3>{f.q}</h3>
+                    <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700 transition-transform group-open:rotate-45'>
+                      <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 4v16m8-8H4' />
+                      </svg>
+                    </span>
+                  </summary>
+                  <p className='-mt-1 pb-4 text-sm leading-relaxed text-slate-600'>{f.a}</p>
+                </details>
+              ))}
             </div>
           </div>
         </section>

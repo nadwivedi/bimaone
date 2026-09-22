@@ -1,0 +1,17 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard
+Disallow: /search
+Disallow: /renewals
+Disallow: /leads
+Disallow: /rto-documents
+Disallow: /kyc
+Disallow: /setting
+Disallow: /subscribe/
+Disallow: /client-name
+Disallow: /agent-name
+Disallow: /rc-details
+Disallow: /premium-calculator
+Disallow: /refer-and-earn
+
+Sitemap: https://bimaone.in/sitemap.xml

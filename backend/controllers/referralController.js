@@ -26,7 +26,7 @@ const getReferralInfo = async (req, res) => {
         referralCode: user.referralCode,
         totalReferrals,
         totalEarnings,
-        shareLink: `${process.env.MAIN_APP_URL || 'https://bimabox.in'}/login?ref=${user.referralCode}`
+        shareLink: `${process.env.MAIN_APP_URL || 'https://bimaone.in'}/login?ref=${user.referralCode}`
       }
     })
   } catch (error) {

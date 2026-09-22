@@ -6,6 +6,7 @@ import { useAuth } from '../../context/AuthContext'
 import { PLANS_CONFIG } from '../../config/plansConfig'
 import PublicLayout from '../../components/PublicLayout'
 import Icon from '../../components/Icon'
+import usePageMeta from '../../hooks/usePageMeta'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
@@ -65,6 +66,12 @@ const PricingPage = () => {
   const navigate = useNavigate()
   const [myPlan, setMyPlan] = useState(null)
 
+  usePageMeta({
+    title: 'Pricing – Insurance Agent Software Plans from ₹899/year | BimaOne',
+    description: 'Simple yearly pricing for BimaOne insurance agent software. Basic ₹899, Standard ₹1,999 and Premium ₹4,999 per year, GST included, with automated WhatsApp reminders in every plan.',
+    path: '/pricing',
+  })
+
   useEffect(() => {
     if (!user) return
     axios
@@ -93,7 +100,7 @@ const PricingPage = () => {
         <div className='pointer-events-none absolute -bottom-32 -left-20 h-72 w-72 rounded-full bg-emerald-400/10 blur-3xl' />
         <div className='relative mx-auto max-w-2xl text-center'>
           <span className='inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200 ring-1 ring-inset ring-white/20'>Pricing</span>
-          <h1 className='mt-4 text-3xl font-bold tracking-tight md:text-5xl'>Simple yearly plans</h1>
+          <h1 className='mt-4 text-3xl font-bold tracking-tight md:text-5xl'>Insurance agent software pricing</h1>
           <p className='mt-3 text-sm text-slate-300 md:text-lg'>One payment for the whole year. No hidden charges. All prices include GST.</p>
 
           {myPlan && (

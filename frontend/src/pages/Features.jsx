@@ -2,11 +2,18 @@ import PublicLayout from '../components/PublicLayout'
 import CtaBanner from '../components/CtaBanner'
 import Icon from '../components/Icon'
 import { featureGroups, TONES, GROUP_TONES } from '../data/features'
+import usePageMeta from '../hooks/usePageMeta'
 
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
 const Features = () => {
   const total = featureGroups.reduce((n, g) => n + g.features.length, 0)
+
+  usePageMeta({
+    title: 'Features – Insurance Management Software for Agents | BimaOne',
+    description: 'All features of BimaOne insurance management software: policy tracking, renewal alerts, leads, client KYC, RTO documents, AI upload, premium calculator and WhatsApp reminders for insurance agents.',
+    path: '/features',
+  })
 
   return (
     <PublicLayout>
@@ -18,9 +25,9 @@ const Features = () => {
             <span className='inline-block rounded-full bg-white/10 px-3 py-1 text-xs font-semibold text-slate-200 ring-1 ring-inset ring-white/20'>
               {total}+ features
             </span>
-            <h1 className='mt-4 text-3xl font-bold leading-tight tracking-tight md:text-5xl'>Everything an insurance agent needs, in one app</h1>
+            <h1 className='mt-4 text-3xl font-bold leading-tight tracking-tight md:text-5xl'>Insurance management software with everything an agent needs</h1>
             <p className='mt-4 text-sm leading-relaxed text-slate-300 md:text-lg'>
-              Manage policies, clients, vehicle documents and renewals — without the paperwork.
+              The complete insurance agent software to manage policies, clients, vehicle documents and renewals — without the paperwork.
             </p>
           </div>
         </section>
