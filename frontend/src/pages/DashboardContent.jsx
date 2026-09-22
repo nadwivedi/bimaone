@@ -266,7 +266,7 @@ const DashboardContent = () => {
 
   return (
     <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <main className='mx-auto max-w-6xl space-y-5 px-3 pt-4 pb-32 md:space-y-6 lg:px-8 lg:pt-6 lg:pb-10'>
+      <main className='w-full space-y-5 px-3 pt-4 pb-32 md:space-y-6 lg:px-8 lg:pt-6 lg:pb-10'>
         {/* 1. Upload */}
         <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
           <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-4 py-3 text-white md:px-6'>

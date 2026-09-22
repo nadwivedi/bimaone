@@ -337,7 +337,7 @@ const Setting = () => {
       </div>
 
       {/* ===== Desktop layout ===== */}
-      <div className='mx-auto hidden max-w-6xl space-y-6 lg:block'>
+      <div className='hidden w-full space-y-6 lg:block'>
         {/* Profile hero */}
         <div className='overflow-hidden rounded-3xl bg-white ring-1 ring-stone-200/70'>
           <div className='flex items-center justify-between gap-6 px-8 py-6'>

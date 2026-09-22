@@ -259,7 +259,7 @@ const RcDetails = () => {
 
   return (
     <div className='min-h-screen bg-slate-50 text-slate-800'>
-      <div className='mx-auto max-w-7xl space-y-6 px-3 py-6 sm:px-6'>
+      <div className='w-full space-y-6 px-3 py-6 sm:px-6'>
         {/* Header */}
         <div ref={resultsTopRef} className='flex flex-col justify-between gap-4 sm:flex-row sm:items-center'>
           <div>
