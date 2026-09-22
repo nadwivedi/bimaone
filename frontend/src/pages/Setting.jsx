@@ -286,12 +286,12 @@ const Setting = () => {
               />
               {planFeatures && (
                 <>
-                  <SettingRow icon={ICONS.ai} color='bg-fuchsia-500' label='AI Documents' value={usageText(myPlan.usage?.aiDocumentsUsed || 0, planFeatures.aiDocuments)} chevron={false} />
+                  <SettingRow icon={ICONS.ai} color='bg-fuchsia-500' label='AI Documents' value={planFeatures.aiUpload === false ? 'Not included' : usageText(myPlan.usage?.aiDocumentsUsed || 0, planFeatures.aiDocuments)} chevron={false} />
                   <SettingRow icon={ICONS.manual} color='bg-pink-500' label='Manual Uploads' value={usageText(myPlan.usage?.manualDocumentsUsed || 0, planFeatures.manualDocuments)} chevron={false} />
                   <SettingRow icon={ICONS.clients} color='bg-teal-500' label='Clients' value={usageText(myPlan.clientsUsed ?? 0, planFeatures.clientLimit)} chevron={false} />
                 </>
               )}
-              {(planExpired || planName !== 'Pro') && (
+              {(planExpired || planName !== 'Premium') && (
                 <Link to='/pricing' className='block px-4 py-3 text-center text-sm font-bold text-violet-600 hover:bg-violet-50 transition-colors'>
                   {planExpired ? 'Renew Subscription' : 'Upgrade Plan'}
                 </Link>
@@ -395,7 +395,7 @@ const Setting = () => {
                       ? (planDaysLeft <= 0 ? 'Ends today' : `${planDaysLeft} days left`)
                       : 'Never expires'}
                   </p>
-                  {(!myPlan || planExpired || planName !== 'Pro') && (
+                  {(!myPlan || planExpired || planName !== 'Premium') && (
                     <Link to='/pricing' className='mt-2 inline-block text-xs font-bold text-violet-600 hover:text-violet-800'>
                       {planExpired ? 'Renew now →' : 'Upgrade →'}
                     </Link>
@@ -404,12 +404,12 @@ const Setting = () => {
               )}
             </div>
             {[
-              { label: 'AI Documents', icon: ICONS.ai, color: 'bg-fuchsia-500', used: myPlan?.usage?.aiDocumentsUsed || 0, limit: planFeatures?.aiDocuments },
+              { label: 'AI Documents', icon: ICONS.ai, color: 'bg-fuchsia-500', used: myPlan?.usage?.aiDocumentsUsed || 0, limit: planFeatures?.aiDocuments, blocked: planFeatures?.aiUpload === false },
               { label: 'Manual Uploads', icon: ICONS.manual, color: 'bg-pink-500', used: myPlan?.usage?.manualDocumentsUsed || 0, limit: planFeatures?.manualDocuments },
               { label: 'Clients', icon: ICONS.clients, color: 'bg-teal-500', used: myPlan?.clientsUsed ?? 0, limit: planFeatures?.clientLimit },
             ].map((u) => {
-              const unlimited = !u.limit || u.limit <= 0
-              const pct = unlimited ? 100 : Math.min(100, Math.round((u.used / u.limit) * 100))
+              const unlimited = !u.blocked && (!u.limit || u.limit <= 0)
+              const pct = u.blocked ? 0 : unlimited ? 100 : Math.min(100, Math.round((u.used / u.limit) * 100))
               return (
                 <div key={u.label} className='px-6 py-5'>
                   <div className='flex items-center gap-2'>
@@ -422,7 +422,7 @@ const Setting = () => {
                   </div>
                   <p className='mt-2 text-xl font-black text-stone-900'>
                     {planLoading ? '…' : u.used}
-                    <span className='ml-1 text-xs font-bold text-stone-400'>{unlimited ? '· Unlimited' : `/ ${u.limit}`}</span>
+                    <span className='ml-1 text-xs font-bold text-stone-400'>{u.blocked ? '· Not included' : unlimited ? '· Unlimited' : `/ ${u.limit}`}</span>
                   </p>
                   <div className='mt-2 h-1.5 w-full overflow-hidden rounded-full bg-stone-200'>
                     <div className={`h-full rounded-full ${pct >= 90 && !unlimited ? 'bg-orange-500' : 'bg-violet-500'}`} style={{ width: `${planLoading ? 0 : pct}%` }} />

@@ -43,6 +43,9 @@ router.get('/check-limit', async (req, res) => {
     const plan = getPlan(activePlan.planKey)
     const limit = plan?.features?.aiDocuments || 0
     const used = activePlan.usage?.aiDocumentsUsed || 0
+    if (plan?.features?.aiUpload === false) {
+      return res.json({ success: true, canUse: false, used, limit: 0, message: 'AI upload is not available on your plan.' })
+    }
     const canUse = limit <= 0 || used < limit
 
     return res.json({ success: true, canUse, used, limit })

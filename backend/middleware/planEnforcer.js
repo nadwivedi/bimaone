@@ -30,6 +30,12 @@ const planEnforcer = (docType = 'manual') => {
       const usage = activePlan.usage || { aiDocumentsUsed: 0, manualDocumentsUsed: 0 }
 
       if (docType === 'ai') {
+        if (plan?.features?.aiUpload === false) {
+          return res.status(403).json({
+            success: false,
+            message: 'AI upload is not available on your plan. Please upgrade.',
+          })
+        }
         const limit = plan?.features?.aiDocuments || 0
         if (limit > 0 && usage.aiDocumentsUsed >= limit) {
           return res.status(403).json({

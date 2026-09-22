@@ -3,7 +3,7 @@ const Razorpay = require('razorpay')
 const PaymentOrder = require('../models/PaymentOrder')
 const UserPlan = require('../models/UserPlan')
 const User = require('../models/User')
-const { getPlan, isAllowedDuration, computePlanPricePaise, computePlanDurationDays } = require('../utils/planConfig')
+const { getPlan, isYearlyPlan, isAllowedDuration, computePlanPricePaise, computePlanDurationDays } = require('../utils/planConfig')
 const { computeExpiryDate } = require('../utils/planCycle')
 
 const getRazorpayInstance = () => {
@@ -39,7 +39,9 @@ const createOrder = async (req, res) => {
         return res.status(404).json({ success: false, message: 'Subscription plan not found' })
       }
 
-      if (!isAllowedDuration(durationMonths)) {
+      if (isYearlyPlan(plan)) {
+        durationMonths = 12
+      } else if (!isAllowedDuration(durationMonths)) {
         return res.status(400).json({
           success: false,
           message: 'Invalid duration. Allowed durations: 3, 6, 9, 12 months.',
@@ -163,17 +165,21 @@ const verifyPayment = async (req, res) => {
     )
 
     // Activate Subscription Plan for User if planKey provided
-    const targetPlanKey = planKey || paymentOrderDoc?.planKey
-    const durationMonths = Number(req.body.durationMonths) || paymentOrderDoc?.durationMonths || 3
+    // Prefer what was stored on the paid order: the client could otherwise pay
+    // for a cheap plan and send a more expensive planKey here.
+    const targetPlanKey = paymentOrderDoc?.planKey || planKey
+    const durationMonths = Number(paymentOrderDoc?.durationMonths) || Number(req.body.durationMonths) || 3
     let userPlan = null
 
     if (targetPlanKey) {
       const plan = getPlan(targetPlanKey)
       if (plan) {
         const startDate = new Date()
-        const durationDays = isAllowedDuration(durationMonths)
-          ? computePlanDurationDays(durationMonths)
-          : plan.durationDays
+        const durationDays = isYearlyPlan(plan)
+          ? plan.durationDays
+          : isAllowedDuration(durationMonths)
+            ? computePlanDurationDays(durationMonths)
+            : plan.durationDays
         const expiryDate = computeExpiryDate(durationDays, startDate)
 
         // Expire any existing active plans for this user

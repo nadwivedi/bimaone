@@ -79,9 +79,85 @@ const BACKEND_PLANS = {
       support: 'Priority',
     },
   },
+  // Current yearly plans. Go/Plus/Pro above are legacy and kept only so
+  // existing subscribers keep resolving until they renew.
+  basic: {
+    name: 'Basic',
+    price: 899,
+    billing: 'yearly',
+    durationDays: 365,
+    features: {
+      aiUpload: false,
+      aiDocuments: 0,
+      manualDocuments: 0,
+      desktopAccess: true,
+      mobileAppAccess: true,
+      excelDownload: true,
+      clientLimit: 0,
+      appNotificationRenewal: true,
+      whatsappRenewal: true,
+      customizedPolicyDownload: true,
+      personalisedQuotation: true,
+      leadManagement: false,
+      advancedVehicleSearch: false,
+      rcDownload: false,
+      processingSpeed: 'Standard',
+      support: 'Standard',
+    },
+  },
+  standard: {
+    name: 'Standard',
+    price: 1999,
+    billing: 'yearly',
+    durationDays: 365,
+    features: {
+      aiUpload: true,
+      aiDocuments: 200,
+      manualDocuments: 0,
+      desktopAccess: true,
+      mobileAppAccess: true,
+      excelDownload: true,
+      clientLimit: 0,
+      appNotificationRenewal: true,
+      whatsappRenewal: true,
+      customizedPolicyDownload: true,
+      personalisedQuotation: true,
+      leadManagement: true,
+      advancedVehicleSearch: false,
+      rcDownload: false,
+      processingSpeed: 'Fast',
+      support: 'Priority',
+    },
+  },
+  premium: {
+    name: 'Premium',
+    price: 4999,
+    billing: 'yearly',
+    durationDays: 365,
+    features: {
+      aiUpload: true,
+      aiDocuments: 0,
+      manualDocuments: 0,
+      desktopAccess: true,
+      mobileAppAccess: true,
+      excelDownload: true,
+      clientLimit: 0,
+      appNotificationRenewal: true,
+      whatsappRenewal: true,
+      customizedPolicyDownload: true,
+      personalisedQuotation: true,
+      leadManagement: true,
+      advancedVehicleSearch: true,
+      rcDownload: true,
+      processingSpeed: 'Highest',
+      support: 'Priority',
+    },
+  },
 }
 
 const getPlan = (planKey) => (planKey && BACKEND_PLANS[planKey]) || null
+
+const isYearlyPlan = (plan) => plan?.billing === 'yearly'
 
 const ALLOWED_DURATIONS = [3, 6, 9, 12]
 const MONTHS_TO_DAYS = 30
@@ -94,6 +170,7 @@ const isAllowedDuration = (months) => ALLOWED_DURATIONS.includes(Number(months))
 const computePlanPricePaise = (planKey, months) => {
   const plan = getPlan(planKey)
   if (!plan) return 0
+  if (isYearlyPlan(plan)) return Math.round(plan.price * 100)
   const m = Number(months) || 3
   const base = plan.price || 0
   const gross = base * (m / 3)
@@ -109,6 +186,7 @@ const computePlanDurationDays = (months) => {
 module.exports = {
   BACKEND_PLANS,
   getPlan,
+  isYearlyPlan,
   ALLOWED_DURATIONS,
   isAllowedDuration,
   computePlanPricePaise,

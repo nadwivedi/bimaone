@@ -24,9 +24,13 @@ const SubscribePage = () => {
   const [purchasing, setPurchasing] = useState(false)
 
   const plan = PLANS_CONFIG.find((p) => p.id === planId) || null
-  const { base, gross, discount, net, savings } = computePlanPrice(plan, duration)
-  const isAnnual = duration === 12
-  const durationDays = computeDurationDays(duration)
+  const yearly = plan?.billing === 'yearly'
+  const quarterly = computePlanPrice(plan, duration)
+  const { base, gross, discount, net, savings } = yearly
+    ? { base: plan.price, gross: plan.price, discount: 0, net: plan.price, savings: 0 }
+    : quarterly
+  const isAnnual = !yearly && duration === 12
+  const durationDays = yearly ? plan.durationDays : computeDurationDays(duration)
 
   const handlePay = async () => {
     if (!plan) return
@@ -35,7 +39,7 @@ const SubscribePage = () => {
     try {
       const orderRes = await axios.post(
         `${API_URL}/api/payment/create-order`,
-        { planKey: plan.id, durationMonths: duration },
+        { planKey: plan.id, durationMonths: yearly ? 12 : duration },
         { withCredentials: true }
       )
 
@@ -51,7 +55,7 @@ const SubscribePage = () => {
         currency,
         key_id,
         name: 'BimaOne',
-        description: `${plan.name} ${duration}-Month Subscription`,
+        description: yearly ? `${plan.name} 1-Year Subscription` : `${plan.name} ${duration}-Month Subscription`,
         prefill: {
           name: user?.name || '',
           email: user?.email || '',
@@ -66,7 +70,7 @@ const SubscribePage = () => {
                 razorpay_payment_id: paymentResponse.razorpay_payment_id,
                 razorpay_signature: paymentResponse.razorpay_signature,
                 planKey: plan.id,
-                durationMonths: duration,
+                durationMonths: yearly ? 12 : duration,
               },
               { withCredentials: true }
             )
@@ -143,7 +147,9 @@ const SubscribePage = () => {
               </span>
             )}
           </div>
-          <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-6'>Choose your subscription duration</p>
+          <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400 mb-6'>
+            {yearly ? '1 year subscription' : 'Choose your subscription duration'}
+          </p>
 
           {isAnnual && (
             <div className='mb-5 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 px-4 py-3'>
@@ -152,7 +158,7 @@ const SubscribePage = () => {
             </div>
           )}
 
-          <label className='block mb-2'>
+          {!yearly && <label className='block mb-2'>
             <span className='text-[11px] font-bold text-slate-500 uppercase tracking-wider'>Subscription Duration</span>
             <select
               value={duration}
@@ -165,7 +171,7 @@ const SubscribePage = () => {
                 </option>
               ))}
             </select>
-          </label>
+          </label>}
 
           <div className='mt-6 rounded-2xl border border-slate-200 bg-slate-50 p-5'>
             <div className='flex items-end justify-between'>
@@ -182,11 +188,13 @@ const SubscribePage = () => {
               </div>
               <div className='text-right'>
                 <p className='text-[10px] font-bold uppercase tracking-widest text-slate-400'>Validity</p>
-                <p className='text-sm font-black text-slate-700'>{duration} Months</p>
+                <p className='text-sm font-black text-slate-700'>{yearly ? '1 Year' : `${duration} Months`}</p>
                 <p className='text-[11px] font-semibold text-slate-400'>{durationDays} days</p>
               </div>
             </div>
-            {discount > 0 ? (
+            {yearly ? (
+              <p className='mt-2 text-[11px] font-semibold text-slate-400'>incl. GST · billed once for the full year</p>
+            ) : discount > 0 ? (
               <p className='mt-2 text-[11px] font-bold text-emerald-600'>incl. 10% annual discount (base {formatINR(base)} / 3 months)</p>
             ) : (
               <p className='mt-2 text-[11px] font-semibold text-slate-400'>base price {formatINR(base)} / 3 months</p>
