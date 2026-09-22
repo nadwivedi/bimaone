@@ -17,6 +17,7 @@ export const icons = {
   lock: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
   phone: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
   check: 'M5 13l4 4L19 7',
+  rupee: 'M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z',
   arrow: 'M13 7l5 5m0 0l-5 5m5-5H6',
   heart: 'M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z',
   star: 'M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z',
@@ -25,6 +26,7 @@ export const icons = {
 export const featureGroups = [
   {
     title: 'Policies & Clients',
+    heading: 'Insurance CRM for your policies & clients',
     description: 'Everything about your customers and their policies, in one organised place.',
     features: [
       { icon: 'shield', title: 'Policy Tracking', description: 'Store every motor and non-motor policy with premium, insurer, dates and documents attached.' },
@@ -37,6 +39,7 @@ export const featureGroups = [
   },
   {
     title: 'Vehicle & RTO Documents',
+    heading: 'Motor insurance & RTO document tracking',
     description: 'Track every vehicle document your clients depend on, with expiry dates in view.',
     features: [
       { icon: 'truck', title: 'RC Management', description: 'Save registration certificates and vehicle details for quick reference.' },
@@ -49,6 +52,7 @@ export const featureGroups = [
   },
   {
     title: 'Smart Tools',
+    heading: 'Smart tools in our policy management software',
     description: 'Save hours every week with tools built for the daily work of an agent.',
     features: [
       { icon: 'chip', title: 'AI Auto Entry', description: 'Upload a document and AI fills in policy numbers, dates and vehicle details for you.' },
@@ -60,10 +64,12 @@ export const featureGroups = [
   },
   {
     title: 'Alerts & Insights',
-    description: 'Stay ahead of expiries and understand how your business is growing.',
+    heading: 'Renewal reminder software & business insights',
+    description: 'Stay ahead of expiries, track your commission and understand how your business is growing.',
     features: [
       { icon: 'clock', title: 'Expiry Alerts', description: 'Get reminded before any policy or document expires, so renewals never slip.' },
       { icon: 'chat', title: 'WhatsApp Reminders', description: 'Send renewal reminders to your clients directly on WhatsApp.' },
+      { icon: 'rupee', title: 'Commission Tracking', description: 'Track commission on every policy by insurer and agent, and see what is received and what is still pending.' },
       { icon: 'chart', title: 'Business Dashboard', description: 'See policies, renewals and earnings at a glance from your dashboard.' },
       { icon: 'lock', title: 'Secure & Private', description: 'Your data and client documents are stored securely and only visible to you.' },
       { icon: 'phone', title: 'Works on Any Device', description: 'Use BimaOne on your phone, tablet or computer — wherever you meet clients.' },

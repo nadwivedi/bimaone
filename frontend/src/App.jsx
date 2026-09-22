@@ -31,6 +31,8 @@ import PricingPage from './pages/Pricing/PricingPage'
 import SubscribePage from './pages/Pricing/SubscribePage'
 import ReferralPage from './pages/ReferralPage'
 import RcDetails from './pages/RcDetails/RcDetails'
+import SeoLanding from './pages/SeoLanding'
+import { landingPages, landingBySlug } from './data/landingPages'
 import ForceEmailVerificationModal from './components/ForceEmailVerificationModal'
 
 function AppContent() {
@@ -39,7 +41,7 @@ function AppContent() {
   const { isAuthenticated, user, loading } = useAuth()
   const isLoginPage = location.pathname === '/login'
   const isLandingPage = location.pathname === '/'
-  const isMarketingPage = ['/', '/about', '/features'].includes(location.pathname)
+  const isMarketingPage = ['/', '/about', '/features'].includes(location.pathname) || Boolean(landingBySlug[location.pathname.slice(1)])
   const publicPages = ['/privacy-policy', '/terms-and-conditions', '/contact-us', '/pricing']
   const isPublicPage = publicPages.includes(location.pathname)
   const showNav = !isLoginPage && !isMarketingPage && (isAuthenticated || !isPublicPage)
@@ -121,6 +123,9 @@ function AppContent() {
             <Route path='/contact-us' element={<ContactUs />} />
             <Route path='/about' element={<About />} />
             <Route path='/features' element={<Features />} />
+            {landingPages.map((p) => (
+              <Route key={p.slug} path={`/${p.slug}`} element={<SeoLanding key={p.slug} slug={p.slug} />} />
+            ))}
             <Route path='/refer-and-earn' element={<ProtectedRoute><ReferralPage /></ProtectedRoute>} />
           </Routes>
         </div>

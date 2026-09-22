@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { landingPages } from '../data/landingPages'
 
 const columns = [
   {
@@ -18,6 +19,11 @@ const columns = [
       { to: '/terms-and-conditions', label: 'Terms & Conditions' },
     ],
   },
+  {
+    title: 'Solutions',
+    span: 'md:col-span-3',
+    links: landingPages.map((p) => ({ to: `/${p.slug}`, label: p.nav })),
+  },
 ]
 
 const Footer = () => {
@@ -25,7 +31,7 @@ const Footer = () => {
     <footer className='border-t border-slate-200 bg-white'>
       <div className='mx-auto max-w-6xl px-4 md:px-8 py-14'>
         <div className='grid grid-cols-2 md:grid-cols-12 gap-10'>
-          <div className='col-span-2 md:col-span-5 space-y-4'>
+          <div className='col-span-2 md:col-span-3 space-y-4'>
             <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-12 md:h-14 w-auto' />
             <p className='text-sm text-slate-500 leading-relaxed max-w-sm'>
               Insurance agent software made for insurance agents. Serving agents across India since 2020.
@@ -33,7 +39,7 @@ const Footer = () => {
           </div>
 
           {columns.map((col) => (
-            <div key={col.title} className='md:col-span-2'>
+            <div key={col.title} className={col.span || 'md:col-span-2'}>
               <h4 className='text-xs font-semibold uppercase tracking-wider text-ink mb-4'>{col.title}</h4>
               <ul className='space-y-3'>
                 {col.links.map((l) => (
@@ -45,9 +51,9 @@ const Footer = () => {
             </div>
           ))}
 
-          <div className='col-span-2 md:col-span-3'>
+          <div className='col-span-2 md:col-span-2'>
             <h4 className='text-xs font-semibold uppercase tracking-wider text-ink mb-4'>Contact</h4>
-            <ul className='space-y-3 text-sm text-slate-500'>
+            <ul className='space-y-3 text-sm text-slate-500 [overflow-wrap:anywhere]'>
               <li><a href='mailto:mybimabox@gmail.com' className='hover:text-brand transition-colors'>mybimabox@gmail.com</a></li>
               <li><a href='tel:+917004534508' className='hover:text-brand transition-colors'>+91 7004534508</a></li>
               <li><a href='https://wa.me/919202469725' target='_blank' rel='noopener noreferrer' className='hover:text-leaf transition-colors'>WhatsApp: +91 9202469725</a></li>

@@ -6,6 +6,39 @@ import usePageMeta from '../hooks/usePageMeta'
 
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
+const faqs = [
+  {
+    q: 'Does BimaOne work for health and life insurance?',
+    a: 'Yes. BimaOne works for every line of insurance an agent sells — motor (private car, two wheeler, commercial vehicles, taxi), health, life, travel, fire, marine, GPA, GMC, liability and more. Track all of them in one insurance CRM with their own renewal dates.',
+  },
+  {
+    q: 'Can I send WhatsApp renewal reminders automatically?',
+    a: 'Yes. Connect your own WhatsApp once by scanning a QR code, and BimaOne sends renewal reminders to your clients before their policy, PUC, tax, fitness or GPS expires. You choose the days (for example 15 and 7 days before), see every message that was sent or failed, and it is included in every plan.',
+  },
+  {
+    q: 'Can I import my Excel data?',
+    a: 'You can export any list — policies, renewals or RTO documents — to Excel at any time. To move your existing Excel records into BimaOne, send us your sheet on WhatsApp and our team will help you bring it in. New policies can also be added in seconds with AI upload.',
+  },
+  {
+    q: 'Is my client data secure?',
+    a: 'Yes. Your clients, policies and documents are private to your account — no other agent can see them — and all data travels over a secure HTTPS connection. We never sell or share your client data.',
+  },
+  {
+    q: 'Does it work on mobile?',
+    a: 'Yes. BimaOne works in the browser on any Android phone, iPhone, tablet or computer, so you can check renewals and client details wherever you meet clients. Nothing needs to be installed.',
+  },
+  {
+    q: 'Is BimaOne suitable for POSP agents and agencies?',
+    a: 'Yes. BimaOne is insurance agency management software for individual agents, POSP agents and small agencies. It works with policies from any insurer, and you can tag every policy with a client name and agent (IMD) name to keep your business organised.',
+  },
+]
+
+const FEATURES_JSON_LD = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+}
+
 const Features = () => {
   const total = featureGroups.reduce((n, g) => n + g.features.length, 0)
 
@@ -13,6 +46,7 @@ const Features = () => {
     title: 'Features – Insurance Management Software for Agents | BimaOne',
     description: 'All features of BimaOne insurance management software: policy tracking, renewal alerts, leads, client KYC, RTO documents, AI upload, premium calculator and WhatsApp reminders for insurance agents.',
     path: '/features',
+    jsonLd: FEATURES_JSON_LD,
   })
 
   return (
@@ -27,7 +61,7 @@ const Features = () => {
             </span>
             <h1 className='mt-4 text-3xl font-bold leading-tight tracking-tight md:text-5xl'>Insurance management software with everything an agent needs</h1>
             <p className='mt-4 text-sm leading-relaxed text-slate-300 md:text-lg'>
-              The complete insurance agent software to manage policies, clients, vehicle documents and renewals — without the paperwork.
+              The complete <strong className='font-semibold text-white'>insurance agent software</strong> and <strong className='font-semibold text-white'>insurance agency management software</strong> to manage policies, clients, vehicle documents and renewals — without the paperwork.
             </p>
           </div>
         </section>
@@ -70,7 +104,7 @@ const Features = () => {
                   <div className='mb-5 flex items-start gap-3 md:mb-6'>
                     <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white md:h-10 md:w-10 ${t.icon}`}>{gi + 1}</span>
                     <div>
-                      <h2 className='text-xl font-bold text-slate-900 md:text-2xl'>{group.title}</h2>
+                      <h2 className='text-xl font-bold text-slate-900 md:text-2xl'>{group.heading || group.title}</h2>
                       <p className='mt-1 text-sm text-slate-600'>{group.description}</p>
                     </div>
                   </div>
@@ -94,6 +128,31 @@ const Features = () => {
             })}
           </div>
         </div>
+
+        {/* FAQ */}
+        <section className='px-4 pb-12 md:px-8 md:pb-16'>
+          <div className='mx-auto max-w-3xl'>
+            <div className='mb-6 text-center md:mb-8'>
+              <span className='inline-block rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-200'>FAQ</span>
+              <h2 className='mt-3 text-2xl font-bold tracking-tight text-slate-900 md:text-3xl'>Questions about BimaOne features</h2>
+            </div>
+            <div className='divide-y divide-slate-200 overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
+              {faqs.map((f, i) => (
+                <details key={f.q} className='group px-5 md:px-6' open={i === 0}>
+                  <summary className='flex cursor-pointer list-none items-center justify-between gap-4 py-4 text-left [&::-webkit-details-marker]:hidden'>
+                    <h3 className='text-sm font-semibold text-slate-900 md:text-base'>{f.q}</h3>
+                    <span className='flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-700 transition-transform group-open:rotate-45'>
+                      <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 4v16m8-8H4' />
+                      </svg>
+                    </span>
+                  </summary>
+                  <p className='-mt-1 pb-4 text-sm leading-relaxed text-slate-600'>{f.a}</p>
+                </details>
+              ))}
+            </div>
+          </div>
+        </section>
 
         <CtaBanner />
       </div>
