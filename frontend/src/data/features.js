@@ -79,3 +79,17 @@ export const highlightFeatures = [
   featureGroups[3].features[1],
   featureGroups[2].features[2],
 ]
+
+// Soft gradient card styles shared by the public pages; mirrors the in-app look.
+export const TONES = {
+  blue: { card: 'from-blue-50 to-sky-50 border-blue-200', icon: 'bg-blue-600', text: 'text-blue-700' },
+  emerald: { card: 'from-emerald-50 to-teal-50 border-emerald-200', icon: 'bg-emerald-600', text: 'text-emerald-700' },
+  amber: { card: 'from-amber-50 to-orange-50 border-amber-200', icon: 'bg-amber-500', text: 'text-amber-700' },
+  violet: { card: 'from-violet-50 to-purple-50 border-violet-200', icon: 'bg-violet-600', text: 'text-violet-700' },
+  rose: { card: 'from-rose-50 to-pink-50 border-rose-200', icon: 'bg-rose-600', text: 'text-rose-700' },
+  sky: { card: 'from-sky-50 to-cyan-50 border-sky-200', icon: 'bg-sky-600', text: 'text-sky-700' },
+}
+
+export const TONE_ORDER = ['blue', 'emerald', 'amber', 'violet', 'rose', 'sky']
+
+export const GROUP_TONES = ['blue', 'emerald', 'violet', 'amber']
