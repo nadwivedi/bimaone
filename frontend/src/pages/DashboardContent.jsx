@@ -357,8 +357,9 @@ const DashboardContent = () => {
               }}
             />
           </div>
-          <div className='mt-2.5 flex flex-wrap items-center justify-center gap-2 text-xs text-slate-500 md:justify-start'>
+          <div className='mt-2.5 flex flex-col items-center gap-2 text-xs text-slate-500 sm:flex-row md:justify-start'>
             <span>Uploading other documents?</span>
+            <div className='flex items-center gap-2'>
             <Link
               to='/rto-documents'
               className='inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-semibold text-slate-700 transition hover:border-blue-300 hover:text-blue-700'
@@ -373,6 +374,7 @@ const DashboardContent = () => {
               <Svg d={ICON.kyc} className='h-3.5 w-3.5' />
               KYC
             </Link>
+            </div>
           </div>
         </section>
 
