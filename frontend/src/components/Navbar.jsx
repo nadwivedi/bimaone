@@ -17,9 +17,9 @@ const Navbar = () => {
 
   return (
     <header className='fixed top-0 left-0 right-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-md'>
-      <nav className='mx-auto flex h-16 max-w-6xl items-center justify-between px-4 md:px-8'>
+      <nav className='mx-auto flex h-[72px] max-w-6xl items-center justify-between px-4 md:px-8'>
         <Link to='/' className='flex items-center' onClick={() => setOpen(false)}>
-          <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-9 w-auto' />
+          <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-11 md:h-12 w-auto' />
         </Link>
 
         <div className='hidden md:flex items-center gap-8'>

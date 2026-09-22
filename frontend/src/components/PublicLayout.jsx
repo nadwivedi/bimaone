@@ -14,7 +14,7 @@ const PublicLayout = ({ children }) => {
   return (
     <div className='min-h-screen bg-white text-ink font-poppins'>
       <Navbar />
-      <main className='pt-16'>{children}</main>
+      <main className='pt-[72px]'>{children}</main>
       <Footer />
       <WhatsAppButton />
     </div>
