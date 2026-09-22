@@ -8,13 +8,15 @@
     "dev": "node index.js",
     "create-admin": "node scripts/createAdmin.js",
     "seed:product-types": "node scripts/seedProductTypes.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "test:whatsapp": "node --test tests/whatsappSession.test.js tests/whatsappAuthState.test.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@whiskeysockets/baileys": "7.0.0-rc14",
     "axios": "^1.13.1",
     "bcryptjs": "^3.0.3",
     "cookie-parser": "^1.4.7",
@@ -26,6 +28,7 @@
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.4.1",
     "multer": "^2.1.1",
+    "node-cron": "^4.2.1",
     "nodemailer": "^8.0.10",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",

@@ -15,8 +15,9 @@ const userRoutes = require('./routes/userRoutes')
 const ocrRoutes = require('./routes/ocrRoutes')
 const uploadRoutes = require('./routes/uploadRoutes')
 const whatsAppRoutes = require('./routes/whatsAppRoutes')
-const whatsAppSessionManager = require('./services/whatsAppSessionManager')
-const expiryReminderService = require('./services/expiryReminderService')
+const whatsappService = require('./services/whatsappService')
+const { initWhatsAppMessageSender } = require('./jobs/whatsappMessageSender')
+const { initWhatsAppExpiryChecker } = require('./jobs/whatsappExpiryChecker')
 
 const app = express()
 const PORT = process.env.PORT || 5000
@@ -82,6 +83,7 @@ app.use('/api/leads', require('./routes/leadRoutes'))
 app.use('/api/ocr', ocrRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/whatsapp', whatsAppRoutes)
+app.use('/api/wa', require('./routes/waRoutes'))
 app.use('/api/calculator', require('./routes/calculatorRoutes'))
 app.use('/api/insurance-companies', require('./routes/insuranceCompanyRoutes'))
 app.use('/api/product-types', require('./routes/productTypeRoutes'))
@@ -119,11 +121,25 @@ mongoose
     server.keepAliveTimeout = 65000
     server.headersTimeout = 70000
 
-    whatsAppSessionManager.restoreSessions().catch((error) => {
-      console.error('Failed to restore WhatsApp sessions:', error)
-    })
+    // Per-agent WhatsApp (Baileys): connects only when there is something to send.
+    whatsappService.start().catch((error) => console.error('[WHATSAPP] Startup failed:', error))
+    initWhatsAppMessageSender()
+    initWhatsAppExpiryChecker()
 
-    expiryReminderService.start()
+    // Close WhatsApp connections cleanly so saved logins stay valid.
+    let shuttingDown = false
+    const shutdown = async (signal) => {
+      if (shuttingDown) return
+      shuttingDown = true
+      console.log(`${signal} received, shutting down…`)
+      server.close()
+      try { await whatsappService.shutdown() } catch (err) { console.error('WhatsApp shutdown error:', err) }
+      await mongoose.disconnect().catch(() => {})
+      process.exit(0)
+    }
+    process.on('SIGINT', () => shutdown('SIGINT'))
+    process.on('SIGTERM', () => shutdown('SIGTERM'))
+    process.on('message', (msg) => { if (msg === 'shutdown') shutdown('shutdown') })
   })
   .catch((error) => {
     console.error('MongoDB connection failed:', error)

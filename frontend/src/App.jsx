@@ -19,6 +19,7 @@ import KycPage from './pages/Kyc/KycPage'
 import KycDetail from './pages/Kyc/KycDetail'
 import Renewals from './pages/Renewals'
 import Leads from './pages/leads/Leads'
+import WhatsApp from './pages/WhatsApp'
 import Reference from './pages/Reference'
 import IMD from './pages/IMD'
 import PrivacyPolicy from './pages/PrivacyPolicy'
@@ -107,6 +108,7 @@ function AppContent() {
             <Route path='/kyc/:id' element={<ProtectedRoute><KycDetail /></ProtectedRoute>} />
             <Route path='/renewals' element={<ProtectedRoute><Renewals /></ProtectedRoute>} />
             <Route path='/leads' element={<ProtectedRoute><Leads /></ProtectedRoute>} />
+            <Route path='/whatsapp' element={<ProtectedRoute><WhatsApp /></ProtectedRoute>} />
             <Route path='/rc-details' element={<ProtectedRoute><RcDetails /></ProtectedRoute>} />
             <Route path='/pricing' element={<PricingPage />} />
             <Route path='/subscribe/:planId' element={<ProtectedRoute><SubscribePage /></ProtectedRoute>} />

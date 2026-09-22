@@ -53,6 +53,11 @@ const navIcons = {
       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 17h14M5 17a2 2 0 01-2-2v-3l2-5a2 2 0 011.9-1.4h10.2A2 2 0 0119 7l2 5v3a2 2 0 01-2 2M5 17v2m14-2v2M3 12h18M7.5 14.5h.01M16.5 14.5h.01' />
     </svg>
   ),
+  whatsapp: (
+    <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' />
+    </svg>
+  ),
   rto: (
     <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
@@ -79,6 +84,7 @@ const navSections = [
       { name: 'Search', path: '/search', icon: navIcons.search },
       { name: 'Renewals', path: '/renewals', icon: navIcons.renewal },
       { name: 'Leads', path: '/leads', icon: navIcons.leads },
+      { name: 'WhatsApp', path: '/whatsapp', icon: navIcons.whatsapp },
     ],
   },
   {
