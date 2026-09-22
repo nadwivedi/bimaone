@@ -1,7 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
-import { GoogleLogin } from '@react-oauth/google'
 import axios from 'axios'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
@@ -330,33 +329,6 @@ const Login = () => {
     }
   }
 
-  const handleGoogleSuccess = async (credentialResponse) => {
-    setLoading(true)
-    setError('')
-    const pendingRef = localStorage.getItem('pendingReferralCode') || ''
-    localStorage.removeItem('pendingReferralCode')
-    const payload = { credential: credentialResponse.credential }
-    const extractedRef = extractReferralCode(pendingRef)
-    if (extractedRef) {
-      payload.referralCode = extractedRef
-    }
-    try {
-      const response = await axios.post(`${BACKEND_URL}/api/auth/google`, payload, { withCredentials: true })
-
-      if (response.data.success) {
-        setUser(response.data.data.user)
-        setIsAuthenticated(true)
-        navigate('/')
-      } else {
-        setError(response.data.message || 'Google login failed')
-      }
-    } catch (err) {
-      setError(err.response?.data?.message || 'Google authentication failed. Please try again.')
-    } finally {
-      setLoading(false)
-    }
-  }
-
   const handleVerifySignupEmail = async (e) => {
     e.preventDefault()
     setError('')
@@ -429,16 +401,12 @@ const Login = () => {
     verifyOtpRefs[nextIndex].current?.focus()
   }
 
-  const handleGoogleError = () => {
-    setError('Google Sign In was unsuccessful. Try again later')
-  }
-
   if (authLoading) {
     return (
-      <div className='min-h-[100dvh] bg-gradient-to-br from-amber-500 via-orange-500 to-red-500 flex items-center justify-center p-4'>
+      <div className='min-h-[100dvh] bg-gradient-to-br from-[#0c1f48] via-[#0a1838] to-[#070f26] flex items-center justify-center p-4'>
         <div className='bg-white rounded-2xl shadow-2xl p-8'>
           <div className='flex flex-col items-center justify-center'>
-            <svg className='animate-spin h-12 w-12 text-orange-600 mb-4' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+            <svg className='animate-spin h-12 w-12 text-blue-600 mb-4' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
               <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
               <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
             </svg>
@@ -449,414 +417,247 @@ const Login = () => {
     )
   }
 
+  const inputCls = 'w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 text-[15px] font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 disabled:opacity-60'
+  const primaryBtnCls = 'flex w-full cursor-pointer items-center justify-center gap-2 rounded-lg bg-blue-700 px-4 py-3.5 text-[15px] font-bold text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60'
+  const linkBtnCls = 'cursor-pointer text-sm font-semibold text-blue-700 hover:text-blue-900 hover:underline'
+
+  const Icon = ({ d, className = 'h-5 w-5' }) => (
+    <svg className={className} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={d} />
+    </svg>
+  )
+
+  const icons = {
+    user: 'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+    mail: 'M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z',
+    phone: 'M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z',
+    lock: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
+    link: 'M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1',
+    login: 'M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1',
+    shield: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z',
+    eye: 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z',
+    eyeOff: 'M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21',
+  }
+
+  const Spinner = () => (
+    <svg className='h-5 w-5 animate-spin text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
+      <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
+      <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
+    </svg>
+  )
+
+  const renderField = ({ icon, type = 'text', ...props }) => (
+    <div className='relative'>
+      <span className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400'>
+        <Icon d={icons[icon]} />
+      </span>
+      <input type={type} className={inputCls} disabled={loading} {...props} />
+    </div>
+  )
+
+  const renderPasswordField = ({ value, onChange, show, setShow, placeholder, name }) => (
+    <div className='relative'>
+      <span className='pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3.5 text-slate-400'>
+        <Icon d={icons.lock} />
+      </span>
+      <input
+        type={show ? 'text' : 'password'}
+        name={name}
+        value={value}
+        onChange={onChange}
+        placeholder={placeholder}
+        className={`${inputCls} pr-11`}
+        disabled={loading}
+      />
+      <button
+        type='button'
+        onClick={() => setShow(!show)}
+        className='absolute inset-y-0 right-0 flex cursor-pointer items-center pr-3.5 text-slate-400 transition-colors hover:text-slate-600'
+        title='Toggle password visibility'
+      >
+        <Icon d={show ? icons.eye : icons.eyeOff} />
+      </button>
+    </div>
+  )
+
+  const titles = {
+    login: ['Welcome back 👋', 'Sign in to your BimaOne account.'],
+    signup: ['Create Account', 'Start managing your insurance business with BimaOne.'],
+    1: ['Forgot Password', 'Enter your registered email to receive an OTP.'],
+    2: ['Enter OTP', `We've sent a 6-digit OTP to ${forgotEmail}`],
+    3: ['Reset Password', 'Choose a new password for your account.'],
+  }
+  const [title, subtitle] = forgotStep === 0 ? titles[mode] : titles[forgotStep]
+
   return (
-    <div className='min-h-[100dvh] bg-gradient-to-br from-slate-50 via-indigo-50 to-blue-100 flex flex-col items-center justify-center p-4 relative overflow-hidden'>
-      <div className='absolute top-0 left-0 w-full h-full overflow-hidden z-0'>
-        <div className='absolute -top-[10%] -left-[10%] w-[50%] h-[50%] bg-indigo-300/20 rounded-full blur-3xl'></div>
-        <div className='absolute -bottom-[10%] -right-[10%] w-[50%] h-[50%] bg-emerald-300/20 rounded-full blur-3xl'></div>
-      </div>
+    <div className='flex min-h-[100dvh] items-center justify-center bg-slate-100 p-4 sm:p-6' style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <div className='grid w-full max-w-[1000px] overflow-hidden rounded-2xl bg-white shadow-2xl shadow-slate-300/60 lg:grid-cols-2'>
+        {/* Left - promotional panel */}
+        <div className='relative hidden overflow-hidden bg-gradient-to-br from-[#1f2a3c] via-[#27374f] to-[#314866] p-12 text-white lg:flex lg:flex-col lg:justify-center'>
+          <div className='pointer-events-none absolute -right-20 -top-20 h-72 w-72 rounded-full bg-white/[0.06]' />
+          <div className='pointer-events-none absolute -bottom-24 -left-16 h-64 w-64 rounded-full bg-white/[0.05]' />
+          <div className='pointer-events-none absolute bottom-16 right-12 h-24 w-24 rounded-full bg-sky-400/15' />
 
-      <div className='w-full max-w-md z-10'>
-        <div className='bg-white/95 backdrop-blur-sm rounded-3xl shadow-2xl p-6 border border-white/20'>
-          <div className='text-center mb-6'>
-            <div className='mb-4'>
-              <Link to='/' className='inline-flex items-center gap-1'>
-                <img src='/bimalogo.png' alt='BimaOne' className='h-[72px] w-auto' />
-                <div className='flex flex-col'>
-                  <span className='text-[26px] font-bold leading-none' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                    <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>One</span>
-                  </span>
-                  <span className='mt-0.5 text-[6.5px] font-medium tracking-wide' style={{ color: '#0c1f48', fontFamily: "'Inter', sans-serif" }}>All your policies. One smart place.</span>
-                </div>
-              </Link>
+          <div className='relative'>
+            <h1 className='text-[2.5rem] font-bold leading-[1.15]'>
+              Your Policies,<br />Simplified.
+            </h1>
+            <p className='mt-5 max-w-sm text-lg leading-relaxed text-slate-300'>
+              Manage clients and renewals from one simple dashboard.
+            </p>
+
+            <div className='mt-10 flex items-center gap-3 border-t border-white/30 pt-6'>
+              <Icon d={icons.shield} className='h-6 w-6' />
+              <span className='font-medium'>Safe & Secure</span>
             </div>
+          </div>
+        </div>
 
-            {forgotStep === 0 ? (
-              <>
-                <div className='flex bg-slate-100 rounded-xl p-1 mb-4'>
-                  <button
-                    type='button'
-                    onClick={() => switchMode('login')}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${mode === 'login' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    Sign In
-                  </button>
-                  <button
-                    type='button'
-                    onClick={() => switchMode('signup')}
-                    className={`flex-1 py-2 text-sm font-bold rounded-lg transition-all ${mode === 'signup' ? 'bg-white text-slate-800 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-                  >
-                    Sign Up
-                  </button>
-                </div>
-
-                {mode === 'login' ? (
-                  <p className='text-slate-500 text-xs'>Enter your credentials to access BimaOne</p>
-                ) : (
-                  <p className='text-slate-500 text-xs'>Create your BimaOne account</p>
-                )}
-
-                {formData.referralCode && (
-                  <div className='mt-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl'>
-                    <div className='flex items-center gap-2'>
-                      <svg className='w-4 h-4 text-emerald-600 shrink-0' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' />
-                      </svg>
-                      <p className='text-xs font-semibold text-emerald-800'>
-                        You were referred by someone! Sign up to earn them a reward.
-                      </p>
-                    </div>
-                    <p className='text-[11px] text-emerald-600 font-bold mt-1 ml-6'>
-                      Referral code: <span className='tracking-wider'>{formData.referralCode}</span>
-                    </p>
-                  </div>
-                )}
-              </>
-            ) : (
-              <div className='mb-2'>
-                <p className='text-slate-700 font-bold text-sm'>
-                  {forgotStep === 1 && 'Forgot Password'}
-                  {forgotStep === 2 && 'Enter OTP'}
-                  {forgotStep === 3 && 'Reset Password'}
-                </p>
-                <p className='text-slate-400 text-xs mt-1'>
-                  {forgotStep === 1 && 'Enter your registered email to receive OTP'}
-                  {forgotStep === 2 && `OTP sent to ${forgotEmail}`}
-                  {forgotStep === 3 && 'Choose a new password for your account'}
-                </p>
-              </div>
-            )}
+        {/* Right - form */}
+        <div className='flex flex-col justify-center px-6 py-10 sm:px-12 sm:py-12'>
+          <div className='mb-10 text-center'>
+            <Link to='/' className='inline-flex'>
+              <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-12 w-auto sm:h-14' />
+            </Link>
           </div>
 
+          <div className='mb-6'>
+            <h2 className='text-[1.75rem] font-bold text-slate-900 sm:text-[2rem]'>{title}</h2>
+            <p className='mt-1 text-sm text-slate-500'>{subtitle}</p>
+          </div>
+
+          {forgotStep === 0 && formData.referralCode && (
+            <div className='mb-4 rounded-lg border border-emerald-200 bg-emerald-50 p-3'>
+              <p className='flex items-center gap-2 text-xs font-semibold text-emerald-800'>
+                <Icon d={icons.link} className='h-4 w-4 shrink-0 text-emerald-600' />
+                You were referred by someone! Sign up to earn them a reward.
+              </p>
+              <p className='ml-6 mt-1 text-[11px] font-bold text-emerald-600'>
+                Referral code: <span className='tracking-wider'>{formData.referralCode}</span>
+              </p>
+            </div>
+          )}
+
           {error && (
-            <div className='mb-4 p-4 bg-red-50 border border-red-200 rounded-xl animate-shake'>
-              <div className='flex items-center gap-2'>
-                <svg className='w-5 h-5 text-red-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' />
-                </svg>
-                <p className='text-sm text-red-800 font-medium'>{error}</p>
-              </div>
+            <div className='mb-4 flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 p-3.5'>
+              <Icon d='M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z' className='h-5 w-5 shrink-0 text-red-600' />
+              <p className='text-sm font-medium text-red-800'>{error}</p>
             </div>
           )}
 
           {forgotMessage && (
-            <div className='mb-4 p-4 bg-green-50 border border-green-200 rounded-xl'>
-              <div className='flex items-center gap-2'>
-                <svg className='w-5 h-5 text-green-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
-                </svg>
-                <p className='text-sm text-green-800 font-medium'>{forgotMessage}</p>
-              </div>
+            <div className='mb-4 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 p-3.5'>
+              <Icon d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' className='h-5 w-5 shrink-0 text-green-600' />
+              <p className='text-sm font-medium text-green-800'>{forgotMessage}</p>
             </div>
           )}
 
           {forgotStep === 0 ? (
-            <form onSubmit={mode === 'login' ? handleLogin : handleSignup} className='space-y-3.5'>
-              {mode === 'signup' && (
-                <>
-                  <div>
-                    <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>Full Name</label>
-                    <div className='relative group'>
-                      <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                        <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z' />
-                        </svg>
-                      </div>
-                      <input type='text' name='name' value={formData.name} onChange={handleChange} placeholder='John Doe' className='w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                    </div>
-                  </div>
-                  <div>
-                    <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>Email</label>
-                    <div className='relative group'>
-                      <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                        <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                        </svg>
-                      </div>
-                      <input type='email' name='email' value={formData.email} onChange={handleChange} placeholder='john@example.com' className='w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {mode === 'signup' && (
-                <div>
-                  <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>Referral Code or Link <span className='text-slate-400 font-medium normal-case'>(optional)</span></label>
-                  <div className='relative group'>
-                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                      <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1' />
-                      </svg>
-                    </div>
-                    <input type='text' name='referralCode' value={formData.referralCode} onChange={handleChange} placeholder='e.g. ABC123 or bimabox.in?ref=ABC123' className='w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                  </div>
-                  {formData.referralCode.trim() && extractReferralCode(formData.referralCode) && formData.referralCode.trim() !== extractReferralCode(formData.referralCode) && (
-                    <p className='mt-1 text-[11px] text-emerald-600 font-semibold flex items-center gap-1'>
-                      <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M5 13l4 4L19 7' />
-                      </svg>
-                      Referral code detected: <span className='font-black tracking-wider'>{extractReferralCode(formData.referralCode)}</span>
-                    </p>
-                  )}
+            <form onSubmit={mode === 'login' ? handleLogin : handleSignup}>
+              {mode === 'login' ? (
+                <div className='space-y-4'>
+                  {renderField({ icon: 'phone', name: 'identifier', value: formData.identifier, onChange: handleChange, placeholder: 'Mobile Number or Email' })}
+                  {renderPasswordField({ name: 'password', value: formData.password, onChange: handleChange, show: showPassword, setShow: setShowPassword, placeholder: 'Password' })}
                 </div>
-              )}
-
-              {mode === 'login' && (
-                <div>
-                  <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>Email or Mobile</label>
-                  <div className='relative group'>
-                    <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                      <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                      </svg>
-                    </div>
-                    <input type='text' name='identifier' value={formData.identifier} onChange={handleChange} placeholder='Email or Mobile' className='w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                  </div>
-                </div>
-              )}
-
-              <div>
-                <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>Password {mode === 'signup' && <span className='text-slate-400 font-medium normal-case'>(optional)</span>}</label>
-                <div className='relative group'>
-                  <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                    <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
-                    </svg>
-                  </div>
-                  <input type={showPassword ? 'text' : 'password'} name='password' value={formData.password} onChange={handleChange} placeholder={mode === 'signup' ? 'Set a password (optional)' : '••••••••'} className='w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                  <button type='button' onClick={() => setShowPassword(!showPassword)} className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-400 hover:text-slate-600 transition-colors'>
-                    {showPassword ? (
-                      <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21' />
-                      </svg>
-                    ) : (
-                      <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' />
-                      </svg>
+              ) : (
+                <div className='space-y-4'>
+                  {renderField({ icon: 'user', name: 'name', value: formData.name, onChange: handleChange, placeholder: 'Full Name' })}
+                  {renderField({ icon: 'mail', type: 'email', name: 'email', value: formData.email, onChange: handleChange, placeholder: 'Email Address' })}
+                  {renderPasswordField({ name: 'password', value: formData.password, onChange: handleChange, show: showPassword, setShow: setShowPassword, placeholder: 'Password (optional)' })}
+                  <div>
+                    {renderField({ icon: 'link', name: 'referralCode', value: formData.referralCode, onChange: handleChange, placeholder: 'Referral code or link (optional)' })}
+                    {formData.referralCode.trim() && extractReferralCode(formData.referralCode) && formData.referralCode.trim() !== extractReferralCode(formData.referralCode) && (
+                      <p className='mt-1 flex items-center gap-1 text-[11px] font-semibold text-emerald-600'>
+                        <Icon d='M5 13l4 4L19 7' className='h-3.5 w-3.5' />
+                        Referral code detected: <span className='font-black tracking-wider'>{extractReferralCode(formData.referralCode)}</span>
+                      </p>
                     )}
-                  </button>
+                  </div>
                 </div>
-              </div>
+              )}
 
               {mode === 'login' && (
-                <div className='text-right -mt-2'>
-                  <button type='button' onClick={handleForgotPassword} className='text-xs font-semibold text-blue-600 hover:text-blue-800 hover:underline transition-colors cursor-pointer'>
+                <div className='mt-3 flex justify-end'>
+                  <button type='button' onClick={handleForgotPassword} className={linkBtnCls}>
                     Forgot Password?
                   </button>
                 </div>
               )}
 
-              {mode === 'signup' ? (
-                <div className='flex gap-3 mt-4'>
-                  <button type='submit' disabled={loading} className='flex-1 bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2'>
-                    {loading ? (
-                      <>
-                        <svg className='animate-spin h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                          <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                          <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                        </svg>
-                        <span>Creating account...</span>
-                      </>
-                    ) : (
-                      <span>Create Account</span>
-                    )}
+              {mode === 'login' ? (
+                <button type='submit' disabled={loading} className={`${primaryBtnCls} mt-5`}>
+                  {loading ? <><Spinner /><span>Logging in...</span></> : <><Icon d={icons.login} /><span>Login</span></>}
+                </button>
+              ) : (
+                <div className='mt-6 flex gap-3'>
+                  <button type='submit' disabled={loading} className={`${primaryBtnCls} flex-1`}>
+                    {loading ? <><Spinner /><span>Creating...</span></> : <span>Create Account</span>}
                   </button>
-                  <button type='button' onClick={(e) => handleSignup(e, true)} disabled={loading} className='flex-1 bg-white border-2 border-slate-200 text-slate-700 py-3 rounded-xl font-bold hover:border-slate-400 hover:bg-slate-50 hover:shadow-sm transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2'>
+                  <button
+                    type='button'
+                    onClick={(e) => handleSignup(e, true)}
+                    disabled={loading}
+                    className='flex-1 cursor-pointer rounded-lg border border-slate-300 bg-white px-4 py-3.5 text-[15px] font-bold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-60'
+                  >
                     Maybe Later
                   </button>
                 </div>
-              ) : (
-                <button type='submit' disabled={loading} className='w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-4'>
-                  {loading ? (
-                    <>
-                      <svg className='animate-spin h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                        <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                        <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                      </svg>
-                      <span>Verifying...</span>
-                    </>
-                  ) : (
-                    <span>Sign In</span>
-                  )}
-                </button>
               )}
 
-              <div className='relative my-4'>
-                <div className='absolute inset-0 flex items-center'>
-                  <div className='w-full border-t border-slate-200'></div>
-                </div>
-                <div className='relative flex justify-center text-xs uppercase'>
-                  <span className='bg-white px-2 text-slate-400 font-bold tracking-widest'>Or continue with</span>
-                </div>
-              </div>
-
-              <div className='flex justify-center'>
-                <GoogleLogin onSuccess={handleGoogleSuccess} onError={handleGoogleError} useOneTap theme="outline" size="large" shape="pill" width="100%" />
-              </div>
+              <p className='mt-10 text-center text-sm text-slate-500'>
+                {mode === 'login' ? "Don't have an account? " : 'Already have an account? '}
+                <button type='button' onClick={() => switchMode(mode === 'login' ? 'signup' : 'login')} className={linkBtnCls}>
+                  {mode === 'login' ? 'Register Now' : 'Login'}
+                </button>
+              </p>
             </form>
           ) : forgotStep === 1 ? (
-            <form onSubmit={handleSendOtp} className='space-y-3.5'>
-              <div>
-                <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>Email Address</label>
-                <div className='relative group'>
-                  <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                    <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
-                    </svg>
-                  </div>
-                  <input type='email' value={forgotEmail} onChange={(e) => setForgotEmail(e.target.value)} placeholder='john@example.com' className='w-full pl-10 pr-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                </div>
-              </div>
-
-              <button type='submit' disabled={loading} className='w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-4'>
-                {loading ? (
-                  <>
-                    <svg className='animate-spin h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                      <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                      <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                    </svg>
-                    <span>Sending OTP...</span>
-                  </>
-                ) : (
-                  <span>Send OTP</span>
-                )}
+            <form onSubmit={handleSendOtp} className='space-y-5'>
+              {renderField({ icon: 'mail', type: 'email', value: forgotEmail, onChange: (e) => setForgotEmail(e.target.value), placeholder: 'Email Address' })}
+              <button type='submit' disabled={loading} className={primaryBtnCls}>
+                {loading ? <><Spinner /><span>Sending OTP...</span></> : <span>Send OTP</span>}
               </button>
-
               <div className='text-center'>
-                <button type='button' onClick={resetForgotPassword} className='text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors cursor-pointer'>
-                  ← Back to Sign In
-                </button>
+                <button type='button' onClick={resetForgotPassword} className={linkBtnCls}>← Back to Login</button>
               </div>
             </form>
           ) : forgotStep === 2 ? (
-            <form onSubmit={handleVerifyOtp} className='space-y-3.5'>
-              <div>
-                <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-3 ml-1'>Enter OTP</label>
-                <div className='flex items-center justify-center gap-2' onPaste={handleOtpPaste}>
-                  {otpDigits.map((digit, index) => (
-                    <input
-                      key={index}
-                      ref={otpRefs[index]}
-                      type='text'
-                      inputMode='numeric'
-                      maxLength={1}
-                      value={digit}
-                      onChange={(e) => handleOtpChange(index, e.target.value)}
-                      onKeyDown={(e) => handleOtpKeyDown(index, e)}
-                      className='w-12 h-14 text-center text-xl font-bold bg-slate-50 border-2 border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all'
-                      disabled={loading}
-                    />
-                  ))}
-                </div>
+            <form onSubmit={handleVerifyOtp} className='space-y-5'>
+              <div className='flex items-center justify-between gap-2' onPaste={handleOtpPaste}>
+                {otpDigits.map((digit, index) => (
+                  <input
+                    key={index}
+                    ref={otpRefs[index]}
+                    type='text'
+                    inputMode='numeric'
+                    maxLength={1}
+                    value={digit}
+                    onChange={(e) => handleOtpChange(index, e.target.value)}
+                    onKeyDown={(e) => handleOtpKeyDown(index, e)}
+                    className='h-14 w-full max-w-[52px] rounded-lg border border-slate-300 text-center text-xl font-bold text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+                    disabled={loading}
+                  />
+                ))}
               </div>
-
-              <button type='submit' disabled={loading || otpDigits.join('').length !== 6} className='w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-4'>
-                {loading ? (
-                  <>
-                    <svg className='animate-spin h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                      <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                      <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                    </svg>
-                    <span>Verifying OTP...</span>
-                  </>
-                ) : (
-                  <span>Verify OTP</span>
-                )}
+              <button type='submit' disabled={loading || otpDigits.join('').length !== 6} className={primaryBtnCls}>
+                {loading ? <><Spinner /><span>Verifying...</span></> : <span>Verify OTP</span>}
               </button>
-
               <div className='text-center'>
-                <button type='button' onClick={() => setForgotStep(1)} className='text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors cursor-pointer'>
-                  ← Change Email
-                </button>
+                <button type='button' onClick={() => setForgotStep(1)} className={linkBtnCls}>← Change Email</button>
               </div>
             </form>
           ) : forgotStep === 3 ? (
-            <form onSubmit={handleResetPassword} className='space-y-3.5'>
-              <div>
-                <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>New Password</label>
-                <div className='relative group'>
-                  <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                    <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
-                    </svg>
-                  </div>
-                  <input type={showNewPassword ? 'text' : 'password'} value={newPassword} onChange={(e) => setNewPassword(e.target.value)} placeholder='Min. 6 characters' className='w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                  <button type='button' onClick={() => setShowNewPassword(!showNewPassword)} className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-400 hover:text-slate-600 transition-colors'>
-                    {showNewPassword ? (
-                      <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21' />
-                      </svg>
-                    ) : (
-                      <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <div>
-                <label className='block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1 ml-1'>Confirm Password</label>
-                <div className='relative group'>
-                  <div className='absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none transition-colors group-focus-within:text-blue-500'>
-                    <svg className='w-5 h-5 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
-                    </svg>
-                  </div>
-                  <input type={showConfirmPassword ? 'text' : 'password'} value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} placeholder='Re-enter new password' className='w-full pl-10 pr-10 py-2.5 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm placeholder:text-slate-400 font-medium' disabled={loading} />
-                  <button type='button' onClick={() => setShowConfirmPassword(!showConfirmPassword)} className='absolute inset-y-0 right-0 pr-3 flex items-center cursor-pointer text-slate-400 hover:text-slate-600 transition-colors'>
-                    {showConfirmPassword ? (
-                      <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21' />
-                      </svg>
-                    ) : (
-                      <svg className='w-5 h-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' />
-                      </svg>
-                    )}
-                  </button>
-                </div>
-              </div>
-
-              <button type='submit' disabled={loading} className='w-full bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-3 rounded-xl font-bold hover:shadow-lg hover:shadow-blue-500/30 transition-all duration-300 transform active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2 mt-4'>
-                {loading ? (
-                  <>
-                    <svg className='animate-spin h-5 w-5 text-white' xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24'>
-                      <circle className='opacity-25' cx='12' cy='12' r='10' stroke='currentColor' strokeWidth='4'></circle>
-                      <path className='opacity-75' fill='currentColor' d='M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z'></path>
-                    </svg>
-                    <span>Resetting Password...</span>
-                  </>
-                ) : (
-                  <span>Reset Password</span>
-                )}
+            <form onSubmit={handleResetPassword} className='space-y-4'>
+              {renderPasswordField({ value: newPassword, onChange: (e) => setNewPassword(e.target.value), show: showNewPassword, setShow: setShowNewPassword, placeholder: 'New password (min. 6 characters)' })}
+              {renderPasswordField({ value: confirmPassword, onChange: (e) => setConfirmPassword(e.target.value), show: showConfirmPassword, setShow: setShowConfirmPassword, placeholder: 'Confirm new password' })}
+              <button type='submit' disabled={loading} className={`${primaryBtnCls} !mt-5`}>
+                {loading ? <><Spinner /><span>Resetting...</span></> : <span>Reset Password</span>}
               </button>
-
               <div className='text-center'>
-                <button type='button' onClick={resetForgotPassword} className='text-xs font-semibold text-slate-500 hover:text-slate-700 transition-colors cursor-pointer'>
-                  ← Back to Sign In
-                </button>
+                <button type='button' onClick={resetForgotPassword} className={linkBtnCls}>← Back to Login</button>
               </div>
             </form>
           ) : null}
-
-          <div className='mt-4 text-center space-y-1'>
-            <p className='text-[10px] text-slate-400 font-semibold flex items-center justify-center gap-1'>
-              <svg className='w-3 h-3 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' />
-              </svg>
-              Your documents are encrypted and secure.
-            </p>
-            <p className='text-[10px] text-slate-400 font-semibold flex items-center justify-center gap-1'>
-              <svg className='w-3 h-3 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z' />
-              </svg>
-              Data stored securely on cloud.
-            </p>
-          </div>
         </div>
       </div>
     </div>
