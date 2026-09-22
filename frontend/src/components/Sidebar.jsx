@@ -97,14 +97,14 @@ const NavLink = ({ item, isActive }) => (
   <Link
     to={item.path}
     className={`group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 ${isActive
-        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-950/50'
-        : 'text-slate-300 hover:bg-white/5 hover:text-white'
+        ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
+        : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
       }`}
   >
     <span
       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors ${isActive
-          ? 'bg-white/15 text-white'
-          : 'bg-white/5 text-slate-300 group-hover:text-white'
+          ? 'bg-white/20 text-white'
+          : 'bg-slate-100 text-slate-500 group-hover:bg-white group-hover:text-blue-600'
         }`}
     >
       {item.icon}
@@ -120,31 +120,20 @@ const Sidebar = () => {
   const userInitials = (user?.name || 'U').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 
   return (
-    <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col bg-gradient-to-b from-[#0c1f48] via-[#0a1838] to-[#070f26] border-r border-white/5 lg:flex'>
-      {/* soft glow */}
-      <div className='pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-blue-500/25 blur-3xl' />
-
+    <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-slate-200 bg-white lg:flex'>
       <div className='relative flex h-full flex-col'>
         <div className='flex-none px-5 pb-4 pt-5'>
-          <Link to='/dashboard' className='flex items-center gap-2.5'>
-            <div className='flex h-11 w-11 items-center justify-center rounded-xl bg-white p-1'>
-              <img src='/bimalogo.png' alt='BimaOne' className='h-full w-auto' />
-            </div>
-            <div className='flex flex-col'>
-              <span className='text-[22px] font-bold leading-none text-white' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Bima<span className='text-blue-400'>One</span>
-              </span>
-              <span className='mt-1 text-[9px] font-medium tracking-wide text-blue-200/50'>All your policies. One smart place.</span>
-            </div>
+          <Link to='/dashboard' className='flex items-center justify-center'>
+            <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-11 w-auto' />
           </Link>
         </div>
 
-        <div className='mx-5 h-px bg-white/10' />
+        <div className='mx-5 h-px bg-slate-200' />
 
         <div className='flex-1 space-y-6 overflow-y-auto px-3 py-5 [&::-webkit-scrollbar]:hidden'>
           {navSections.map((section) => (
             <div key={section.title}>
-              <p className='mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-200/50'>{section.title}</p>
+              <p className='mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-400'>{section.title}</p>
               <nav className='space-y-1'>
                 {section.items.map((item) => (
                   <NavLink key={item.path} item={item} isActive={isActivePath(item.path)} />
@@ -154,18 +143,18 @@ const Sidebar = () => {
           ))}
         </div>
 
-        <div className='flex-none space-y-2 p-3'>
+        <div className='flex-none space-y-2 border-t border-slate-200 p-3'>
           <NavLink item={{ name: 'Settings', path: '/setting', icon: navIcons.settings }} isActive={isActivePath('/setting')} />
           <Link
             to='/setting'
-            className='flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-3 ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/10'
+            className='flex items-center gap-3 rounded-2xl bg-slate-50 px-3 py-3 ring-1 ring-inset ring-slate-200 transition-colors hover:bg-slate-100'
           >
             <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white'>
               {userInitials}
             </div>
             <div className='min-w-0 flex-1'>
-              <p className='truncate text-sm font-semibold text-white'>{user?.name || 'My Account'}</p>
-              <p className='truncate text-[11px] text-slate-300'>{user?.email || user?.mobile || 'BimaOne'}</p>
+              <p className='truncate text-sm font-semibold text-slate-800'>{user?.name || 'My Account'}</p>
+              <p className='truncate text-[11px] text-slate-500'>{user?.email || user?.mobile || 'BimaOne'}</p>
             </div>
           </Link>
         </div>
