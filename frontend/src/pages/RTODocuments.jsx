@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
@@ -18,116 +18,11 @@ import EditRcModal from './Rc/EditRcModal'
 import ImportModal from '../components/ImportModal'
 import useCurrentPlan from '../hooks/useCurrentPlan'
 import UpgradePopup from '../components/UpgradePopup'
+import { getDaysRemaining } from '../utils/dateHelpers'
 
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"
 
-
-const CustomDropdown = ({ value, onChange, options, label, icon }) => {
-  const [isOpen, setIsOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const dropdownRef = useRef(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setIsOpen(false);
-      }
-    };
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, []);
-
-  useEffect(() => {
-    if (!isOpen) setSearchTerm('');
-  }, [isOpen]);
-
-  const filteredOptions = options.filter(opt => 
-    opt.label.toLowerCase().includes(searchTerm.toLowerCase())
-  );
-
-  const selectedOption = options.find(opt => opt.value === value) || options[0];
-
-  return (
-    <div className="relative flex-1 min-w-[120px]" ref={dropdownRef}>
-      <button
-        type="button"
-        onClick={() => setIsOpen(!isOpen)}
-        className={`flex w-full items-center justify-between rounded-xl border-2 transition-all duration-200 px-3 py-2.5 text-[11px] font-black focus:outline-none ${
-          isOpen ? 'border-blue-500 bg-white shadow-lg ring-4 ring-blue-500/10' : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300'
-        }`}
-      >
-        <div className="flex items-center gap-1.5 truncate">
-          {icon && <span className={isOpen ? 'text-blue-500' : 'text-slate-400'}>{icon}</span>}
-          <span className="truncate">{label}: {selectedOption.label}</span>
-        </div>
-        <svg
-          className={`h-3 w-3 text-slate-400 transition-transform duration-300 ${isOpen ? 'rotate-180 text-blue-500' : ''}`}
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
-        </svg>
-      </button>
-
-      {isOpen && (
-        <div className="absolute left-0 right-0 z-[70] mt-2 max-h-80 overflow-hidden rounded-xl border border-slate-100 bg-white shadow-2xl ring-1 ring-black/5 animate-in fade-in slide-in-from-top-2 duration-200 flex flex-col">
-          <div className="p-2 border-b border-slate-50">
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 flex items-center pl-2.5 pointer-events-none">
-                <svg className="w-3 h-3 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
-              </div>
-              <input
-                type="text"
-                autoFocus
-                placeholder={`Search ${label.toLowerCase()}...`}
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="w-full bg-slate-50 border-none rounded-lg py-1.5 pl-8 pr-2 text-[10px] font-bold text-slate-900 placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/20 outline-none"
-              />
-            </div>
-          </div>
-          
-          <div className="overflow-y-auto flex-1">
-            {filteredOptions.length > 0 ? (
-              filteredOptions.map((option) => (
-                <button
-                  key={option.value}
-                  type="button"
-                  onClick={() => {
-                    onChange(option.value);
-                    setIsOpen(false);
-                  }}
-                  className={`flex w-full items-center px-4 py-4.5 text-[11px] font-bold transition-all duration-150 ${
-                    value === option.value
-                      ? 'bg-blue-50 text-blue-600'
-                      : 'text-slate-600 hover:bg-blue-50/50 hover:text-blue-600'
-                  }`}
-                >
-                  <div className="flex items-center justify-between w-full">
-                    <span>{option.label}</span>
-                    {value === option.value && (
-                      <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
-                      </svg>
-                    )}
-                  </div>
-                </button>
-              ))
-            ) : (
-              <div className="px-4 py-8 text-center">
-                <p className="text-[10px] font-bold text-slate-400">No {label.toLowerCase()} found</p>
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
 
 const RTODocuments = () => {
   const navigate = useNavigate()
@@ -272,319 +167,324 @@ const RTODocuments = () => {
     XLSX.writeFile(wb, `rto_documents_${typeFilter}_${new Date().toISOString().split('T')[0]}.xlsx`)
   }
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Active': return 'bg-emerald-100 text-emerald-700'
-      case 'Expired': return 'bg-rose-100 text-rose-700'
-      case 'Expiring Soon': return 'bg-amber-100 text-amber-700'
-      default: return 'bg-slate-100 text-slate-700'
-    }
+  const STATUS_STYLES = {
+    Active: { badge: 'bg-emerald-50 text-emerald-700 ring-emerald-200', dot: 'bg-emerald-500', label: 'Active' },
+    'Expiring Soon': { badge: 'bg-amber-50 text-amber-700 ring-amber-200', dot: 'bg-amber-500', label: 'Expiring' },
+    Expired: { badge: 'bg-rose-50 text-rose-700 ring-rose-200', dot: 'bg-rose-500', label: 'Expired' },
   }
 
-  const getDocTypeIcon = (type) => {
-    switch(type) {
-      case 'Tax': return '💰'
-      case 'PUC': return '🌬️'
-      case 'GPS': return (
-        <svg className='h-6 w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z' />
-          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 11a3 3 0 11-6 0 3 3 0 016 0z' />
-        </svg>
-      )
-      case 'Fitness': return '🔧'
-      case 'Permit': return '📜'
-      case 'RC': return (
-        <svg className='h-6 w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-        </svg>
-      )
-      default: return '📄'
-    }
+  const TYPE_CONFIG = {
+    Tax: { label: 'Road Tax', tint: 'bg-emerald-50 text-emerald-600 ring-emerald-100', icon: 'M9 8h6m-5 0a3 3 0 110 6H9l3 3m-3-6h6m6 1a9 9 0 11-18 0 9 9 0 0118 0z' },
+    PUC: { label: 'PUC', tint: 'bg-sky-50 text-sky-600 ring-sky-100', icon: 'M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z' },
+    GPS: { label: 'GPS', tint: 'bg-violet-50 text-violet-600 ring-violet-100', icon: 'M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z' },
+    Fitness: { label: 'Fitness', tint: 'bg-amber-50 text-amber-600 ring-amber-100', icon: 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' },
+    Permit: { label: 'Permit', tint: 'bg-rose-50 text-rose-600 ring-rose-100', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
+    RC: { label: 'RC', tint: 'bg-blue-50 text-blue-600 ring-blue-100', icon: 'M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2' },
   }
+
+  const typeLabel = (type) => TYPE_CONFIG[type]?.label || type
+  const holderName = (doc) => doc.rawRecord?.ownerName || doc.rawRecord?.policyHolderName || doc.rawRecord?.name || ''
+
+  const getExpiryInfo = (doc) => {
+    if (!/^\d{1,2}-\d{1,2}-\d{4}$/.test(doc.validTo || '')) return null
+    const days = getDaysRemaining(doc.validTo)
+    if (days < 0) return { text: `Expired ${-days} day${days === -1 ? '' : 's'} ago`, cls: 'text-rose-600' }
+    if (days === 0) return { text: 'Expires today', cls: 'text-amber-600' }
+    return { text: `${days} day${days === 1 ? '' : 's'} left`, cls: days <= 30 ? 'text-amber-600' : 'text-slate-400' }
+  }
+
+  const typeCounts = documents.reduce((acc, d) => ({ ...acc, [d.type]: (acc[d.type] || 0) + 1 }), {})
+
+  const TypeIcon = ({ type, size = 'h-10 w-10' }) => (
+    <div className={`flex ${size} shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${TYPE_CONFIG[type]?.tint || 'bg-slate-50 text-slate-500 ring-slate-100'}`}>
+      <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={TYPE_CONFIG[type]?.icon || TYPE_CONFIG.Permit.icon} />
+      </svg>
+    </div>
+  )
+
+  const StatusBadge = ({ status }) => {
+    const s = STATUS_STYLES[status] || STATUS_STYLES.Active
+    return (
+      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset ${s.badge}`}>
+        <span className={`h-1.5 w-1.5 rounded-full ${s.dot}`} />
+        {s.label}
+      </span>
+    )
+  }
+
+  const Plate = ({ number }) => (
+    <span className='inline-flex items-center rounded-md border border-slate-300 bg-white px-2 py-0.5 text-xs font-semibold tracking-wider text-slate-800 shadow-sm'>
+      {number}
+    </span>
+  )
+
+  const ActionButtons = ({ doc }) => (
+    <div className='flex items-center justify-end gap-1'>
+      <button
+        onClick={(e) => handleEditClick(e, doc)}
+        className='cursor-pointer rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600'
+        title='Edit Record'
+      >
+        <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z' />
+        </svg>
+      </button>
+      <button
+        onClick={(e) => { e.stopPropagation(); setDeletingDoc(doc) }}
+        className='cursor-pointer rounded-lg p-2 text-slate-400 transition hover:bg-rose-50 hover:text-rose-600'
+        title='Delete Record'
+      >
+        <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' />
+        </svg>
+      </button>
+    </div>
+  )
+
+  const statCards = [
+    { key: 'All', label: 'Total Documents', value: totalDocs, icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', iconCls: 'bg-blue-50 text-blue-600', activeCls: 'border-blue-500 ring-4 ring-blue-500/10' },
+    { key: 'Active', label: 'Active', value: activeDocs, icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', iconCls: 'bg-emerald-50 text-emerald-600', activeCls: 'border-emerald-500 ring-4 ring-emerald-500/10' },
+    { key: 'Expiring Soon', label: 'Expiring Soon', value: expiringDocs, icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', iconCls: 'bg-amber-50 text-amber-600', activeCls: 'border-amber-500 ring-4 ring-amber-500/10' },
+    { key: 'Expired', label: 'Expired', value: expiredDocs, icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z', iconCls: 'bg-rose-50 text-rose-600', activeCls: 'border-rose-500 ring-4 ring-rose-500/10' },
+  ]
+
+  const typeTabs = [{ value: 'All', label: 'All', count: totalDocs }, ...Object.keys(TYPE_CONFIG).map((t) => ({ value: t, label: TYPE_CONFIG[t].label, count: typeCounts[t] || 0 }))]
 
   return (
-    <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f0f9ff,_#f8fafc_45%,_#ffffff_100%)]'>
-      <main className='px-2 pt-3 pb-32 lg:px-8 lg:pt-4'>
-        <section className='w-full'>
-          <div className='max-w-6xl mx-auto'>
-            {/* Quick Action Buttons */}
-            <div className='rounded-[32px] border border-slate-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(15,23,42,0.25)] md:p-5 lg:p-6'>
-              <div className='mb-6 flex items-center justify-between'>
-                <div>
-                  <h1 className='text-xl md:text-2xl font-black text-slate-900'>RTO Documents</h1>
-                  <p className='text-[8px] md:text-[10px] font-bold text-slate-400 uppercase tracking-[0.15em]'>Manage all your vehicle documents</p>
-                </div>
-                <div className='flex items-center gap-2'>
-                  {filteredDocuments.length > 0 && (
-                    <button
-                      type='button'
-                      onClick={() => !features.excelDownload ? setShowUpgradePopup(true) : handleExport()}
-                      className='flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-[10px] font-bold text-emerald-600 hover:bg-emerald-100 transition-all border border-emerald-200'
-                    >
-                      <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-                      </svg>
-                      Export Excel
-                    </button>
-                  )}
-                  <button
-                    type='button'
-                    onClick={() => setShowImportModal(true)}
-                    className='flex items-center gap-2 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 px-4 py-2.5 text-xs font-black text-white uppercase tracking-wider shadow-lg shadow-blue-200 transition-all hover:from-blue-700 hover:to-indigo-700 hover:shadow-xl hover:shadow-blue-300 hover:-translate-y-0.5 active:scale-95'
-                  >
-                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 4v16m8-8H4' />
-                    </svg>
-                    Add
-                  </button>
-                </div>
-              </div>
-
-              {/* Stats Summary */}
-              {!loading && documents.length > 0 && (
-                <div className='mb-6 grid grid-cols-2 gap-3 md:grid-cols-4'>
-                  {[
-                    { label: 'Total Documents', value: totalDocs, color: 'bg-slate-900', textColor: 'text-slate-900', iconBg: 'bg-slate-100', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' },
-                    { label: 'Active', value: activeDocs, color: 'bg-emerald-600', textColor: 'text-emerald-700', iconBg: 'bg-emerald-100', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' },
-                    { label: 'Expiring Soon', value: expiringDocs, color: 'bg-amber-500', textColor: 'text-amber-700', iconBg: 'bg-amber-100', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' },
-                    { label: 'Expired', value: expiredDocs, color: 'bg-rose-600', textColor: 'text-rose-700', iconBg: 'bg-rose-100', icon: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' },
-                  ].map((stat) => (
-                    <div key={stat.label} className='relative overflow-hidden rounded-2xl border border-slate-200 bg-white p-3 md:p-4 shadow-sm transition-all hover:shadow-md'>
-                      <div className='flex items-center gap-2 md:gap-3'>
-                        <div className={`flex h-8 w-8 md:h-10 md:w-10 items-center justify-center rounded-xl ${stat.iconBg}`}>
-                          <svg className={`h-4 w-4 md:h-5 md:w-5 ${stat.textColor}`} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={stat.icon} />
-                          </svg>
-                        </div>
-                        <div>
-                          <p className='text-[10px] md:text-xs font-bold text-slate-400 uppercase tracking-wide'>{stat.label}</p>
-                          <p className={`text-sm md:text-lg font-black ${stat.textColor}`}>{stat.value}</p>
-                        </div>
-                      </div>
-                      <div className={`absolute bottom-0 left-0 right-0 h-0.5 ${stat.color} opacity-30`} />
-                    </div>
-                  ))}
-                </div>
+    <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <main className='px-3 pt-4 pb-32 lg:px-8 lg:pt-6'>
+        <section className='mx-auto w-full max-w-6xl space-y-5'>
+          {/* Header */}
+          <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>
+            <div>
+              <h1 className='text-xl font-bold text-slate-900 md:text-2xl'>RTO Documents</h1>
+              <p className='mt-0.5 text-sm text-slate-500'>Road Tax, PUC, Fitness, Permit, GPS &amp; RC for all your vehicles</p>
+            </div>
+            <div className='flex items-center gap-2'>
+              {filteredDocuments.length > 0 && (
+                <button
+                  type='button'
+                  onClick={() => !features.excelDownload ? setShowUpgradePopup(true) : handleExport()}
+                  className='flex cursor-pointer items-center gap-2 rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-semibold text-slate-700 shadow-sm transition hover:bg-slate-50'
+                >
+                  <svg className='h-4 w-4 text-emerald-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
+                  </svg>
+                  Export Excel
+                </button>
               )}
+              <button
+                type='button'
+                onClick={() => setShowImportModal(true)}
+                className='flex cursor-pointer items-center gap-2 rounded-lg bg-blue-700 px-4 py-2.5 text-sm font-semibold text-white shadow-md shadow-blue-700/20 transition hover:bg-blue-800 active:scale-[0.98]'
+              >
+                <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 4v16m8-8H4' />
+                </svg>
+                Add Document
+              </button>
+            </div>
+          </div>
 
-              {/* Search & Filters */}
-              <div className='mb-6 flex flex-col md:flex-row md:items-center gap-3 w-full'>
-                <div className='relative w-full md:w-80 md:flex-shrink-0'>
-                  <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
-                    <svg className='w-4 h-4 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
-                    </svg>
-                  </div>
-                  <input
-                    type='text'
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder='Search by vehicle or type...'
-                    className='w-full rounded-xl border-2 border-slate-200 bg-white py-2.5 pl-9 pr-4 text-xs font-black text-slate-900 placeholder:text-[10px] md:placeholder:text-xs placeholder:text-slate-400 placeholder:font-semibold focus:border-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-500/10 transition-all uppercase'
-                  />
-                </div>
+          {/* Stat cards (click to filter by status) */}
+          {!loading && documents.length > 0 && (
+            <div className='grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4'>
+              {statCards.map((stat) => {
+                const isActive = statusFilter === stat.key
+                return (
+                  <button
+                    key={stat.key}
+                    type='button'
+                    onClick={() => setStatusFilter(isActive && stat.key !== 'All' ? 'All' : stat.key)}
+                    className={`flex cursor-pointer items-center gap-3 rounded-2xl border bg-white p-4 text-left shadow-sm transition hover:shadow-md ${isActive ? stat.activeCls : 'border-slate-200 hover:border-slate-300'}`}
+                  >
+                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${stat.iconCls}`}>
+                      <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={stat.icon} />
+                      </svg>
+                    </div>
+                    <div className='min-w-0'>
+                      <p className='text-2xl font-bold leading-none text-slate-900'>{stat.value}</p>
+                      <p className='mt-1 truncate text-xs font-medium text-slate-500'>{stat.label}</p>
+                    </div>
+                  </button>
+                )
+              })}
+            </div>
+          )}
 
-                <div className='flex flex-col md:flex-row gap-2 flex-1 w-full'>
-                  <div className='flex gap-2 flex-1 md:flex-initial md:w-96'>
-                    <CustomDropdown
-                      label="Type"
-                      value={typeFilter}
-                      onChange={(val) => {
-                        setTypeFilter(val)
-                      }}
-                      options={[
-                        { value: 'All', label: 'All' },
-                        { value: 'Tax', label: 'Road Tax' },
-                        { value: 'PUC', label: 'PUC' },
-                        { value: 'GPS', label: 'GPS' },
-                        { value: 'Fitness', label: 'Fitness' },
-                        { value: 'Permit', label: 'Permit' },
-                        { value: 'RC', label: 'RC' },
-                      ]}
-                      icon={
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                      }
-                    />
-
-                    <CustomDropdown
-                      label="Status"
-                      value={statusFilter}
-                      onChange={setStatusFilter}
-                      options={[
-                        { value: 'All', label: 'All Status' },
-                        { value: 'Active', label: 'Active' },
-                        { value: 'Expiring Soon', label: 'Expiring' },
-                        { value: 'Expired', label: 'Expired' },
-                      ]}
-                      icon={
-                        <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
-                        </svg>
-                      }
-                    />
-                  </div>
-                </div>
+          {/* Documents card */}
+          <div className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'>
+            {/* Toolbar: type tabs + search */}
+            <div className='flex flex-col gap-3 border-b border-slate-200 p-3 md:p-4 lg:flex-row lg:items-center lg:justify-between'>
+              <div className='-mx-1 flex gap-1.5 overflow-x-auto px-1 pb-1 [&::-webkit-scrollbar]:hidden lg:pb-0'>
+                {typeTabs.map((tab) => {
+                  const isActive = typeFilter === tab.value
+                  return (
+                    <button
+                      key={tab.value}
+                      type='button'
+                      onClick={() => setTypeFilter(tab.value)}
+                      className={`flex shrink-0 cursor-pointer items-center gap-1.5 rounded-lg px-3 py-2 text-[13px] font-medium transition ${isActive ? 'bg-slate-900 text-white' : 'text-slate-600 hover:bg-slate-100'}`}
+                    >
+                      {tab.label}
+                      <span className={`rounded-md px-1.5 text-[11px] font-semibold ${isActive ? 'bg-white/20 text-white' : 'bg-slate-100 text-slate-500'}`}>{tab.count}</span>
+                    </button>
+                  )
+                })}
               </div>
 
-              {/* Document List */}
-              {loading ? (
-                <div className='mt-6 text-center py-12 bg-slate-50/50 rounded-2xl border-2 border-dashed border-slate-200'>
-                  <div className='animate-spin h-8 w-8 border-4 border-blue-600 border-t-transparent rounded-full mx-auto'></div>
-                  <p className='text-xs text-slate-500 mt-2 font-bold uppercase tracking-widest'>Loading documents...</p>
+              <div className='relative w-full lg:w-72'>
+                <svg className='pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
+                </svg>
+                <input
+                  type='text'
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder='Search vehicle number...'
+                  className='w-full rounded-lg border border-slate-300 bg-white py-2.5 pl-10 pr-9 text-sm font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+                />
+                {searchQuery && (
+                  <button type='button' onClick={() => setSearchQuery('')} className='absolute right-2.5 top-1/2 -translate-y-1/2 cursor-pointer rounded p-1 text-slate-400 hover:text-slate-600' title='Clear'>
+                    <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M6 18L18 6M6 6l12 12' />
+                    </svg>
+                  </button>
+                )}
+              </div>
+            </div>
+
+            {/* Active status filter chip */}
+            {statusFilter !== 'All' && (
+              <div className='flex items-center gap-2 border-b border-slate-100 bg-slate-50/60 px-4 py-2 text-xs text-slate-500'>
+                Showing
+                <StatusBadge status={statusFilter} />
+                <button type='button' onClick={() => setStatusFilter('All')} className='cursor-pointer font-semibold text-blue-700 hover:underline'>Clear</button>
+              </div>
+            )}
+
+            {loading ? (
+              <div className='py-16 text-center'>
+                <div className='mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent'></div>
+                <p className='mt-3 text-sm text-slate-500'>Loading documents...</p>
+              </div>
+            ) : filteredDocuments.length === 0 ? (
+              <div className='px-4 py-16 text-center'>
+                <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-slate-100 text-slate-400'>
+                  <svg className='h-8 w-8' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
+                  </svg>
                 </div>
-              ) : (
-                <>
-                  {/* Mobile View (Cards) */}
-                  <div className='grid gap-4 sm:grid-cols-2 lg:hidden'>
-                    {filteredDocuments.map((doc) => (
+                <h3 className='text-base font-semibold text-slate-800'>{documents.length === 0 ? 'No documents yet' : 'No documents found'}</h3>
+                <p className='mt-1 text-sm text-slate-500'>
+                  {documents.length === 0 ? 'Click "Add Document" to add your first RTO document.' : 'Try a different search or filter.'}
+                </p>
+              </div>
+            ) : (
+              <>
+                {/* Mobile cards */}
+                <div className='divide-y divide-slate-100 lg:hidden'>
+                  {filteredDocuments.map((doc) => {
+                    const expiry = getExpiryInfo(doc)
+                    return (
                       <div
                         key={doc.id}
                         onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
-                        className='group relative overflow-hidden rounded-2xl border-2 border-slate-200 bg-white p-4 shadow-sm transition-all hover:border-blue-400 hover:shadow-xl hover:shadow-blue-100/50 hover:-translate-y-0.5 cursor-pointer'
+                        className='flex cursor-pointer items-start gap-3 p-4 transition hover:bg-slate-50'
                       >
-                        <div className='flex items-start justify-between'>
-                          <div className='flex items-center gap-3'>
-                            <div className='flex h-11 w-11 items-center justify-center rounded-xl bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 group-hover:scale-110 group-hover:ring-blue-200 transition-all'>
-                              <span className='text-lg'>{getDocTypeIcon(doc.type)}</span>
+                        <TypeIcon type={doc.type} />
+                        <div className='min-w-0 flex-1'>
+                          <div className='flex items-start justify-between gap-2'>
+                            <div className='min-w-0'>
+                              <p className='text-sm font-semibold text-slate-900'>{typeLabel(doc.type)}</p>
+                              <div className='mt-1'><Plate number={doc.vehicleNumber} /></div>
                             </div>
-                            <div>
-                              <h3 className='text-sm font-black text-slate-900'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</h3>
-                              <p className='text-[10px] font-black tracking-wider text-slate-400 uppercase font-mono'>{doc.vehicleNumber}</p>
-                            </div>
+                            <StatusBadge status={doc.status} />
                           </div>
-                          <span className={`shrink-0 rounded-lg px-2 py-1 text-[9px] font-black uppercase leading-none tracking-wider shadow-sm ring-1 ring-inset ${getStatusColor(doc.status)}`}>
-                            {doc.status === 'Expiring Soon' ? 'Expiring' : doc.status}
-                          </span>
-                        </div>
-                        <div className='mt-4 flex items-center justify-between border-t border-slate-100 pt-3'>
-                          <div className='flex gap-5'>
-                            <div>
-                              <p className='text-[8px] font-black uppercase tracking-wider text-slate-400'>From</p>
-                              <p className='text-xs font-bold text-slate-700'>{doc.validFrom}</p>
+                          <div className='mt-2.5 flex items-end justify-between gap-2'>
+                            <div className='text-xs text-slate-500'>
+                              {doc.validTo !== 'N/A' ? (
+                                <>
+                                  <span>{doc.validFrom} → <span className='font-semibold text-slate-800'>{doc.validTo}</span></span>
+                                  {expiry && <p className={`mt-0.5 font-medium ${expiry.cls}`}>{expiry.text}</p>}
+                                </>
+                              ) : (
+                                <span>No expiry</span>
+                              )}
                             </div>
-                            <div>
-                              <p className='text-[8px] font-black uppercase tracking-wider text-slate-400'>To</p>
-                              <p className='text-xs font-black text-slate-900'>{doc.validTo}</p>
-                            </div>
-                          </div>
-                          <div className='flex items-center gap-1'>
-                            <button
-                              onClick={(e) => handleEditClick(e, doc)}
-                              className='rounded-lg bg-blue-50/80 p-1.5 text-blue-500 opacity-0 group-hover:opacity-100 hover:bg-blue-100 hover:text-blue-700 transition-all'
-                              title="Edit Record"
-                            >
-                              <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                              </svg>
-                            </button>
-                            <button
-                              onClick={(e) => { e.stopPropagation(); setDeletingDoc(doc) }}
-                              className='rounded-lg bg-red-50/80 p-1.5 text-red-500 opacity-0 group-hover:opacity-100 hover:bg-red-100 hover:text-red-700 transition-all'
-                              title="Delete Record"
-                            >
-                              <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                              </svg>
-                            </button>
+                            <ActionButtons doc={doc} />
                           </div>
                         </div>
                       </div>
-                    ))}
-                  </div>
-
-                  {/* Desktop View (Table) */}
-                  <div className='hidden lg:block'>
-                    <div className='overflow-hidden rounded-2xl border border-slate-100 bg-white'>
-                      <table className='w-full text-left'>
-                        <thead>
-                          <tr className='bg-slate-50/50 border-b border-slate-100'>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Type</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Vehicle</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Valid From</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400'>Valid To</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right'>Status</th>
-                            <th className='px-6 py-4 text-[10px] font-black uppercase tracking-wider text-slate-400 text-right'>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className='divide-y divide-slate-50'>
-                          {filteredDocuments.map((doc, idx) => (
-                            <tr
-                              key={doc.id}
-                              onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
-                              className='group cursor-pointer transition-all hover:bg-blue-50/40'
-                              style={{ animationDelay: `${idx * 30}ms` }}
-                            >
-                              <td className='px-6 py-4'>
-                                <div className='flex items-center gap-3'>
-                                  <div className='flex h-9 w-9 items-center justify-center rounded-xl bg-white text-slate-600 shadow-sm ring-1 ring-slate-200 group-hover:ring-blue-200 group-hover:scale-110 transition-all'>
-                                    <span className='text-sm'>{getDocTypeIcon(doc.type)}</span>
-                                  </div>
-                                  <div>
-                                    <span className='text-sm font-extrabold text-slate-800'>{doc.type === 'Tax' ? 'Road Tax' : doc.type}</span>
-                                  </div>
-                                </div>
-                              </td>
-                              <td className='px-6 py-4'>
-                                <span className='font-mono text-xs font-extrabold text-slate-600'>{doc.vehicleNumber}</span>
-                              </td>
-                              <td className='px-6 py-4'>
-                                <span className='text-xs font-semibold text-slate-500'>{doc.validFrom}</span>
-                              </td>
-                              <td className='px-6 py-4'>
-                                <span className='text-xs font-bold text-slate-700'>{doc.validTo}</span>
-                              </td>
-                              <td className='px-6 py-4 text-right'>
-                                <span className={`inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-wider shadow-sm ring-1 ring-inset ${getStatusColor(doc.status)}`}>
-                                  <span className={`h-1.5 w-1.5 rounded-full ${doc.status === 'Active' ? 'bg-emerald-500' : doc.status === 'Expiring Soon' ? 'bg-amber-500' : 'bg-rose-500'}`} />
-                                  {doc.status === 'Expiring Soon' ? 'Expiring' : doc.status}
-                                </span>
-                              </td>
-                              <td className='px-6 py-4 text-right'>
-                                <div className='flex items-center justify-end gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity'>
-                                  <button
-                                    onClick={(e) => handleEditClick(e, doc)}
-                                    className='rounded-lg bg-blue-50 p-1.5 text-blue-500 hover:bg-blue-100 hover:text-blue-700 transition-all hover:scale-110'
-                                    title="Edit Record"
-                                  >
-                                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
-                                    </svg>
-                                  </button>
-                                  <button
-                                    onClick={(e) => { e.stopPropagation(); setDeletingDoc(doc) }}
-                                    className='rounded-lg bg-red-50 p-1.5 text-red-500 hover:bg-red-100 hover:text-red-700 transition-all hover:scale-110'
-                                    title="Delete Record"
-                                  >
-                                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                                    </svg>
-                                  </button>
-                                </div>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  </div>
-                </>
-              )}
-
-              {!loading && filteredDocuments.length === 0 && (
-                <div className='mt-6 text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200'>
-                  <div className='mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-slate-50 to-slate-100 shadow-inner'>
-                    <svg className='h-10 w-10 text-slate-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M12 11v4m0 2h.01' opacity='0.5' />
-                    </svg>
-                  </div>
-                  <h3 className='text-lg font-black text-slate-800'>No Documents Found</h3>
-                  <p className='mt-1 text-xs font-semibold text-slate-400'>Try adjusting your search or filter to find what you're looking for.</p>
+                    )
+                  })}
                 </div>
-              )}
-            </div>
+
+                {/* Desktop table */}
+                <div className='hidden lg:block'>
+                  <table className='w-full text-left'>
+                    <thead>
+                      <tr className='border-b border-slate-200 bg-slate-50/70 text-xs font-semibold text-slate-500'>
+                        <th className='px-5 py-3'>Document</th>
+                        <th className='px-5 py-3'>Vehicle</th>
+                        <th className='px-5 py-3'>Validity</th>
+                        <th className='px-5 py-3'>Expiry</th>
+                        <th className='px-5 py-3'>Status</th>
+                        <th className='px-5 py-3 text-right'>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody className='divide-y divide-slate-100'>
+                      {filteredDocuments.map((doc) => {
+                        const expiry = getExpiryInfo(doc)
+                        const holder = holderName(doc)
+                        return (
+                          <tr
+                            key={doc.id}
+                            onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
+                            className='cursor-pointer transition hover:bg-slate-50'
+                          >
+                            <td className='px-5 py-3.5'>
+                              <div className='flex items-center gap-3'>
+                                <TypeIcon type={doc.type} />
+                                <div className='min-w-0'>
+                                  <p className='text-sm font-semibold text-slate-900'>{typeLabel(doc.type)}</p>
+                                  {holder && <p className='max-w-[180px] truncate text-xs text-slate-500'>{holder}</p>}
+                                </div>
+                              </div>
+                            </td>
+                            <td className='px-5 py-3.5'>
+                              <Plate number={doc.vehicleNumber} />
+                            </td>
+                            <td className='px-5 py-3.5 text-sm'>
+                              {doc.validTo !== 'N/A' ? (
+                                <span className='text-slate-500'>{doc.validFrom} <span className='text-slate-300'>→</span> <span className='font-semibold text-slate-800'>{doc.validTo}</span></span>
+                              ) : (
+                                <span className='text-slate-400'>—</span>
+                              )}
+                            </td>
+                            <td className='px-5 py-3.5 text-sm'>
+                              {expiry ? <span className={`font-medium ${expiry.cls}`}>{expiry.text}</span> : <span className='text-slate-400'>No expiry</span>}
+                            </td>
+                            <td className='px-5 py-3.5'>
+                              <StatusBadge status={doc.status} />
+                            </td>
+                            <td className='px-5 py-3.5'>
+                              <ActionButtons doc={doc} />
+                            </td>
+                          </tr>
+                        )
+                      })}
+                    </tbody>
+                  </table>
+                </div>
+
+                <div className='border-t border-slate-100 px-5 py-3 text-xs text-slate-500'>
+                  Showing {filteredDocuments.length} of {totalDocs} documents
+                </div>
+              </>
+            )}
           </div>
         </section>
       </main>
