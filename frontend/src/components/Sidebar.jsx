@@ -1,5 +1,4 @@
 import { Link, useLocation } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
 
 const navIcons = {
   home: (
@@ -127,9 +126,7 @@ const NavLink = ({ item, isActive }) => (
 
 const Sidebar = () => {
   const location = useLocation()
-  const { user } = useAuth()
   const isActivePath = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`)
-  const userInitials = (user?.name || 'U').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 
   return (
     <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-slate-200 bg-white lg:flex'>
@@ -157,18 +154,6 @@ const Sidebar = () => {
 
         <div className='flex-none space-y-2 border-t border-slate-200 p-3'>
           <NavLink item={{ name: 'Settings', path: '/setting', icon: navIcons.settings }} isActive={isActivePath('/setting')} />
-          <Link
-            to='/setting'
-            className='flex items-center gap-3 rounded-2xl bg-slate-50 px-3 py-3 ring-1 ring-inset ring-slate-200 transition-colors hover:bg-slate-100'
-          >
-            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white'>
-              {userInitials}
-            </div>
-            <div className='min-w-0 flex-1'>
-              <p className='truncate text-sm font-semibold text-slate-800'>{user?.name || 'My Account'}</p>
-              <p className='truncate text-[11px] text-slate-500'>{user?.email || user?.mobile || 'BimaOne'}</p>
-            </div>
-          </Link>
         </div>
       </div>
     </aside>
