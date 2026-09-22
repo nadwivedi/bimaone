@@ -644,16 +644,16 @@ const Search = () => {
         </section>
 
         {/* Results */}
-        <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
+        <section className='md:overflow-hidden md:rounded-2xl md:bg-white md:shadow-sm md:ring-1 md:ring-slate-200'>
           {loading && (
-            <div className='flex flex-col items-center gap-3 py-20'>
+            <div className='flex flex-col items-center gap-3 rounded-2xl bg-white py-20 ring-1 ring-slate-200 md:rounded-none md:ring-0'>
               <div className='h-9 w-9 animate-spin rounded-full border-4 border-blue-600 border-r-transparent' />
               <p className='text-sm text-slate-400'>Loading records…</p>
             </div>
           )}
 
           {showEmpty && (
-            <div className='flex flex-col items-center gap-2 px-6 py-20 text-center'>
+            <div className='flex flex-col items-center gap-2 rounded-2xl bg-white px-6 py-20 text-center ring-1 ring-slate-200 md:rounded-none md:ring-0'>
               <span className='flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-500'>
                 <Svg d={ICON.search} className='h-7 w-7' />
               </span>
@@ -726,31 +726,46 @@ const Search = () => {
                 </table>
               </div>
 
-              {/* Mobile list */}
-              <ul className='divide-y divide-slate-100 md:hidden'>
+              {/* Mobile cards */}
+              <ul className='space-y-3 md:hidden'>
                 {filteredRecords.map((record) => {
                   const name = record.policyHolderName || record.ownerName || record.name || ''
                   const due = dueText(getDaysLeft(record.validTo || record.taxTo))
                   const company = isInsurance ? recordCompanyName(record) : ''
+                  const product = isInsurance ? [record.product, record.insuranceClass].filter(Boolean).join(' · ') : ''
                   return (
-                    <li key={record._id} className='flex items-start gap-2 px-4 py-3'>
-                      <button type='button' onClick={() => openRecord(record)} className='min-w-0 flex-1 text-left'>
-                        <span className='mb-0.5 block truncate text-sm font-semibold text-slate-800'>{name || '—'}</span>
-                        <Plate value={record.vehicleNumber} small />
-                        {company && <span className='mt-0.5 block truncate text-xs text-slate-500'>{company}</span>}
-                        <span className='mt-1 block text-xs text-slate-600'>
-                          {record.validTo || record.taxTo || '—'}
+                    <li key={record._id} className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70'>
+                      <button type='button' onClick={() => openRecord(record)} className='block w-full p-3.5 text-left active:bg-slate-50'>
+                        <span className='flex items-start justify-between gap-3'>
+                          <span className='min-w-0'>
+                            <span className='block truncate text-[15px] font-semibold text-slate-900'>{name || '—'}</span>
+                            <span className='mt-1 flex items-center gap-2'>
+                              <Plate value={record.vehicleNumber} small />
+                              {record.mobileNumber && <span className='text-xs text-slate-400'>{record.mobileNumber}</span>}
+                            </span>
+                          </span>
+                          {isInsurance && record.premium != null && (
+                            <span className='shrink-0 rounded-lg bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700'>{formatPremium(record.premium)}</span>
+                          )}
+                        </span>
+                        {company && (
+                          <span className='mt-2 block break-words text-xs font-medium text-slate-700'>{company}</span>
+                        )}
+                        {product && (
+                          <span className={`${company ? 'mt-0.5' : 'mt-2'} block break-words text-xs text-slate-500`}>{product}</span>
+                        )}
+                      </button>
+                      <div className='flex items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/60 py-1.5 pl-3.5 pr-1.5'>
+                        <span className='min-w-0 truncate text-xs text-slate-600'>
+                          <span className='text-slate-400'>Valid to </span>
+                          <span className='font-semibold text-slate-800'>{record.validTo || record.taxTo || '—'}</span>
                           {due.text && <span className={`ml-1.5 font-semibold ${due.cls}`}>{due.text}</span>}
                         </span>
-                      </button>
-                      <div className='flex shrink-0 flex-col items-end'>
-                        {isInsurance && record.premium != null && (
-                          <span className='mb-1 text-xs font-semibold text-emerald-700'>{formatPremium(record.premium)}</span>
-                        )}
-                        <div className='flex'>
+                        <span className='flex shrink-0'>
+                          <IconAction icon={ICON.eye} label='View' onClick={(e) => { e.stopPropagation(); openRecord(record) }} />
                           <IconAction icon={ICON.edit} label='Edit' onClick={(e) => startEdit(e, record)} />
                           <IconAction icon={ICON.trash} label='Delete' danger onClick={(e) => startDelete(e, record)} />
-                        </div>
+                        </span>
                       </div>
                     </li>
                   )
@@ -758,7 +773,7 @@ const Search = () => {
               </ul>
 
               {/* Footer */}
-              <div className='flex flex-col items-center justify-between gap-3 border-t border-slate-100 bg-gray-50 px-4 py-3 sm:flex-row md:px-6'>
+              <div className='mt-3 flex flex-col items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-slate-200 sm:flex-row md:mt-0 md:rounded-none md:border-t md:border-slate-100 md:bg-gray-50 md:px-6 md:ring-0'>
                 <p className='text-xs text-slate-500'>
                   Showing <span className='font-semibold text-slate-700'>{filteredRecords.length}</span> of{' '}
                   <span className='font-semibold text-slate-700'>{totalRecords}</span> {typeLabel} records
