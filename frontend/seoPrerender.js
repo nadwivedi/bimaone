@@ -9,7 +9,6 @@ import { PAGE_META } from './src/data/pageMeta.js'
 import { landingPages, landingJsonLd } from './src/data/landingPages.js'
 
 const SITE_URL = 'https://bimaone.in'
-const EXTRA_SITEMAP_PATHS = ['/privacy-policy', '/terms-and-conditions']
 
 const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;')
 
@@ -66,11 +65,13 @@ const writePage = (outDir, route, html) => {
 
 export default function seoPrerender() {
   let outDir
+  let publicDir
   return {
     name: 'bimaone-seo-prerender',
     apply: 'build',
     configResolved(config) {
       outDir = path.resolve(config.root, config.build.outDir)
+      publicDir = config.publicDir || path.resolve(config.root, 'public')
     },
     closeBundle() {
       const template = fs.readFileSync(path.join(outDir, 'index.html'), 'utf8')
@@ -93,19 +94,11 @@ export default function seoPrerender() {
         writePage(outDir, `/${p.slug}`, html)
       }
 
-      const today = new Date().toISOString().slice(0, 10)
-      const entries = [
-        ...Object.keys(PAGE_META),
-        ...landingPages.map((p) => `/${p.slug}`),
-        ...EXTRA_SITEMAP_PATHS,
-      ]
-      const xml = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-${entries.map((loc) => `  <url><loc>${SITE_URL}${loc}</loc><lastmod>${today}</lastmod></url>`).join('\n')}
-</urlset>
-`
-      fs.writeFileSync(path.join(outDir, 'sitemap.xml'), xml)
-      this.info?.(`pre-rendered ${Object.keys(PAGE_META).length + landingPages.length} pages and sitemap.xml (${entries.length} URLs)`)
+      // sitemap.xml is maintained by hand in public/ — add a <url> there when you add a page.
+      const missing = [...Object.keys(PAGE_META), ...landingPages.map((p) => `/${p.slug}`)]
+        .filter((loc) => !fs.readFileSync(path.join(publicDir, 'sitemap.xml'), 'utf8').includes(`<loc>${SITE_URL}${loc}</loc>`))
+      if (missing.length) this.warn(`public/sitemap.xml is missing: ${missing.join(', ')}`)
+      this.info?.(`pre-rendered ${Object.keys(PAGE_META).length + landingPages.length} pages`)
     },
   }
 }
