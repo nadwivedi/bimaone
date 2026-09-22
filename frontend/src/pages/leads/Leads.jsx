@@ -11,11 +11,6 @@ import {
 // Lead Management: stat cards, leads table with checkboxes + pagination, filters panel on the right.
 const PAGE_SIZE = 10
 
-const VIEWS = [
-  { key: 'all', label: 'All Leads' },
-  ...BUCKETS.map((b) => ({ key: b.key, label: b.long })),
-]
-
 const AVATAR_COLORS = [
   'bg-blue-100 text-blue-700', 'bg-purple-100 text-purple-700', 'bg-orange-100 text-orange-700',
   'bg-emerald-100 text-emerald-700', 'bg-violet-100 text-violet-700', 'bg-teal-100 text-teal-700',
@@ -78,6 +73,19 @@ const PanelSelect = ({ value, onChange, children }) => (
       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M19 9l-7 7-7-7' />
     </svg>
   </div>
+)
+
+const STAT_TONES = {
+  blue: { card: 'from-blue-50 to-sky-50 border-blue-200', icon: 'bg-blue-600', value: 'text-blue-700' },
+  emerald: { card: 'from-emerald-50 to-teal-50 border-emerald-200', icon: 'bg-emerald-600', value: 'text-emerald-700' },
+  amber: { card: 'from-amber-50 to-orange-50 border-amber-200', icon: 'bg-amber-500', value: 'text-amber-700' },
+  violet: { card: 'from-violet-50 to-purple-50 border-violet-200', icon: 'bg-violet-600', value: 'text-violet-700' },
+}
+
+const Plate = ({ value, small = false }) => (
+  <span className={`inline-block rounded-md border-2 border-slate-800 bg-amber-300 font-mono font-bold text-slate-900 ${small ? 'px-1.5 text-[11px] tracking-wider' : 'px-1.5 py-0.5 text-[11px] tracking-widest'}`}>
+    {value}
+  </span>
 )
 
 const Leads = () => {
@@ -185,10 +193,10 @@ const Leads = () => {
   const winRate = closed ? Math.round(((counts.converted ?? 0) / closed) * 100) : 0
   const inProgress = Math.max(0, (counts.open ?? 0) - (counts.new ?? 0))
   const stats = [
-    { label: 'Total Leads', value: counts.all ?? 0, note: `${counts.open ?? 0} open`, icon: ICON_PATHS.users, circle: 'bg-blue-100 text-blue-600' },
-    { label: 'New Leads', value: counts.new ?? 0, note: `${counts.today ?? 0} follow-ups today`, icon: ICON_PATHS.plus, circle: 'bg-emerald-100 text-emerald-600' },
-    { label: 'In Progress', value: inProgress, note: counts.overdue ? `${counts.overdue} overdue` : 'None overdue', icon: ICON_PATHS.clock, circle: 'bg-amber-100 text-amber-600', warn: !!counts.overdue },
-    { label: 'Converted', value: counts.converted ?? 0, note: `${winRate}% win rate`, icon: ICON_PATHS.check, circle: 'bg-purple-100 text-purple-600' },
+    { label: 'Total Leads', value: counts.all ?? 0, note: `${counts.open ?? 0} open`, icon: ICON_PATHS.users, tone: STAT_TONES.blue },
+    { label: 'New Leads', value: counts.new ?? 0, note: `${counts.today ?? 0} follow-ups today`, icon: ICON_PATHS.plus, tone: STAT_TONES.emerald },
+    { label: 'In Progress', value: inProgress, note: counts.overdue ? `${counts.overdue} overdue` : 'None overdue', icon: ICON_PATHS.clock, tone: STAT_TONES.amber, warn: !!counts.overdue },
+    { label: 'Converted', value: counts.converted ?? 0, note: `${winRate}% win rate`, icon: ICON_PATHS.check, tone: STAT_TONES.violet },
   ]
 
   // Page numbers with ellipsis, e.g. 1 2 3 4 5 … 25
@@ -202,338 +210,406 @@ const Leads = () => {
   }, [page, totalPages])
 
   const filtersPanel = (
-    <div className='w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl' onClick={(e) => e.stopPropagation()}>
-      <div className='mb-5 flex items-center justify-between'>
-        <h2 className='text-lg font-bold text-slate-900'>Filters</h2>
-        <button type='button' onClick={() => setShowFilters(false)} className='flex h-8 w-8 items-center justify-center rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 hover:text-slate-800' aria-label='Close filters'>
-          <Icon d={ICON_PATHS.close} className='h-4 w-4' strokeWidth={2.5} />
+    <div
+      className='flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl md:rounded-2xl'
+      onClick={(e) => e.stopPropagation()}
+      role='dialog'
+      aria-modal='true'
+      aria-label='Filter leads'
+    >
+      <div className='flex flex-shrink-0 items-center justify-between bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] p-3 text-white md:p-4'>
+        <div>
+          <h2 className='text-lg font-bold md:text-xl'>Filter Leads</h2>
+          <p className='text-xs text-slate-300 md:text-sm'>Narrow down who to follow up with</p>
+        </div>
+        <button type='button' onClick={() => setShowFilters(false)} className='rounded-lg p-1.5 text-white transition hover:bg-white/20 md:p-2' aria-label='Close filters'>
+          <Icon d={ICON_PATHS.close} className='h-5 w-5 md:h-6 md:w-6' />
         </button>
       </div>
-      <div className='space-y-4'>
-        <div>
-          <label className={panelLabel}>Insurance Type</label>
-          <PanelSelect value={draft.type} onChange={(v) => setDraft((d) => ({ ...d, type: v }))}>
-            <option value=''>All Types</option>
-            {INSURANCE_TYPES.map((t) => <option key={t.value} value={t.value}>{t.value}</option>)}
-          </PanelSelect>
-        </div>
-        <div>
-          <label className={panelLabel}>Status</label>
-          <PanelSelect value={draft.status} onChange={(v) => setDraft((d) => ({ ...d, status: v }))}>
-            <option value=''>All Statuses</option>
-            {LEAD_STATUSES.map((st) => <option key={st.value} value={st.value}>{st.label}</option>)}
-          </PanelSelect>
-        </div>
-        <div>
-          <label className={panelLabel}>Source</label>
-          <PanelSelect value={draft.source} onChange={(v) => setDraft((d) => ({ ...d, source: v }))}>
-            <option value=''>All Sources</option>
-            {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
-          </PanelSelect>
-        </div>
-        <div>
-          <label className={panelLabel}>Lead Type (Hot / Warm / Cold)</label>
-          <div className='flex flex-wrap gap-2'>
+
+      <div className='flex-1 space-y-4 overflow-y-auto p-3 md:p-6'>
+        <section className='rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 p-3 md:p-5'>
+          <h3 className='mb-3 flex items-center gap-2 text-base font-bold text-gray-800'>
+            <span className='flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white md:h-7 md:w-7'>1</span>
+            Lead
+          </h3>
+          <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
+            <div>
+              <label className={panelLabel}>Insurance Type</label>
+              <PanelSelect value={draft.type} onChange={(v) => setDraft((d) => ({ ...d, type: v }))}>
+                <option value=''>All types</option>
+                {INSURANCE_TYPES.map((t) => <option key={t.value} value={t.value}>{t.value}</option>)}
+              </PanelSelect>
+            </div>
+            <div>
+              <label className={panelLabel}>Status</label>
+              <PanelSelect value={draft.status} onChange={(v) => setDraft((d) => ({ ...d, status: v }))}>
+                <option value=''>All statuses</option>
+                {LEAD_STATUSES.map((st) => <option key={st.value} value={st.value}>{st.label}</option>)}
+              </PanelSelect>
+            </div>
+            <div className='sm:col-span-2'>
+              <label className={panelLabel}>Source</label>
+              <PanelSelect value={draft.source} onChange={(v) => setDraft((d) => ({ ...d, source: v }))}>
+                <option value=''>All sources</option>
+                {SOURCES.map((s) => <option key={s} value={s}>{s}</option>)}
+              </PanelSelect>
+            </div>
+          </div>
+        </section>
+
+        <section className='rounded-xl border-2 border-amber-200 bg-gradient-to-r from-amber-50 to-orange-50 p-3 md:p-5'>
+          <h3 className='mb-3 flex items-center gap-2 text-base font-bold text-gray-800'>
+            <span className='flex h-6 w-6 items-center justify-center rounded-full bg-amber-500 text-xs text-white md:h-7 md:w-7'>2</span>
+            Priority &amp; Date
+          </h3>
+          <label className={panelLabel}>Lead Type</label>
+          <div className='mb-4 flex flex-wrap gap-2'>
             {LEAD_TEMPS.map((t) => (
               <button key={t.value || 'all'} type='button' onClick={() => setDraft((d) => ({ ...d, priority: t.value }))} className={tempChip(draft.priority === t.value, t.active)}>
                 {t.label}
               </button>
             ))}
           </div>
-        </div>
-        <div>
           <label className={panelLabel}>Created Date</label>
           <div className='grid grid-cols-2 gap-2'>
-            <input type='date' value={draft.dateFrom} max={draft.dateTo || undefined} onChange={(e) => setDraft((d) => ({ ...d, dateFrom: e.target.value }))} className={`${panelInput} px-2`} title='From' />
-            <input type='date' value={draft.dateTo} min={draft.dateFrom || undefined} onChange={(e) => setDraft((d) => ({ ...d, dateTo: e.target.value }))} className={`${panelInput} px-2`} title='To' />
+            <input type='date' value={draft.dateFrom} max={draft.dateTo || undefined} onChange={(e) => setDraft((d) => ({ ...d, dateFrom: e.target.value }))} className={panelInput} title='From' />
+            <input type='date' value={draft.dateTo} min={draft.dateFrom || undefined} onChange={(e) => setDraft((d) => ({ ...d, dateTo: e.target.value }))} className={panelInput} title='To' />
           </div>
-        </div>
-        <div className='grid grid-cols-2 gap-2 pt-1'>
-          <button type='button' onClick={resetPanel} className='rounded-lg border border-slate-200 bg-white py-2.5 text-sm font-semibold text-slate-700 hover:bg-slate-50'>
-            Reset
-          </button>
-          <button type='button' onClick={applyPanel} className='rounded-lg bg-blue-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700'>
-            Apply Filters
-          </button>
-        </div>
+        </section>
+      </div>
+
+      <div className='flex flex-shrink-0 items-center justify-between gap-3 border-t border-gray-200 bg-gray-50 p-3 md:p-4'>
+        <button type='button' onClick={resetPanel} className='rounded-lg px-4 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-50'>
+          Reset
+        </button>
+        <button type='button' onClick={applyPanel} className='rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-2 font-semibold text-white shadow-md shadow-blue-700/20 transition hover:from-blue-800 hover:to-blue-700 md:px-8'>
+          Apply Filters
+        </button>
       </div>
     </div>
   )
 
+  const RowMenu = ({ lead, ctx }) => (
+    <div className='relative' onClick={(e) => e.stopPropagation()}>
+      <button
+        type='button'
+        onClick={() => setMenuFor(menuFor === `${ctx}:${lead._id}` ? null : `${ctx}:${lead._id}`)}
+        className='flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-blue-50 hover:text-blue-700'
+        aria-label='Actions'
+      >
+        <svg className='h-5 w-5' fill='currentColor' viewBox='0 0 24 24'><circle cx='12' cy='5' r='1.8' /><circle cx='12' cy='12' r='1.8' /><circle cx='12' cy='19' r='1.8' /></svg>
+      </button>
+      {menuFor === `${ctx}:${lead._id}` && (
+        <div ref={menuRef} className='absolute right-0 top-9 z-20 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl'>
+          {[
+            { label: 'View details', run: () => L.setDetailLead(lead) },
+            !isClosedStatus(lead.status) && { label: 'Log follow-up', run: () => L.openFollowUp(lead) },
+            { label: 'Edit lead', run: () => L.openEdit(lead) },
+            lead.mobile && { label: 'Call', run: () => { window.location.href = `tel:+91${lead.mobile}` } },
+            lead.mobile && { label: 'WhatsApp', run: () => window.open(`https://wa.me/91${lead.mobile}`, '_blank', 'noopener') },
+            !isClosedStatus(lead.status) && { label: 'Mark converted', run: () => L.updateStatus(lead, 'converted') },
+            { label: 'Delete', run: () => L.handleDelete(lead), danger: true },
+          ].filter(Boolean).map((item) => (
+            <button
+              key={item.label}
+              type='button'
+              onClick={() => { setMenuFor(null); item.run() }}
+              className={`block w-full px-3.5 py-2 text-left text-sm ${item.danger ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-700 hover:bg-slate-50'}`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+
+  const phoneText = (mobile) => (mobile ? `+91 ${mobile.replace(/(\d{5})(\d{5})/, '$1 $2')}` : '')
+
   return (
-    <div className='min-h-screen bg-slate-50'>
-      <main className='px-3 pt-4 pb-10 lg:px-6 lg:pt-6'>
-        <div className='w-full'>
-          {/* Header */}
-          <div className='mb-5 flex flex-wrap items-center justify-between gap-3'>
-            <div>
-              <h1 className='text-2xl font-bold text-slate-900 md:text-[28px]'>Lead Management</h1>
-              <p className='mt-1 text-sm text-slate-500'>Track, manage and convert your insurance leads into loyal customers.</p>
-            </div>
-            <div className='flex items-center gap-2'>
-              <button type='button' onClick={L.openAdd} className='flex items-center gap-2 rounded-lg bg-blue-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-blue-700'>
-                <Icon d={ICON_PATHS.plus} strokeWidth={2.5} />Add New Lead
+    <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <main className='w-full space-y-4 px-3 pt-4 pb-10 md:space-y-5 lg:px-8 lg:pt-6'>
+        {/* Header card */}
+        <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
+          <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-4 pt-4 text-white md:px-6'>
+            <div className='flex flex-wrap items-start justify-between gap-3'>
+              <div>
+                <h1 className='text-lg font-bold md:text-2xl'>Lead Management</h1>
+                <p className='text-xs text-slate-300 md:text-sm'>
+                  {counts.overdue ? `${counts.overdue} follow-up${counts.overdue > 1 ? 's' : ''} overdue — call them first` : 'Track, follow up and convert your insurance leads'}
+                </p>
+              </div>
+              <button
+                type='button'
+                onClick={L.openAdd}
+                className='inline-flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-slate-900 shadow-md transition hover:bg-blue-50'
+              >
+                <Icon d={ICON_PATHS.plus} strokeWidth={2.5} className='h-4 w-4' />
+                Add New Lead
               </button>
             </div>
+
+            <div className='-mx-1 mt-4 flex gap-1 overflow-x-auto px-1 [&::-webkit-scrollbar]:hidden'>
+              {[{ key: 'all', label: 'All' }, ...BUCKETS.map((b) => ({ key: b.key, label: b.label }))].map((v) => {
+                const active = L.bucket === v.key
+                return (
+                  <button
+                    key={v.key}
+                    type='button'
+                    onClick={() => L.setBucket(v.key)}
+                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-t-lg px-4 py-2 text-sm font-semibold transition ${active ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
+                  >
+                    {v.label}
+                    <span className={`rounded-full px-1.5 text-[11px] ${active ? 'bg-slate-100 text-slate-600' : v.key === 'overdue' && counts.overdue ? 'bg-orange-500 text-white' : 'bg-white/15 text-slate-200'}`}>
+                      {counts[v.key] ?? 0}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
           </div>
 
-          <div>
-            <div className='min-w-0 space-y-5'>
-              {/* Stat cards */}
-              <div className='grid grid-cols-2 gap-3 lg:grid-cols-4 lg:gap-4'>
-                {stats.map((s) => (
-                  <div key={s.label} className='flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm md:gap-4 md:p-5'>
-                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-full md:h-14 md:w-14 ${s.circle}`}>
-                      <Icon d={s.icon} className='h-5 w-5 md:h-6 md:w-6' strokeWidth={2.2} />
-                    </div>
-                    <div className='min-w-0'>
-                      <p className='truncate text-xs font-medium text-slate-600 md:text-sm'>{s.label}</p>
-                      <p className='text-2xl font-bold leading-tight text-slate-900 md:text-[28px]'>{s.value}</p>
-                      <p className={`truncate text-[11px] font-medium md:text-xs ${s.warn ? 'text-orange-600' : 'text-emerald-600'}`}>{s.note}</p>
-                    </div>
-                  </div>
-                ))}
+          <div className='p-3 md:p-5'>
+            <div className='space-y-3 rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 p-3'>
+              <div className='flex gap-2'>
+                <label className='relative block flex-1'>
+                  <span className='pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400'>
+                    <Icon d={ICON_PATHS.search} className='h-5 w-5' />
+                  </span>
+                  <input
+                    type='search'
+                    value={L.search}
+                    onChange={(e) => { L.setSearch(e.target.value); setDraft((d) => ({ ...d, search: e.target.value })) }}
+                    placeholder='Search by name, phone or vehicle number'
+                    className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-3 text-[15px] font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+                  />
+                </label>
+                <button
+                  type='button'
+                  onClick={() => setShowFilters(true)}
+                  className='inline-flex shrink-0 items-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-3.5 text-sm font-semibold text-white shadow-md shadow-blue-700/20 transition hover:from-blue-800 hover:to-blue-700 md:px-5'
+                >
+                  <Icon d={ICON_PATHS.filter} className='h-4 w-4' />
+                  <span className='hidden sm:inline'>Filters</span>
+                  {panelFilterCount > 0 && (
+                    <span className='flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-blue-700'>{panelFilterCount}</span>
+                  )}
+                </button>
               </div>
-
-              {/* Leads table */}
-              <div className='rounded-2xl border border-slate-200 bg-white shadow-sm'>
-                <div className='flex flex-wrap items-center gap-3 border-b border-slate-100 px-4 py-4 md:px-5'>
-                  <h2 className='mr-auto text-lg font-bold text-slate-900'>Leads</h2>
-                  <div className='w-full sm:w-44'>
-                    <PanelSelect value={L.bucket} onChange={L.setBucket}>
-                      {VIEWS.map((v) => <option key={v.key} value={v.key}>{v.label} ({counts[v.key] ?? 0})</option>)}
-                    </PanelSelect>
-                  </div>
-                  <div className='flex w-full items-center gap-2 sm:w-auto'>
-                    <div className='relative flex-1 sm:w-80 sm:flex-none'>
-                      <Icon d={ICON_PATHS.search} className='pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400' />
-                      <input
-                        value={L.search}
-                        onChange={(e) => { L.setSearch(e.target.value); setDraft((d) => ({ ...d, search: e.target.value })) }}
-                        placeholder='Search by name, phone, vehicle...'
-                        className={`${panelInput} pl-9`}
-                      />
-                    </div>
-                    <div className='relative'>
-                      <button
-                        type='button'
-                        onClick={() => setShowFilters((v) => !v)}
-                        className={`relative flex h-[42px] w-[42px] items-center justify-center rounded-lg border transition-colors ${showFilters || panelFilterCount
-                          ? 'border-blue-600 bg-blue-600 text-white'
-                          : 'border-slate-200 bg-white text-slate-600 hover:border-blue-400 hover:text-blue-600'}`}
-                        title='Filters'
-                        aria-label='Filters'
-                      >
-                        <Icon d={ICON_PATHS.filter} className='h-[18px] w-[18px]' />
-                        {panelFilterCount > 0 && (
-                          <span className='absolute -right-1.5 -top-1.5 flex h-4 min-w-4 items-center justify-center rounded-full bg-rose-500 px-1 text-[10px] font-bold text-white'>
-                            {panelFilterCount}
-                          </span>
-                        )}
-                      </button>
-                    </div>
-                  </div>
-                </div>
-
-                <div className='flex items-center gap-2 overflow-x-auto border-b border-slate-100 px-4 py-2.5 [&::-webkit-scrollbar]:hidden md:px-5'>
-                  <span className='shrink-0 text-xs font-semibold text-slate-500'>Lead type:</span>
-                  {LEAD_TEMPS.map((t) => (
-                    <button
-                      key={t.value || 'all'}
-                      type='button'
-                      onClick={() => { L.setFilter('priority', t.value); setDraft((d) => ({ ...d, priority: t.value })) }}
-                      className={`shrink-0 ${tempChip(L.filters.priority === t.value, t.active)}`}
-                    >
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-
-                {selected.size > 0 && (
-                  <div className='flex flex-wrap items-center gap-2 border-b border-blue-100 bg-blue-50 px-4 py-2.5 md:px-5'>
-                    <span className='text-sm font-semibold text-blue-800'>{selected.size} selected</span>
-                    <div className='w-48'>
-                      <PanelSelect value='' onChange={bulkStatus}>
-                        <option value=''>Change status…</option>
-                        {LEAD_STATUSES.map((st) => <option key={st.value} value={st.value}>{st.label}</option>)}
-                      </PanelSelect>
-                    </div>
-                    <button type='button' disabled={bulkBusy} onClick={bulkDelete} className='rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-50'>Delete</button>
-                    <button type='button' onClick={() => setSelected(new Set())} className='ml-auto text-sm font-semibold text-blue-700 hover:underline'>Clear</button>
-                  </div>
-                )}
-
-                {L.loading && leads.length === 0 ? (
-                  <div className='py-16 text-center'>
-                    <div className='mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent' />
-                  </div>
-                ) : leads.length === 0 ? (
-                  <div className='py-16 text-center'>
-                    <p className='text-sm font-semibold text-slate-500'>{L.activeFilterCount ? 'No leads match these filters.' : 'No leads yet.'}</p>
-                    <button type='button' onClick={L.activeFilterCount ? () => { setDraft(EMPTY_DRAFT); L.clearFilters() } : L.openAdd} className='mt-2 text-sm font-semibold text-blue-600 hover:underline'>
-                      {L.activeFilterCount ? 'Reset filters' : '+ Add your first lead'}
-                    </button>
-                  </div>
-                ) : (
-                  <>
-                    {/* Desktop table */}
-                    <div className='hidden overflow-x-auto md:block'>
-                      <table className='w-full min-w-[900px] text-left'>
-                        <thead>
-                          <tr className='border-b border-slate-100 bg-slate-50/60 text-xs font-semibold text-slate-700'>
-                            <th className='w-10 py-3 pl-5 pr-2'>
-                              <input type='checkbox' checked={allOnPageSelected} onChange={toggleAll} className='h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600' />
-                            </th>
-                            <th className='px-3 py-3'>Name</th>
-                            <th className='px-3 py-3'>Contact</th>
-                            <th className='px-3 py-3'>Insurance Type</th>
-                            <th className='px-3 py-3'>Source</th>
-                            <th className='px-3 py-3'>Status</th>
-                            <th className='px-3 py-3'>Next Follow-up</th>
-                            <th className='px-3 py-3'>Created At</th>
-                            <th className='px-5 py-3 text-center'>Actions</th>
-                          </tr>
-                        </thead>
-                        <tbody className='divide-y divide-slate-100'>
-                          {pageLeads.map((lead) => {
-                            const created = formatCreated(lead.createdAt)
-                            const isChecked = selected.has(lead._id)
-                            return (
-                              <tr key={lead._id} onClick={() => L.setDetailLead(lead)} className={`cursor-pointer transition-colors ${isChecked ? 'bg-blue-50/60' : 'hover:bg-slate-50'}`}>
-                                <td className='py-3.5 pl-5 pr-2' onClick={(e) => e.stopPropagation()}>
-                                  <input type='checkbox' checked={isChecked} onChange={() => toggleOne(lead._id)} className='h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600' />
-                                </td>
-                                <td className='px-3 py-3.5'>
-                                  <div className='flex items-center gap-3'>
-                                    <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(lead.name)}`}>{initials(lead.name)}</div>
-                                    <div className='min-w-0'>
-                                      <p className='truncate text-sm font-semibold text-slate-900'>{lead.name}</p>
-                                      <p className='text-xs text-slate-400'>{[lead.city, lead.priority && lead.priority[0].toUpperCase() + lead.priority.slice(1)].filter(Boolean).join(' · ')}</p>
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className='max-w-[220px] px-3 py-3.5'>
-                                  <p className='whitespace-nowrap text-sm text-slate-700'>{lead.mobile ? `+91 ${lead.mobile.replace(/(\d{5})(\d{5})/, '$1 $2')}` : '—'}</p>
-                                  {lead.email && <p className='truncate text-xs text-slate-400' title={lead.email}>{lead.email}</p>}
-                                </td>
-                                <td className='px-3 py-3.5 text-sm text-slate-700'>
-                                  {lead.insuranceType}
-                                  {lead.vehicleNumber && <p className='font-mono text-[11px] text-slate-400'>{lead.vehicleNumber}</p>}
-                                </td>
-                                <td className='px-3 py-3.5'>
-                                  {lead.source ? (
-                                    <span className={`inline-block whitespace-nowrap rounded-md px-2 py-1 text-[11px] font-semibold ${SOURCE_STYLES[lead.source] || SOURCE_STYLES.Other}`}>{lead.source}</span>
-                                  ) : <span className='text-sm text-slate-300'>—</span>}
-                                </td>
-                                <td className='px-3 py-3.5'><StatusTag status={lead.status} /></td>
-                                <td className={`whitespace-nowrap px-3 py-3.5 text-xs font-semibold ${isClosedStatus(lead.status) ? 'text-slate-300' : followUpTone(lead.nextFollowUpDate)}`}>
-                                  {isClosedStatus(lead.status) ? '—' : followUpLabel(lead.nextFollowUpDate, lead.nextFollowUpTime)}
-                                </td>
-                                <td className='whitespace-nowrap px-3 py-3.5 text-xs text-slate-600'>
-                                  {created.date}<p className='text-slate-400'>{created.time}</p>
-                                </td>
-                                <td className='relative px-5 py-3.5 text-center' onClick={(e) => e.stopPropagation()}>
-                                  <button
-                                    type='button'
-                                    onClick={() => setMenuFor(menuFor === lead._id ? null : lead._id)}
-                                    className='rounded-lg p-1.5 text-slate-500 hover:bg-slate-100 hover:text-slate-800'
-                                    aria-label='Actions'
-                                  >
-                                    <svg className='h-5 w-5' fill='currentColor' viewBox='0 0 24 24'><circle cx='12' cy='5' r='1.8' /><circle cx='12' cy='12' r='1.8' /><circle cx='12' cy='19' r='1.8' /></svg>
-                                  </button>
-                                  {menuFor === lead._id && (
-                                    <div ref={menuRef} className='absolute right-8 top-10 z-20 w-44 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-lg'>
-                                      {[
-                                        { label: 'View details', run: () => L.setDetailLead(lead) },
-                                        !isClosedStatus(lead.status) && { label: 'Log follow-up', run: () => L.openFollowUp(lead) },
-                                        { label: 'Edit lead', run: () => L.openEdit(lead) },
-                                        lead.mobile && { label: 'Call', run: () => { window.location.href = `tel:+91${lead.mobile}` } },
-                                        lead.mobile && { label: 'WhatsApp', run: () => window.open(`https://wa.me/91${lead.mobile}`, '_blank', 'noopener') },
-                                        !isClosedStatus(lead.status) && { label: 'Mark converted', run: () => L.updateStatus(lead, 'converted') },
-                                        { label: 'Delete', run: () => L.handleDelete(lead), danger: true },
-                                      ].filter(Boolean).map((item) => (
-                                        <button
-                                          key={item.label}
-                                          type='button'
-                                          onClick={() => { setMenuFor(null); item.run() }}
-                                          className={`block w-full px-3.5 py-2 text-left text-sm ${item.danger ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-700 hover:bg-slate-50'}`}
-                                        >
-                                          {item.label}
-                                        </button>
-                                      ))}
-                                    </div>
-                                  )}
-                                </td>
-                              </tr>
-                            )
-                          })}
-                        </tbody>
-                      </table>
-                    </div>
-
-                    {/* Mobile list */}
-                    <div className='divide-y divide-slate-100 md:hidden'>
-                      {pageLeads.map((lead) => (
-                        <div key={lead._id} onClick={() => L.setDetailLead(lead)} className='flex items-start gap-3 px-4 py-3.5 active:bg-slate-50'>
-                          <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(lead.name)}`}>{initials(lead.name)}</div>
-                          <div className='min-w-0 flex-1'>
-                            <div className='flex items-start justify-between gap-2'>
-                              <p className='truncate text-sm font-semibold text-slate-900'>{lead.name}</p>
-                              <StatusTag status={lead.status} />
-                            </div>
-                            <p className='text-xs text-slate-500'>{[lead.mobile && `+91 ${lead.mobile}`, lead.insuranceType].filter(Boolean).join(' · ')}</p>
-                            {lead.email && <p className='truncate text-xs text-slate-400'>{lead.email}</p>}
-                            <div className='mt-1.5 flex items-center justify-between gap-2'>
-                              {lead.source ? (
-                                <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${SOURCE_STYLES[lead.source] || SOURCE_STYLES.Other}`}>{lead.source}</span>
-                              ) : <span />}
-                              {!isClosedStatus(lead.status) && (
-                                <span className={`text-[11px] font-semibold ${followUpTone(lead.nextFollowUpDate)}`}>{followUpLabel(lead.nextFollowUpDate, lead.nextFollowUpTime)}</span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-
-                    {/* Pagination */}
-                    <div className='flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 px-4 py-3.5 md:px-5'>
-                      <p className='text-xs text-slate-500'>
-                        Showing {(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, leads.length)} of {leads.length} leads
-                      </p>
-                      <div className='flex items-center gap-1.5'>
-                        <button type='button' disabled={page === 1} onClick={() => setPage((p) => p - 1)} className='flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40'>
-                          <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' /></svg>
-                        </button>
-                        {pageNumbers.map((n, i) => (n === '…' ? (
-                          <span key={`gap-${i}`} className='flex h-8 w-8 items-center justify-center text-sm text-slate-400'>…</span>
-                        ) : (
-                          <button
-                            key={n}
-                            type='button'
-                            onClick={() => setPage(n)}
-                            className={`flex h-8 min-w-8 items-center justify-center rounded-lg border px-2 text-sm font-medium ${n === page ? 'border-blue-600 bg-blue-600 text-white' : 'border-slate-200 text-slate-700 hover:bg-slate-50'}`}
-                          >
-                            {n}
-                          </button>
-                        )))}
-                        <button type='button' disabled={page === totalPages} onClick={() => setPage((p) => p + 1)} className='flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 disabled:opacity-40'>
-                          <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' /></svg>
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
+              <div className='flex items-center gap-2 overflow-x-auto [&::-webkit-scrollbar]:hidden'>
+                <span className='shrink-0 text-xs font-semibold text-slate-500'>Lead type</span>
+                {LEAD_TEMPS.map((t) => (
+                  <button
+                    key={t.value || 'all'}
+                    type='button'
+                    onClick={() => { L.setFilter('priority', t.value); setDraft((d) => ({ ...d, priority: t.value })) }}
+                    className={`shrink-0 ${tempChip(L.filters.priority === t.value, t.active)}`}
+                  >
+                    {t.label}
+                  </button>
+                ))}
               </div>
             </div>
           </div>
-        </div>
+        </section>
+
+        {/* Stat cards */}
+        <section className='grid grid-cols-2 gap-2.5 lg:grid-cols-4 md:gap-4'>
+          {stats.map((s) => (
+            <div key={s.label} className={`rounded-xl border-2 bg-gradient-to-r p-3 md:p-4 ${s.tone.card}`}>
+              <div className='flex items-center gap-3'>
+                <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white md:h-11 md:w-11 ${s.tone.icon}`}>
+                  <Icon d={s.icon} className='h-5 w-5' strokeWidth={2.2} />
+                </span>
+                <div className='min-w-0'>
+                  <p className={`text-xl font-bold leading-none md:text-2xl ${s.tone.value}`}>{s.value}</p>
+                  <p className='mt-1 truncate text-xs font-semibold text-slate-700 md:text-sm'>{s.label}</p>
+                  <p className={`truncate text-[11px] font-medium ${s.warn ? 'text-orange-600' : 'text-slate-500'}`}>{s.note}</p>
+                </div>
+              </div>
+            </div>
+          ))}
+        </section>
+
+        {/* Leads */}
+        <section className='md:overflow-visible md:rounded-2xl md:bg-white md:shadow-sm md:ring-1 md:ring-slate-200'>
+          {selected.size > 0 && (
+            <div className='mb-3 flex flex-wrap items-center gap-2 rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 px-4 py-2.5 md:mb-0 md:rounded-none md:rounded-t-2xl md:border-0 md:border-b md:border-blue-100 md:px-6'>
+              <span className='text-sm font-semibold text-blue-800'>{selected.size} selected</span>
+              <div className='w-48'>
+                <PanelSelect value='' onChange={bulkStatus}>
+                  <option value=''>Change status…</option>
+                  {LEAD_STATUSES.map((st) => <option key={st.value} value={st.value}>{st.label}</option>)}
+                </PanelSelect>
+              </div>
+              <button type='button' disabled={bulkBusy} onClick={bulkDelete} className='rounded-lg border border-rose-200 bg-white px-3 py-2 text-sm font-semibold text-rose-600 hover:bg-rose-50 disabled:opacity-50'>Delete</button>
+              <button type='button' onClick={() => setSelected(new Set())} className='ml-auto text-sm font-semibold text-blue-700 hover:underline'>Clear</button>
+            </div>
+          )}
+
+          {L.loading && leads.length === 0 ? (
+            <div className='flex flex-col items-center gap-3 rounded-2xl bg-white py-20 ring-1 ring-slate-200 md:rounded-none md:ring-0'>
+              <div className='h-9 w-9 animate-spin rounded-full border-4 border-blue-600 border-r-transparent' />
+              <p className='text-sm text-slate-400'>Loading leads…</p>
+            </div>
+          ) : leads.length === 0 ? (
+            <div className='flex flex-col items-center gap-2 rounded-2xl bg-white px-6 py-20 text-center ring-1 ring-slate-200 md:rounded-none md:ring-0'>
+              <span className='flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-500'>
+                <Icon d={ICON_PATHS.users} className='h-7 w-7' />
+              </span>
+              <p className='font-semibold text-slate-800'>{L.activeFilterCount ? 'No leads match these filters' : 'No leads yet'}</p>
+              <p className='text-sm text-slate-500'>{L.activeFilterCount ? 'Try removing some filters.' : 'Add your first lead to start tracking follow-ups.'}</p>
+              <button
+                type='button'
+                onClick={L.activeFilterCount ? () => { setDraft(EMPTY_DRAFT); L.clearFilters() } : L.openAdd}
+                className='mt-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-700/20'
+              >
+                {L.activeFilterCount ? 'Reset filters' : '+ Add New Lead'}
+              </button>
+            </div>
+          ) : (
+            <>
+              {/* Desktop table */}
+              <div className='hidden md:block'>
+                <table className='w-full text-left'>
+                  <thead>
+                    <tr className={`bg-gradient-to-r from-slate-50 to-blue-50 text-xs font-semibold uppercase tracking-wide text-slate-500 ${selected.size ? '' : '[&>th:first-child]:rounded-tl-2xl [&>th:last-child]:rounded-tr-2xl'}`}>
+                      <th className='w-10 py-3 pl-6 pr-2'>
+                        <input type='checkbox' checked={allOnPageSelected} onChange={toggleAll} className='h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600' aria-label='Select all on page' />
+                      </th>
+                      <th className='px-3 py-3'>Lead</th>
+                      <th className='px-3 py-3'>Interested In</th>
+                      <th className='px-3 py-3'>Status</th>
+                      <th className='px-3 py-3'>Next Follow-up</th>
+                      <th className='px-3 py-3'>Created</th>
+                      <th className='w-16 px-4 py-3' />
+                    </tr>
+                  </thead>
+                  <tbody className='divide-y divide-slate-100'>
+                    {pageLeads.map((lead) => {
+                      const created = formatCreated(lead.createdAt)
+                      const isChecked = selected.has(lead._id)
+                      return (
+                        <tr key={lead._id} onClick={() => L.setDetailLead(lead)} className={`cursor-pointer transition ${isChecked ? 'bg-blue-50/60' : 'hover:bg-blue-50/40'}`}>
+                          <td className='py-3.5 pl-6 pr-2' onClick={(e) => e.stopPropagation()}>
+                            <input type='checkbox' checked={isChecked} onChange={() => toggleOne(lead._id)} className='h-4 w-4 cursor-pointer rounded border-slate-300 accent-blue-600' aria-label={`Select ${lead.name}`} />
+                          </td>
+                          <td className='px-3 py-3.5'>
+                            <div className='flex items-center gap-3'>
+                              <div className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(lead.name)}`}>{initials(lead.name)}</div>
+                              <div className='min-w-0'>
+                                <p className='max-w-[220px] truncate text-sm font-semibold text-slate-800'>{lead.name}</p>
+                                <p className='text-xs text-slate-500'>{phoneText(lead.mobile) || '—'}</p>
+                              </div>
+                            </div>
+                          </td>
+                          <td className='px-3 py-3.5'>
+                            <p className='text-sm text-slate-700'>{lead.insuranceType || '—'}</p>
+                            <div className='mt-1 flex flex-wrap items-center gap-1.5'>
+                              {lead.vehicleNumber && <Plate value={lead.vehicleNumber} />}
+                              {lead.source && (
+                                <span className={`rounded-md px-2 py-0.5 text-[11px] font-semibold ${SOURCE_STYLES[lead.source] || SOURCE_STYLES.Other}`}>{lead.source}</span>
+                              )}
+                            </div>
+                          </td>
+                          <td className='px-3 py-3.5'><StatusTag status={lead.status} /></td>
+                          <td className={`whitespace-nowrap px-3 py-3.5 text-xs font-semibold ${isClosedStatus(lead.status) ? 'text-slate-300' : followUpTone(lead.nextFollowUpDate)}`}>
+                            {isClosedStatus(lead.status) ? '—' : followUpLabel(lead.nextFollowUpDate, lead.nextFollowUpTime)}
+                          </td>
+                          <td className='whitespace-nowrap px-3 py-3.5 text-xs text-slate-600'>
+                            {created.date}<p className='text-slate-400'>{created.time}</p>
+                          </td>
+                          <td className='px-4 py-3.5'>
+                            <RowMenu lead={lead} ctx='table' />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile cards */}
+              <ul className='space-y-3 md:hidden'>
+                {pageLeads.map((lead) => (
+                  <li key={lead._id} className='rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70'>
+                    <button type='button' onClick={() => L.setDetailLead(lead)} className='block w-full rounded-t-xl p-3.5 text-left active:bg-slate-50'>
+                      <span className='flex items-start gap-3'>
+                        <span className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-xs font-bold ${avatarColor(lead.name)}`}>{initials(lead.name)}</span>
+                        <span className='min-w-0 flex-1'>
+                          <span className='flex items-start justify-between gap-2'>
+                            <span className='truncate text-[15px] font-semibold text-slate-900'>{lead.name}</span>
+                            <StatusTag status={lead.status} />
+                          </span>
+                          <span className='block text-xs text-slate-500'>{phoneText(lead.mobile)}</span>
+                          <span className='mt-1.5 flex flex-wrap items-center gap-1.5'>
+                            {lead.insuranceType && <span className='text-xs font-medium text-slate-700'>{lead.insuranceType}</span>}
+                            {lead.vehicleNumber && <Plate value={lead.vehicleNumber} small />}
+                            {lead.source && (
+                              <span className={`rounded-md px-2 py-0.5 text-[10px] font-semibold ${SOURCE_STYLES[lead.source] || SOURCE_STYLES.Other}`}>{lead.source}</span>
+                            )}
+                          </span>
+                        </span>
+                      </span>
+                    </button>
+                    <div className='flex items-center justify-between gap-2 rounded-b-xl border-t border-slate-100 bg-slate-50/60 py-1.5 pl-3.5 pr-1.5'>
+                      <span className={`min-w-0 truncate text-xs font-semibold ${isClosedStatus(lead.status) ? 'text-slate-400' : followUpTone(lead.nextFollowUpDate)}`}>
+                        {isClosedStatus(lead.status) ? 'Closed' : followUpLabel(lead.nextFollowUpDate, lead.nextFollowUpTime)}
+                      </span>
+                      <span className='flex shrink-0 items-center'>
+                        {lead.mobile && (
+                          <a href={`tel:+91${lead.mobile}`} className='flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-blue-50 hover:text-blue-700' aria-label='Call'>
+                            <Icon d={ICON_PATHS.phone} className='h-4 w-4' />
+                          </a>
+                        )}
+                        {lead.mobile && (
+                          <a href={`https://wa.me/91${lead.mobile}`} target='_blank' rel='noopener noreferrer' className='flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-emerald-50 hover:text-emerald-600' aria-label='WhatsApp'>
+                            <Icon d={ICON_PATHS.chat} className='h-4 w-4' />
+                          </a>
+                        )}
+                        <RowMenu lead={lead} ctx='card' />
+                      </span>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+
+              {/* Pagination */}
+              <div className='mt-3 flex flex-wrap items-center justify-between gap-3 rounded-xl bg-white px-4 py-3 ring-1 ring-slate-200 md:mt-0 md:rounded-none md:rounded-b-2xl md:border-t md:border-slate-100 md:bg-gray-50 md:px-6 md:ring-0'>
+                <p className='text-xs text-slate-500'>
+                  Showing <span className='font-semibold text-slate-700'>{(page - 1) * PAGE_SIZE + 1}–{Math.min(page * PAGE_SIZE, leads.length)}</span> of{' '}
+                  <span className='font-semibold text-slate-700'>{leads.length}</span> leads
+                </p>
+                {totalPages > 1 && (
+                  <div className='flex items-center gap-1.5'>
+                    <button type='button' disabled={page === 1} onClick={() => setPage((p) => p - 1)} className='flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40' aria-label='Previous page'>
+                      <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' /></svg>
+                    </button>
+                    {pageNumbers.map((n, i) => (n === '…' ? (
+                      <span key={`gap-${i}`} className='flex h-8 w-8 items-center justify-center text-sm text-slate-400'>…</span>
+                    ) : (
+                      <button
+                        key={n}
+                        type='button'
+                        onClick={() => setPage(n)}
+                        className={`flex h-8 min-w-8 items-center justify-center rounded-lg px-2 text-sm font-semibold transition ${n === page ? 'bg-gradient-to-r from-blue-700 to-blue-600 text-white shadow-md shadow-blue-700/20' : 'border border-slate-200 bg-white text-slate-700 hover:bg-slate-50'}`}
+                      >
+                        {n}
+                      </button>
+                    )))}
+                    <button type='button' disabled={page === totalPages} onClick={() => setPage((p) => p + 1)} className='flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40' aria-label='Next page'>
+                      <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5l7 7-7 7' /></svg>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </section>
       </main>
       {showFilters && (
-        <div
-          className='fixed inset-0 z-[65] flex items-center justify-center bg-slate-900/40 p-4 backdrop-blur-sm'
-          onClick={() => setShowFilters(false)}
-        >
+        <div className='fixed inset-0 z-[65] flex items-center justify-center bg-black/60 p-2 md:p-4' onClick={() => setShowFilters(false)}>
           {filtersPanel}
         </div>
       )}
