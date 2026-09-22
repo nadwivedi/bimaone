@@ -122,9 +122,9 @@ const Sidebar = () => {
   return (
     <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-slate-200 bg-white lg:flex'>
       <div className='relative flex h-full flex-col'>
-        <div className='flex-none px-5 pb-4 pt-5'>
+        <div className='flex-none px-4 pb-4 pt-5'>
           <Link to='/dashboard' className='flex items-center justify-center'>
-            <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-11 w-auto' />
+            <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-14 w-auto' />
           </Link>
         </div>
 
