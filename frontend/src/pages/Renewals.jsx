@@ -186,7 +186,7 @@ const Renewals = () => {
 
   return (
     <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f5f3ff,_#faf7f2_45%,_#fffdf9_100%)]'>
-      <main className='px-2 pt-3 pb-32 lg:px-8 lg:pt-4'>
+      <main className='px-2 pt-3 pb-10 lg:px-8 lg:pt-4'>
         <div className='w-full'>
           <div className='rounded-[32px] border border-stone-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(68,64,60,0.25)] md:p-5 lg:p-6'>
 

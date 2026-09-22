@@ -527,7 +527,7 @@ const Search = () => {
 
   return (
     <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <main className='w-full space-y-4 px-3 pt-4 pb-32 md:space-y-5 lg:px-8 lg:pt-6 lg:pb-10'>
+      <main className='w-full space-y-4 px-3 pt-4 pb-10 md:space-y-5 lg:px-8 lg:pt-6 lg:pb-10'>
         {/* Search card */}
         <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
           <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-4 pt-4 text-white md:px-6'>

@@ -415,7 +415,7 @@ const PremiumCalculator = () => {
 
   return (
     <>
-      <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f0f9ff,_#f8fafc_45%,_#ffffff_100%)] px-0 pb-24 pt-4 sm:px-4 md:px-6'>
+      <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f0f9ff,_#f8fafc_45%,_#ffffff_100%)] px-0 pb-10 pt-4 sm:px-4 md:px-6'>
         <div className='w-full'>
 
           {step === 1 && (

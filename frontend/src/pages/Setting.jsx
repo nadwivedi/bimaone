@@ -216,7 +216,7 @@ const Setting = () => {
   const usageText = (used, limit) => (!limit || limit <= 0 ? `${used} · Unlimited` : `${used} / ${limit}`)
 
   return (
-    <div className='min-h-screen bg-stone-100/70 px-3 pb-32 pt-4 md:px-6 font-sans'>
+    <div className='min-h-screen bg-stone-100/70 px-3 pb-10 pt-4 md:px-6 font-sans'>
       <div className='mx-auto max-w-2xl space-y-6 lg:hidden'>
         {/* Left column: profile + account */}
         <div className='space-y-6'>

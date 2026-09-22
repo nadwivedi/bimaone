@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 
 const navIcons = {
@@ -124,18 +125,46 @@ const NavLink = ({ item, isActive }) => (
   </Link>
 )
 
-const Sidebar = () => {
+const Sidebar = ({ mobileOpen = false, onClose }) => {
   const location = useLocation()
   const isActivePath = (path) => location.pathname === path || location.pathname.startsWith(`${path}/`)
 
-  return (
-    <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-slate-200 bg-white lg:flex'>
-      <div className='relative flex h-full flex-col'>
-        <div className='flex-none px-4 pb-4 pt-5'>
+  useEffect(() => {
+    onClose?.()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname])
+
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (e) => { if (e.key === 'Escape') onClose?.() }
+    document.addEventListener('keydown', onKey)
+    const prevOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    return () => {
+      document.removeEventListener('keydown', onKey)
+      document.body.style.overflow = prevOverflow
+    }
+  }, [mobileOpen, onClose])
+
+  const content = (
+    <div className='relative flex h-full flex-col'>
+      <div className='flex-none px-4 pb-4 pt-5'>
+        <div className='flex items-center justify-center'>
           <Link to='/dashboard' className='flex items-center justify-center'>
             <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-14 w-auto' />
           </Link>
+          <button
+            type='button'
+            onClick={onClose}
+            className='absolute right-3 top-4 rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700 lg:hidden'
+            aria-label='Close menu'
+          >
+            <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' />
+            </svg>
+          </button>
         </div>
+      </div>
 
         <div className='mx-5 h-px bg-slate-200' />
 
@@ -155,8 +184,30 @@ const Sidebar = () => {
         <div className='flex-none space-y-2 border-t border-slate-200 p-3'>
           <NavLink item={{ name: 'Settings', path: '/setting', icon: navIcons.settings }} isActive={isActivePath('/setting')} />
         </div>
+    </div>
+  )
+
+  return (
+    <>
+      <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col border-r border-slate-200 bg-white lg:flex'>
+        {content}
+      </aside>
+
+      <div className={`fixed inset-0 z-50 lg:hidden ${mobileOpen ? '' : 'pointer-events-none'}`} aria-hidden={!mobileOpen}>
+        <div
+          className={`absolute inset-0 bg-slate-900/50 transition-opacity duration-200 ${mobileOpen ? 'opacity-100' : 'opacity-0'}`}
+          onClick={onClose}
+        />
+        <aside
+          className={`absolute inset-y-0 left-0 flex w-[280px] max-w-[85vw] flex-col bg-white shadow-2xl transition-transform duration-200 ${mobileOpen ? 'translate-x-0' : '-translate-x-full'}`}
+          role='dialog'
+          aria-modal='true'
+          aria-label='Menu'
+        >
+          {content}
+        </aside>
       </div>
-    </aside>
+    </>
   )
 }
 

@@ -404,7 +404,7 @@ const RTODocumentDetail = () => {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 px-3 pb-24 pt-5 md:px-6 lg:px-8" style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className="min-h-screen bg-slate-50 px-3 pb-10 pt-5 md:px-6 lg:px-8" style={{ fontFamily: "'Poppins', sans-serif" }}>
       <div className="mx-auto max-w-3xl">
         {/* Loading State */}
         {loading && (

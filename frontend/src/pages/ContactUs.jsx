@@ -264,7 +264,7 @@ const ContactUs = () => {
     </div>
   )
 
-  return user ? <div className='min-h-screen bg-white pb-24 lg:pb-0'>{content}</div> : <PublicLayout>{content}</PublicLayout>
+  return user ? <div className='min-h-screen bg-white pb-10 lg:pb-0'>{content}</div> : <PublicLayout>{content}</PublicLayout>
 }
 
 export default ContactUs

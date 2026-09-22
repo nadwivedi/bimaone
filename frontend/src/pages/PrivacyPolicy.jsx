@@ -118,7 +118,7 @@ const PrivacyPolicy = () => {
   ]
 
   return (
-    <div className='min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-4 pb-32 pt-6 md:px-6 lg:px-8'>
+    <div className='min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 px-4 pb-10 pt-6 md:px-6 lg:px-8'>
       <div className='mx-auto max-w-2xl'>
         {/* Header */}
         <div className='mb-8'>

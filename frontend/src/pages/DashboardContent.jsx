@@ -269,7 +269,7 @@ const DashboardContent = () => {
 
   return (
     <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <main className='w-full space-y-5 px-3 pt-4 pb-32 md:space-y-6 lg:px-8 lg:pt-6 lg:pb-10'>
+      <main className='w-full space-y-5 px-3 pt-4 pb-10 md:space-y-6 lg:px-8 lg:pt-6 lg:pb-10'>
         {/* 1. Stats */}
         <section className='grid grid-cols-3 gap-2.5 md:gap-4'>
           {statCards.map((s) => {

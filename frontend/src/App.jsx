@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate } from 'react-router-dom'
-import { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { AuthProvider } from './context/AuthContext'
@@ -14,7 +14,6 @@ import Setting from './pages/Setting'
 import RTODocuments from './pages/RTODocuments'
 import RTODocumentDetail from './pages/RTODocumentDetail'
 import Search from './pages/Search'
-import BottomNavigation from './components/BottomNavigation'
 import PremiumCalculator from './pages/PremiumCalculator'
 import KycPage from './pages/Kyc/KycPage'
 import KycDetail from './pages/Kyc/KycDetail'
@@ -44,6 +43,8 @@ function AppContent() {
   const isPublicPage = publicPages.includes(location.pathname)
   const showNav = !isLoginPage && !isMarketingPage && (isAuthenticated || !isPublicPage)
   const theme = getTheme()
+  const [menuOpen, setMenuOpen] = useState(false)
+  const closeMenu = useCallback(() => setMenuOpen(false), [])
 
   const needsEmailVerification = isAuthenticated && user && !user.emailVerified && !user.googleId
 
@@ -57,28 +58,42 @@ function AppContent() {
     <>
       <ToastContainer />
       {needsEmailVerification && <ForceEmailVerificationModal />}
-      {showNav && <Sidebar />}
+      {showNav && <Sidebar mobileOpen={menuOpen} onClose={closeMenu} />}
 
       {showNav && (
-        <nav className={`fixed top-0 left-0 right-0 z-20 flex h-16 items-center border-b border-slate-200 lg:hidden ${theme.navbar}`}>
-          {location.pathname !== '/' && (
-            <button onClick={() => navigate(-1)} className='ml-3 p-2 text-slate-600 hover:text-slate-900 transition cursor-pointer' title='Go back'>
+        <nav className={`fixed top-0 left-0 right-0 z-20 flex h-16 items-center border-b border-slate-200 px-2 lg:hidden ${theme.navbar}`}>
+          <div className='relative z-10 flex items-center gap-0.5'>
+            <button
+              type='button'
+              onClick={() => setMenuOpen(true)}
+              className='rounded-lg p-2 text-slate-700 transition hover:bg-slate-100'
+              aria-label='Open menu'
+            >
               <svg className='h-6 w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M4 6h16M4 12h16M4 18h16' />
               </svg>
             </button>
-          )}
-          <div className='flex-1 flex justify-center'>
-            <Link to='/' className='flex items-center'>
-              <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-12 w-auto' />
-            </Link>
+            {location.pathname !== '/dashboard' && (
+              <button
+                type='button'
+                onClick={() => navigate(-1)}
+                className='rounded-lg p-2 text-slate-600 transition hover:bg-slate-100 hover:text-slate-900'
+                aria-label='Go back'
+              >
+                <svg className='h-6 w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 19l-7-7 7-7' />
+                </svg>
+              </button>
+            )}
           </div>
-          {location.pathname !== '/' && <div className='w-12' />}
+          <Link to='/dashboard' className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2'>
+            <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-12 w-auto max-w-[45vw] object-contain' />
+          </Link>
         </nav>
       )}
 
       <div className={showNav ? 'lg:ml-[260px]' : ''}>
-        <div className={showNav ? 'pt-16 pb-20 lg:pt-0 lg:pb-0' : ''}>
+        <div className={showNav ? 'pt-16 lg:pt-0' : ''}>
           {showNav && location.pathname !== '/' && location.pathname !== '/dashboard' && (
             <div className='sticky top-0 z-20 hidden h-14 items-center border-b border-slate-200 bg-white/90 px-6 backdrop-blur-md lg:flex'>
               <button onClick={() => navigate(-1)} className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900' title='Go back'>
@@ -118,7 +133,6 @@ function AppContent() {
           </Routes>
         </div>
       </div>
-      {showNav && <BottomNavigation />}
     </>
   )
 }

@@ -262,7 +262,7 @@ const Leads = () => {
 
   return (
     <div className='min-h-screen bg-slate-50'>
-      <main className='px-3 pt-4 pb-32 lg:px-6 lg:pt-6'>
+      <main className='px-3 pt-4 pb-10 lg:px-6 lg:pt-6'>
         <div className='w-full'>
           {/* Header */}
           <div className='mb-5 flex flex-wrap items-center justify-between gap-3'>

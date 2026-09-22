@@ -292,7 +292,7 @@ const RTODocuments = () => {
 
   return (
     <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
-      <main className='px-3 pt-4 pb-32 lg:px-8 lg:pt-6'>
+      <main className='px-3 pt-4 pb-10 lg:px-8 lg:pt-6'>
         <section className='w-full space-y-5'>
           {/* Header */}
           <div className='flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between'>

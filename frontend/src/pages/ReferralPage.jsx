@@ -108,7 +108,7 @@ const ReferralPage = () => {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-slate-50/50 px-4 pb-32 pt-8 md:px-6 lg:px-8'>
+      <div className='min-h-screen bg-slate-50/50 px-4 pb-10 pt-8 md:px-6 lg:px-8'>
         <div className='mx-auto max-w-4xl animate-pulse space-y-6'>
           <div className='h-32 rounded-[32px] bg-slate-200' />
           <div className='grid grid-cols-1 md:grid-cols-3 gap-4'>
@@ -122,7 +122,7 @@ const ReferralPage = () => {
   }
 
   return (
-    <div className='min-h-screen bg-slate-50/50 px-4 pb-32 pt-8 md:px-6 lg:px-8'>
+    <div className='min-h-screen bg-slate-50/50 px-4 pb-10 pt-8 md:px-6 lg:px-8'>
       <div className='mx-auto max-w-4xl space-y-6'>
 
         {/* Header Banner */}
