@@ -1001,23 +1001,23 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      <div className='bg-white rounded-xl md:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[80vh] md:max-h-[95vh] overflow-hidden flex flex-col relative'>
+      <div className='bg-white rounded-xl md:rounded-2xl shadow-2xl max-w-4xl w-full max-h-[80vh] md:max-h-[95vh] overflow-hidden flex flex-col relative' style={{ fontFamily: "'Poppins', sans-serif" }}>
         {isDragOver && (
-          <div className='absolute inset-0 z-50 flex items-center justify-center bg-indigo-600/90 rounded-xl md:rounded-2xl'>
+          <div className='absolute inset-0 z-50 flex items-center justify-center bg-blue-600/90 rounded-xl md:rounded-2xl'>
             <div className='text-white text-center px-6'>
               <svg className='w-12 h-12 mx-auto mb-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                 <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12' />
               </svg>
               <p className='text-xl font-bold'>Drop your file here</p>
-              <p className='text-sm text-indigo-200 mt-1'>PDF or Image (max 15MB)</p>
+              <p className='text-sm text-blue-200 mt-1'>PDF or Image (max 15MB)</p>
             </div>
           </div>
         )}
-        <div className='bg-gradient-to-r from-blue-600 to-indigo-600 p-3 md:p-4 text-white flex-shrink-0'>
+        <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] p-3 md:p-4 text-white flex-shrink-0'>
           <div className='flex justify-between items-center'>
             <div>
               <h2 className='text-lg md:text-2xl font-bold'>{isEditMode ? 'Edit Insurance' : 'Add New Insurance'}</h2>
-              <p className='text-blue-100 text-xs md:text-sm mt-1'>{isEditMode ? 'Update insurance record' : 'Add insurance record'}</p>
+              <p className='text-slate-300 text-xs md:text-sm mt-1'>{isEditMode ? 'Update insurance record' : 'Add insurance record'}</p>
             </div>
             <div className='flex items-center gap-1 md:gap-3'>
               <div className='relative overflow-hidden'>
@@ -1042,29 +1042,29 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
           <div className='flex-1 overflow-y-auto p-3 md:p-6'>
 
 
-            <div className='bg-gradient-to-r from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+            <div className='bg-gradient-to-r from-blue-50 to-sky-50 border-2 border-blue-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
               <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
-                <span className='bg-indigo-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>1</span>
+                <span className='bg-blue-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>1</span>
                 Policy Details
               </h3>
               <div className='grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4'>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Issue Date <span className='text-red-500'>*</span></label>
-                  <input type='date' name='issueDate' value={formData.issueDate ? formData.issueDate.split('-').reverse().join('-') : ''} onChange={handleChange} tabIndex='1' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white' required />
+                  <input type='date' name='issueDate' value={formData.issueDate ? formData.issueDate.split('-').reverse().join('-') : ''} onChange={handleChange} tabIndex='1' className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' required />
                 </div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Vehicle Number</label>
                   <div className='relative'>
-                    <input type='text' name='vehicleNumber' value={formData.vehicleNumber} onChange={handleChange} onKeyDown={handleInputKeyDown} placeholder='Enter vehicle number' tabIndex='2' className='w-full px-3 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono bg-white' autoFocus />
+                    <input type='text' name='vehicleNumber' value={formData.vehicleNumber} onChange={handleChange} onKeyDown={handleInputKeyDown} placeholder='Enter vehicle number' tabIndex='2' className='w-full px-3.5 py-2.5 pr-10 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' autoFocus />
                   </div>
                 </div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Policy Number</label>
-                  <input type='text' name='policyNumber' value={formData.policyNumber} onChange={handleChange} onKeyDown={handleInputKeyDown} placeholder='INS001234567' tabIndex='3' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent font-mono bg-white' />
+                  <input type='text' name='policyNumber' value={formData.policyNumber} onChange={handleChange} onKeyDown={handleInputKeyDown} placeholder='INS001234567' tabIndex='3' className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' />
                 </div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Policy Holder Name</label>
-                  <input type='text' name='policyHolderName' value={formData.policyHolderName} onChange={handleChange} onKeyDown={handleInputKeyDown} placeholder='Enter policy holder name' tabIndex='4' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white' />
+                  <input type='text' name='policyHolderName' value={formData.policyHolderName} onChange={handleChange} onKeyDown={handleInputKeyDown} placeholder='Enter policy holder name' tabIndex='4' className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' />
                 </div>
                 <div className='md:col-span-4 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
                   <div>
@@ -1077,7 +1077,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                         const company = insuranceCompanies.find(c => c._id === id)
                         setFormData(prev => ({ ...prev, insuranceCompanyId: id, insuranceCompany: company ? company.name : '' }))
                       }}
-                      className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white'
+                      className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     >
                       <option value="">Select Company</option>
                       {loadingCompanies ? (
@@ -1092,7 +1092,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
 
                   <div>
                     <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Product Type</label>
-                    <select name='product' value={formData.product} onChange={handleChange} className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white'>
+                    <select name='product' value={formData.product} onChange={handleChange} className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'>
                       <option value="">Select Product Type</option>
                       {formData.product && !productTypes.some(p => (typeof p === 'string' ? p : p.name) === formData.product) && (
                         <option value={formData.product}>{formData.product}</option>
@@ -1106,7 +1106,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
 
                   <div>
                     <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Policy Type</label>
-                    <select name='insuranceClass' value={formData.insuranceClass} onChange={handleChange} className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white'>
+                    <select name='insuranceClass' value={formData.insuranceClass} onChange={handleChange} className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'>
                       <option value="">Select Policy Type</option>
                       <option value="Comprehensive">Comprehensive</option>
                       <option value="Third Party">Third Party</option>
@@ -1123,7 +1123,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       <button
                         type='button'
                         onClick={() => { setShowAddReference(true); setNewReferenceName('') }}
-                        className='text-xs text-indigo-600 hover:text-indigo-800 font-semibold flex items-center cursor-pointer'
+                        className='text-xs text-blue-600 hover:text-blue-800 font-semibold flex items-center cursor-pointer'
                       >
                         <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
@@ -1145,7 +1145,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                         }}
                         onBlur={() => setTimeout(() => setReferenceDropdownOpen(false), 200)}
                         placeholder='Select or type Client Name...'
-                        className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white pr-10'
+                        className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white pr-10'
                       />
                       {formData.reference && !referenceDropdownOpen ? (
                         <button
@@ -1178,7 +1178,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                               key={ref._id}
                               type='button'
                               onMouseDown={() => handleReferenceSelect(ref)}
-                              className={`w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 transition cursor-pointer ${formData.reference === ref.name ? 'bg-indigo-50 text-indigo-700 font-semibold' : 'text-gray-700'}`}
+                              className={`w-full text-left px-3 py-2 text-sm hover:bg-blue-50 transition cursor-pointer ${formData.reference === ref.name ? 'bg-blue-50 text-blue-700 font-semibold' : 'text-gray-700'}`}
                             >
                               {ref.name}
                             </button>
@@ -1198,7 +1198,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       <button
                         type='button'
                         onClick={() => { setShowAddImd(true); setNewImdName('') }}
-                        className='text-xs text-purple-600 hover:text-purple-800 font-semibold flex items-center cursor-pointer'
+                        className='text-xs text-sky-600 hover:text-sky-800 font-semibold flex items-center cursor-pointer'
                       >
                         <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
@@ -1220,7 +1220,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                         }}
                         onBlur={() => setTimeout(() => setImdDropdownOpen(false), 200)}
                         placeholder='Select or type Agent name...'
-                        className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white pr-10'
+                        className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white pr-10'
                       />
                       {formData.imd && !imdDropdownOpen ? (
                         <button
@@ -1253,7 +1253,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                               key={ref._id}
                               type='button'
                               onMouseDown={() => handleImdSelect(ref)}
-                              className={`w-full text-left px-3 py-2 text-sm hover:bg-purple-50 transition cursor-pointer ${formData.imd === ref.name ? 'bg-purple-50 text-purple-700 font-semibold' : 'text-gray-700'}`}
+                              className={`w-full text-left px-3 py-2 text-sm hover:bg-sky-50 transition cursor-pointer ${formData.imd === ref.name ? 'bg-sky-50 text-sky-700 font-semibold' : 'text-gray-700'}`}
                             >
                               {ref.name}
                             </button>
@@ -1270,40 +1270,40 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
 
                 <div className='md:col-span-4 mt-3 md:mt-4'>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Notes</label>
-                  <textarea name='remarks' value={formData.remarks} onChange={handleChange} rows='2' placeholder='Any additional notes...' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white resize-none' />
+                  <textarea name='remarks' value={formData.remarks} onChange={handleChange} rows='2' placeholder='Any additional notes...' className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white resize-none' />
                 </div>
 
               </div>
             </div>
 
-            <div className='bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+            <div className='bg-gradient-to-r from-sky-50 to-cyan-50 border-2 border-sky-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
               <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
-                <span className='bg-purple-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>2</span>
+                <span className='bg-sky-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>2</span>
                 Validity
               </h3>
               <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Valid From <span className='text-red-500'>*</span></label>
-                  <input type='date' name='validFrom' value={formData.validFrom ? formData.validFrom.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} tabIndex='5' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white' required />
+                  <input type='date' name='validFrom' value={formData.validFrom ? formData.validFrom.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} tabIndex='5' className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' required />
                 </div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Valid To <span className='text-xs text-blue-500'>(Auto-calculated, editable)</span></label>
-                  <input type='date' name='validTo' value={formData.validTo ? formData.validTo.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} tabIndex='6' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white' />
+                  <input type='date' name='validTo' value={formData.validTo ? formData.validTo.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} tabIndex='6' className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' />
                 </div>
                 <div></div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>TP Valid From</label>
-                  <input type='date' name='tpValidFrom' value={formData.tpValidFrom ? formData.tpValidFrom.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white' />
+                  <input type='date' name='tpValidFrom' value={formData.tpValidFrom ? formData.tpValidFrom.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' />
                 </div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>TP Valid To</label>
-                  <input type='date' name='tpValidTo' value={formData.tpValidTo ? formData.tpValidTo.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent bg-white' />
+                  <input type='date' name='tpValidTo' value={formData.tpValidTo ? formData.tpValidTo.split('-').reverse().join('-') : ''} onChange={handleChange} onKeyDown={handleInputKeyDown} className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white' />
                 </div>
                 <div></div>
               </div>
             </div>
 
-            <div className='bg-gradient-to-r from-emerald-50 to-lime-50 border-2 border-emerald-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+            <div className='bg-gradient-to-r from-emerald-50 to-teal-50 border-2 border-emerald-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
               <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
                 <span className='bg-emerald-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>3</span>
                 Premium
@@ -1322,7 +1322,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       min='0'
                       step='any'
                       tabIndex='7'
-                      className='w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                      className='w-full pl-8 pr-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     />
                   </div>
                 </div>
@@ -1339,7 +1339,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       min='0'
                       step='any'
                       tabIndex='8'
-                      className='w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                      className='w-full pl-8 pr-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     />
                   </div>
                 </div>
@@ -1356,7 +1356,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       min='0'
                       step='any'
                       tabIndex='9'
-                      className='w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                      className='w-full pl-8 pr-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     />
                   </div>
                 </div>
@@ -1376,16 +1376,16 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       min='0'
                       step='any'
                       tabIndex='10'
-                      className='w-full pl-7 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                      className='w-full pl-8 pr-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     />
                   </div>
                 </div>
               </div>
             </div>
 
-            <div className='bg-gradient-to-r from-teal-50 to-cyan-50 border-2 border-teal-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+            <div className='bg-gradient-to-r from-slate-50 to-blue-50 border-2 border-slate-300 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
               <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
-                <span className='bg-teal-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>4</span>
+                <span className='bg-slate-700 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>4</span>
                 Claim Details
               </h3>
               <div className='flex items-center gap-3 mb-4'>
@@ -1393,7 +1393,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                   type='button'
                   onClick={handleClaimToggle}
                   className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors cursor-pointer ${
-                    formData.claimRaised ? 'bg-teal-600' : 'bg-slate-300'
+                    formData.claimRaised ? 'bg-blue-600' : 'bg-slate-300'
                   }`}
                 >
                   <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -1421,7 +1421,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                           setFormData(prev => ({ ...prev, claimDate: '' }))
                         }
                       }}
-                      className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white'
+                      className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     />
                   </div>
                   <div className='md:col-span-2'>
@@ -1432,23 +1432,23 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       onChange={handleChange}
                       rows='2'
                       placeholder='Any remarks about the claim...'
-                      className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent bg-white resize-none'
+                      className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white resize-none'
                     />
                   </div>
                 </div>
               )}
             </div>
 
-            <div className='bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+            <div className='bg-gradient-to-r from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
               {/* Header row with title and + button */}
               <div className='flex items-center justify-between mb-3'>
                 <h3 className='text-base md:text-lg font-bold text-gray-800 flex items-center gap-2'>
-                  <svg className="w-5 h-5 md:w-6 md:h-6 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <svg className="w-5 h-5 md:w-6 md:h-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d="M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.414 6.586a6 6 0 108.484 8.484L20.5 13" />
                   </svg>
                   Endorsement Documents
                   {endorsements.length > 0 && (
-                    <span className='bg-amber-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0'>
+                    <span className='bg-indigo-600 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center flex-shrink-0'>
                       {endorsements.length}
                     </span>
                   )}
@@ -1457,7 +1457,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                 <div className='relative overflow-hidden flex-shrink-0'>
                   <button
                     type='button'
-                    className='flex items-center gap-1.5 px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold rounded-lg transition cursor-pointer shadow-sm'
+                    className='flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition cursor-pointer shadow-sm'
                     title='Add endorsement file(s)'
                   >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1478,12 +1478,12 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
               {/* Empty-state dashed drop-zone */}
               {endorsements.length === 0 ? (
                 <div className='relative overflow-hidden'>
-                  <div className='border-2 border-dashed border-amber-300 rounded-xl py-8 px-4 flex flex-col items-center gap-2 bg-white/40 hover:bg-white/60 transition cursor-pointer'>
-                    <svg className="w-10 h-10 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <div className='border-2 border-dashed border-indigo-300 rounded-xl py-8 px-4 flex flex-col items-center gap-2 bg-white/40 hover:bg-white/60 transition cursor-pointer'>
+                    <svg className="w-10 h-10 text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                     </svg>
-                    <p className='text-sm font-semibold text-amber-700'>Click or drop endorsement files here</p>
-                    <p className='text-xs text-amber-500'>PDF, JPG, PNG — max 15 MB each · Multiple files allowed</p>
+                    <p className='text-sm font-semibold text-indigo-700'>Click or drop endorsement files here</p>
+                    <p className='text-xs text-indigo-500'>PDF, JPG, PNG — max 15 MB each · Multiple files allowed</p>
                   </div>
                   <input
                     type='file'
@@ -1496,7 +1496,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
               ) : (
                 <div className='space-y-2'>
                   {endorsements.map((endo, idx) => (
-                    <div key={idx} className='flex items-center justify-between gap-3 rounded-lg bg-white/80 px-3 py-2.5 border border-amber-200 shadow-sm'>
+                    <div key={idx} className='flex items-center justify-between gap-3 rounded-lg bg-white/80 px-3 py-2.5 border border-indigo-200 shadow-sm'>
                       <div className='min-w-0 flex items-center gap-2'>
                         <div className={`flex-shrink-0 w-7 h-7 rounded-md flex items-center justify-center ${endo.type === 'pdf' ? 'bg-red-100' : 'bg-blue-100'}`}>
                           {endo.type === 'pdf' ? (
@@ -1531,7 +1531,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
             </div>
 
             {uploadedInsuranceDocument && (
-              <div className='bg-gradient-to-r from-slate-50 to-violet-50 border-2 border-slate-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+              <div className='bg-gradient-to-r from-slate-50 to-blue-50 border-2 border-slate-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
                 <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
                   <span className='bg-slate-700 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>5</span>
                   Uploaded Insurance Document
@@ -1553,9 +1553,9 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
             )}
 
             {endorsements.map((endo, idx) => (
-              <div key={idx} className='bg-gradient-to-r from-amber-50 to-orange-50 border-2 border-amber-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+              <div key={idx} className='bg-gradient-to-r from-indigo-50 to-blue-50 border-2 border-indigo-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
                 <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
-                  <span className='bg-amber-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>{idx + 1}</span>
+                  <span className='bg-indigo-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>{idx + 1}</span>
                   Uploaded Endorsement Document: {endo.name}
                 </h3>
                 {endo.type === 'pdf' ? (
@@ -1573,7 +1573,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
 
             <div className='flex gap-2 md:gap-3 w-full md:w-auto'>
               <button type='button' onClick={onClose} className='flex-1 md:flex-none px-4 md:px-6 py-2 bg-white border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-100 font-semibold transition cursor-pointer'>Cancel</button>
-              <button type='submit' disabled={isSubmitting} className='flex-1 md:flex-none px-6 md:px-8 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg hover:shadow-lg font-semibold transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'>{isSubmitting ? (isEditMode ? 'Updating...' : 'Adding...') : (isEditMode ? 'Update Insurance' : 'Add Insurance')}</button>
+              <button type='submit' disabled={isSubmitting} className='flex-1 md:flex-none px-6 md:px-8 py-2 bg-gradient-to-r from-blue-700 to-blue-600 text-white rounded-lg shadow-md shadow-blue-700/20 hover:from-blue-800 hover:to-blue-700 font-semibold transition flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed'>{isSubmitting ? (isEditMode ? 'Updating...' : 'Adding...') : (isEditMode ? 'Update Insurance' : 'Add Insurance')}</button>
             </div>
           </div>
         </form>
