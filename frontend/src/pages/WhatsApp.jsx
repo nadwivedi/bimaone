@@ -86,6 +86,7 @@ const WhatsApp = () => {
   const [expanded, setExpanded] = useState(null)
   const [settings, setSettings] = useState(null)
   const [savingSettings, setSavingSettings] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [testNumber, setTestNumber] = useState(user?.mobile || '')
   const pollRef = useRef(null)
 
@@ -109,9 +110,6 @@ const WhatsApp = () => {
   }, [logPage, logFilter, logSearch])
 
   useEffect(() => { loadStatus() }, [loadStatus])
-  useEffect(() => {
-    axios.get(`${API}/settings`, req).then((r) => setSettings(r.data.data)).catch(() => toast.error('Could not load WhatsApp settings'))
-  }, [])
   useEffect(() => {
     const t = setTimeout(loadLogs, logSearch ? 300 : 0)
     return () => clearTimeout(t)
@@ -159,11 +157,20 @@ const WhatsApp = () => {
   const retry = (id) => run(`retry-${id}`, post(`/logs/${id}/retry`), { refreshLogs: true })
   const remove = (id) => run(`del-${id}`, () => axios.delete(`${API}/logs/${id}`, req), { refreshLogs: true })
 
+  const openSettings = () => {
+    setSettings(null)
+    setShowSettings(true)
+    axios.get(`${API}/settings`, req)
+      .then((r) => setSettings(r.data.data))
+      .catch(() => { toast.error('Could not load WhatsApp settings'); setShowSettings(false) })
+  }
+
   const saveSettings = async () => {
     setSavingSettings(true)
     try {
       const res = await axios.put(`${API}/settings`, settings, req)
       setSettings(res.data.data)
+      setShowSettings(false)
       toast.success('Settings saved')
     } catch (err) {
       toast.error(err.response?.data?.message || 'Could not save settings')
@@ -200,10 +207,20 @@ const WhatsApp = () => {
                 <p className='text-xs text-slate-300 md:text-sm'>Renewal reminders go to your clients from your own WhatsApp number</p>
               </div>
             </div>
+            <div className='flex items-center gap-2'>
             <span className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-xs font-semibold ring-1 ring-inset ${PILL[state.tone]}`}>
               <span className={`h-1.5 w-1.5 rounded-full ${state.tone === 'emerald' ? 'bg-emerald-400' : state.tone === 'rose' ? 'bg-rose-400' : state.tone === 'amber' ? 'bg-amber-400' : 'bg-sky-400'}`} />
               {state.label}
             </span>
+            <button
+              type='button'
+              onClick={openSettings}
+              className='inline-flex items-center gap-1.5 rounded-lg bg-white/15 px-3 py-1.5 text-xs font-semibold ring-1 ring-inset ring-white/20 transition hover:bg-white/25 md:text-sm'
+            >
+              <Svg d={ICON.cog} className='h-4 w-4' />
+              Settings
+            </button>
+            </div>
           </div>
         </section>
 
@@ -430,102 +447,136 @@ const WhatsApp = () => {
           </div>
         </div>
 
-        {/* Settings */}
-        <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
-          <div className='flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 px-4 py-3.5 md:px-5'>
-            <div className='flex items-center gap-2'>
-              <Svg d={ICON.cog} className='h-5 w-5 text-slate-500' />
-              <h2 className='font-semibold text-slate-900'>Reminder settings</h2>
-            </div>
-            {settings && (
-              <label className='inline-flex cursor-pointer items-center gap-2 text-sm font-semibold text-slate-700'>
-                <input
-                  type='checkbox'
-                  checked={settings.automationEnabled !== false}
-                  onChange={(e) => setSettings((s) => ({ ...s, automationEnabled: e.target.checked }))}
-                  className='h-4 w-4 accent-emerald-600'
-                />
-                Automatic reminders {settings.automationEnabled !== false ? 'on' : 'off'}
-              </label>
-            )}
-          </div>
-
-          {!settings ? (
-            <div className='flex justify-center py-12 text-blue-600'><Spinner className='h-8 w-8 border-4' /></div>
-          ) : (
-            <div className='space-y-4 p-4 md:p-5'>
-              <div className='grid gap-3 sm:grid-cols-3'>
-                <label className='block'>
-                  <span className='mb-1 block text-xs font-semibold text-slate-600'>Message language</span>
-                  <select value={settings.messageLanguage} onChange={(e) => setSettings((s) => ({ ...s, messageLanguage: e.target.value }))} className={`${inputCls} cursor-pointer`}>
-                    <option value='english'>English</option>
-                    <option value='hindi'>Hindi</option>
-                    <option value='both'>English + Hindi</option>
-                  </select>
-                </label>
-                <label className='block'>
-                  <span className='mb-1 block text-xs font-semibold text-slate-600'>Max messages per day</span>
-                  <input type='number' min='1' max='200' value={settings.maxMessagesPerDay} onChange={(e) => setSettings((s) => ({ ...s, maxMessagesPerDay: e.target.value }))} className={inputCls} />
-                </label>
-                <label className='block'>
-                  <span className='mb-1 block text-xs font-semibold text-slate-600'>Max messages per hour</span>
-                  <input type='number' min='1' max='60' value={settings.maxMessagesPerHour} onChange={(e) => setSettings((s) => ({ ...s, maxMessagesPerHour: e.target.value }))} className={inputCls} />
-                </label>
-              </div>
-              <p className='text-xs text-slate-500'>Messages are sent between 7 AM and 9 PM with a short random gap, so your number isn't flagged as spam.</p>
-
-              <div className='grid gap-3 md:grid-cols-2 xl:grid-cols-3'>
-                {settings.services.map((svc) => {
-                  const rule = settings.alertRules[svc.key]
-                  return (
-                    <div key={svc.key} className={`rounded-xl border-2 p-3.5 transition ${rule.enabled ? 'border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50' : 'border-slate-200 bg-slate-50 opacity-70'}`}>
-                      <label className='flex cursor-pointer items-center justify-between gap-2'>
-                        <span className='font-semibold text-slate-900'>{svc.label}</span>
-                        <input type='checkbox' checked={rule.enabled} onChange={(e) => setRule(svc.key, { enabled: e.target.checked })} className='h-4 w-4 accent-blue-600' />
-                      </label>
-                      <div className='mt-3 space-y-2.5'>
-                        <label className='block'>
-                          <span className='mb-1 block text-[11px] font-semibold text-slate-600'>Days before expiry (comma separated)</span>
-                          <input
-                            value={Array.isArray(rule.beforeDays) ? rule.beforeDays.join(', ') : rule.beforeDays}
-                            onChange={(e) => setRule(svc.key, { beforeDays: e.target.value })}
-                            disabled={!rule.enabled}
-                            placeholder='15, 7, 1'
-                            className={inputCls}
-                          />
-                        </label>
-                        <label className='flex items-center gap-2 text-xs text-slate-700'>
-                          <input type='checkbox' checked={rule.sendOnExpiryDay} onChange={(e) => setRule(svc.key, { sendOnExpiryDay: e.target.checked })} disabled={!rule.enabled} className='h-4 w-4 accent-blue-600' />
-                          Remind on the expiry day
-                        </label>
-                        <label className='flex items-center gap-2 text-xs text-slate-700'>
-                          <input type='checkbox' checked={rule.sendAfterExpiry} onChange={(e) => setRule(svc.key, { sendAfterExpiry: e.target.checked })} disabled={!rule.enabled} className='h-4 w-4 accent-blue-600' />
-                          Remind after expiry
-                        </label>
-                        {rule.sendAfterExpiry && rule.enabled && (
-                          <input
-                            value={Array.isArray(rule.afterDays) ? rule.afterDays.join(', ') : rule.afterDays}
-                            onChange={(e) => setRule(svc.key, { afterDays: e.target.value })}
-                            placeholder='Days after expiry, e.g. 3, 7'
-                            className={inputCls}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )
-                })}
-              </div>
-
-              <div className='flex justify-end border-t border-slate-100 pt-4'>
-                <button type='button' onClick={saveSettings} disabled={savingSettings} className={btnPrimary}>
-                  {savingSettings && <Spinner />}
-                  Save settings
-                </button>
-              </div>
-            </div>
-          )}
-        </section>
       </main>
+
+      {/* Settings popup */}
+      {showSettings && (
+        <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-2 md:p-4' onClick={() => !savingSettings && setShowSettings(false)}>
+          <div
+            className='flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl md:rounded-2xl'
+            onClick={(e) => e.stopPropagation()}
+            role='dialog'
+            aria-modal='true'
+            aria-label='WhatsApp settings'
+          >
+            <div className='flex flex-shrink-0 items-center justify-between bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] p-3 text-white md:p-4'>
+              <div className='flex items-center gap-3'>
+                <span className='flex h-10 w-10 items-center justify-center rounded-xl bg-white/15'><Svg d={ICON.cog} /></span>
+                <div>
+                  <h2 className='text-lg font-bold md:text-xl'>WhatsApp Settings</h2>
+                  <p className='text-xs text-slate-300 md:text-sm'>Choose when and how reminders are sent</p>
+                </div>
+              </div>
+              <button type='button' onClick={() => setShowSettings(false)} disabled={savingSettings} className='rounded-lg p-1.5 text-white transition hover:bg-white/20 md:p-2' aria-label='Close'>
+                <svg className='h-5 w-5 md:h-6 md:w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M6 18L18 6M6 6l12 12' /></svg>
+              </button>
+            </div>
+
+            {!settings ? (
+              <div className='flex justify-center py-16 text-blue-600'><Spinner className='h-8 w-8 border-4' /></div>
+            ) : (
+              <div className='flex-1 space-y-4 overflow-y-auto p-3 md:space-y-5 md:p-6'>
+                {/* 1. General */}
+                <section className='rounded-xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-teal-50 p-3 md:p-5'>
+                  <div className='mb-3 flex flex-wrap items-center justify-between gap-2 md:mb-4'>
+                    <h3 className='flex items-center gap-2 text-base font-bold text-gray-800 md:text-lg'>
+                      <span className='flex h-6 w-6 items-center justify-center rounded-full bg-emerald-600 text-xs text-white md:h-8 md:w-8 md:text-sm'>1</span>
+                      General
+                    </h3>
+                    <label className='inline-flex cursor-pointer items-center gap-2 rounded-full bg-white px-3 py-1.5 text-sm font-semibold text-slate-700 shadow-sm'>
+                      <input
+                        type='checkbox'
+                        checked={settings.automationEnabled !== false}
+                        onChange={(e) => setSettings((s) => ({ ...s, automationEnabled: e.target.checked }))}
+                        className='h-4 w-4 accent-emerald-600'
+                      />
+                      Automatic reminders {settings.automationEnabled !== false ? 'on' : 'off'}
+                    </label>
+                  </div>
+                  <div className='grid gap-3 sm:grid-cols-3'>
+                    <label className='block'>
+                      <span className='mb-1 block text-xs font-semibold text-gray-700 md:text-sm'>Message language</span>
+                      <select value={settings.messageLanguage} onChange={(e) => setSettings((s) => ({ ...s, messageLanguage: e.target.value }))} className={`${inputCls} cursor-pointer`}>
+                        <option value='english'>English</option>
+                        <option value='hindi'>Hindi</option>
+                        <option value='both'>English + Hindi</option>
+                      </select>
+                    </label>
+                    <label className='block'>
+                      <span className='mb-1 block text-xs font-semibold text-gray-700 md:text-sm'>Max messages per day</span>
+                      <input type='number' min='1' max='200' value={settings.maxMessagesPerDay} onChange={(e) => setSettings((s) => ({ ...s, maxMessagesPerDay: e.target.value }))} className={inputCls} />
+                    </label>
+                    <label className='block'>
+                      <span className='mb-1 block text-xs font-semibold text-gray-700 md:text-sm'>Max messages per hour</span>
+                      <input type='number' min='1' max='60' value={settings.maxMessagesPerHour} onChange={(e) => setSettings((s) => ({ ...s, maxMessagesPerHour: e.target.value }))} className={inputCls} />
+                    </label>
+                  </div>
+                  <p className='mt-2.5 text-xs text-slate-600'>Messages go out between 7 AM and 9 PM with a short random gap, so your number isn't flagged as spam.</p>
+                </section>
+
+                {/* 2. Reminders per document */}
+                <section className='rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 p-3 md:p-5'>
+                  <h3 className='mb-3 flex items-center gap-2 text-base font-bold text-gray-800 md:mb-4 md:text-lg'>
+                    <span className='flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 text-xs text-white md:h-8 md:w-8 md:text-sm'>2</span>
+                    When to remind clients
+                  </h3>
+                  <div className='grid gap-3 md:grid-cols-2 lg:grid-cols-3'>
+                    {settings.services.map((svc) => {
+                      const rule = settings.alertRules[svc.key]
+                      return (
+                        <div key={svc.key} className={`rounded-lg bg-white p-3.5 shadow-sm ring-1 transition ${rule.enabled ? 'ring-blue-200' : 'opacity-60 ring-slate-200'}`}>
+                          <label className='flex cursor-pointer items-center justify-between gap-2'>
+                            <span className='font-semibold text-slate-900'>{svc.label}</span>
+                            <input type='checkbox' checked={rule.enabled} onChange={(e) => setRule(svc.key, { enabled: e.target.checked })} className='h-4 w-4 accent-blue-600' />
+                          </label>
+                          <div className='mt-3 space-y-2.5'>
+                            <label className='block'>
+                              <span className='mb-1 block text-[11px] font-semibold text-slate-600'>Days before expiry (comma separated)</span>
+                              <input
+                                value={Array.isArray(rule.beforeDays) ? rule.beforeDays.join(', ') : rule.beforeDays}
+                                onChange={(e) => setRule(svc.key, { beforeDays: e.target.value })}
+                                disabled={!rule.enabled}
+                                placeholder='15, 7, 1'
+                                className={inputCls}
+                              />
+                            </label>
+                            <label className='flex items-center gap-2 text-xs text-slate-700'>
+                              <input type='checkbox' checked={rule.sendOnExpiryDay} onChange={(e) => setRule(svc.key, { sendOnExpiryDay: e.target.checked })} disabled={!rule.enabled} className='h-4 w-4 accent-blue-600' />
+                              Remind on the expiry day
+                            </label>
+                            <label className='flex items-center gap-2 text-xs text-slate-700'>
+                              <input type='checkbox' checked={rule.sendAfterExpiry} onChange={(e) => setRule(svc.key, { sendAfterExpiry: e.target.checked })} disabled={!rule.enabled} className='h-4 w-4 accent-blue-600' />
+                              Remind after expiry
+                            </label>
+                            {rule.sendAfterExpiry && rule.enabled && (
+                              <input
+                                value={Array.isArray(rule.afterDays) ? rule.afterDays.join(', ') : rule.afterDays}
+                                onChange={(e) => setRule(svc.key, { afterDays: e.target.value })}
+                                placeholder='Days after expiry, e.g. 3, 7'
+                                className={inputCls}
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </section>
+              </div>
+            )}
+
+            <div className='flex flex-shrink-0 items-center justify-end gap-2 border-t border-gray-200 bg-gray-50 p-3 md:gap-3 md:p-4'>
+              <button type='button' onClick={() => setShowSettings(false)} disabled={savingSettings} className='rounded-lg border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-700 transition hover:bg-gray-100 md:px-6'>
+                Cancel
+              </button>
+              <button type='button' onClick={saveSettings} disabled={savingSettings || !settings} className={`${btnPrimary} md:px-8`}>
+                {savingSettings && <Spinner />}
+                Save Settings
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
