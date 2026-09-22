@@ -628,7 +628,7 @@ const Search = () => {
                 <table className='w-full min-w-[760px] text-left'>
                   <thead>
                     <tr className='bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500'>
-                      <th className='px-6 py-3'>Vehicle &amp; {isInsurance ? 'Policy Holder' : 'Owner'}</th>
+                      <th className='px-6 py-3'>{isInsurance ? 'Policy Holder' : 'Owner'} &amp; Vehicle</th>
                       {isInsurance && <th className='px-6 py-3'>Company &amp; Policy</th>}
                       {isInsurance && <th className='px-6 py-3'>Client &amp; Agent</th>}
                       <th className='px-6 py-3'>Validity</th>
@@ -643,8 +643,8 @@ const Search = () => {
                       return (
                         <tr key={record._id} onClick={() => openRecord(record)} className='cursor-pointer transition hover:bg-slate-50'>
                           <td className='px-6 py-3.5'>
+                            <p className='mb-1 max-w-[240px] truncate text-sm font-semibold text-slate-800' title={name}>{name || '—'}</p>
                             <Plate value={record.vehicleNumber} />
-                            <p className='mt-1 max-w-[240px] truncate text-sm font-semibold text-slate-800' title={name}>{name || '—'}</p>
                             {record.mobileNumber && <p className='text-xs text-slate-500'>{record.mobileNumber}</p>}
                           </td>
                           {isInsurance && (
@@ -690,8 +690,8 @@ const Search = () => {
                     <li key={record._id} className='px-4 py-3'>
                       <button type='button' onClick={() => openRecord(record)} className='flex w-full items-start gap-3 text-left active:bg-slate-50'>
                         <span className='min-w-0 flex-1'>
+                          <span className='mb-0.5 block truncate text-sm font-semibold text-slate-800'>{name || '—'}</span>
                           <Plate value={record.vehicleNumber} small />
-                          <span className='mt-1 block truncate text-sm font-semibold text-slate-800'>{name || '—'}</span>
                           {company && <span className='block truncate text-xs text-slate-500'>{company}{record.product ? ` · ${record.product}` : ''}</span>}
                           {record.mobileNumber && <span className='block text-xs text-slate-400'>{record.mobileNumber}</span>}
                         </span>
