@@ -1,11 +1,18 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import * as XLSX from 'xlsx'
 import { getInsuranceCompanies, subscribeInsuranceCompanies } from '../utils/insuranceCompanyCache'
 import { getProductTypes, subscribeProductTypes } from '../utils/productTypeCache'
 import useCurrentPlan from '../hooks/useCurrentPlan'
 import UpgradePopup from '../components/UpgradePopup'
+import DocumentDetailModal from '../components/DocumentDetailModal'
+import AddInsuranceModal from './Insurance/AddInsuranceModal'
+import EditTaxModal from './Tax/EditTaxModal'
+import EditPucModal from './Puc/EditPucModal'
+import EditGpsModal from './Gps/EditGpsModal'
+import EditFitnessModal from './Fitness/EditFitnessModal'
+import EditPermitModal from './Permit/components/EditPermitModal'
+import { toast } from 'react-toastify'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
@@ -37,8 +44,77 @@ const API_ENDPOINTS = {
   Permit: '/api/permit',
 }
 
+const ICON = {
+  search: 'M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z',
+  filter: 'M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z',
+  close: 'M6 18L18 6M6 6l12 12',
+  download: 'M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  chevron: 'M9 5l7 7-7 7',
+  chevronDown: 'M19 9l-7 7-7-7',
+  eye: 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z',
+  edit: 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z',
+  trash: 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16',
+  warn: 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z',
+}
+
+const Svg = ({ d, className = 'h-5 w-5', strokeWidth = 2 }) => (
+  <svg className={className} fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={strokeWidth} d={d} />
+  </svg>
+)
+
+const Plate = ({ value, small = false }) => (
+  <span className={`inline-block rounded-md border-2 border-slate-800 bg-amber-300 font-mono font-bold text-slate-900 ${small ? 'px-1.5 text-[11px] tracking-wider' : 'px-2 py-0.5 text-xs tracking-widest'}`}>
+    {value || '—'}
+  </span>
+)
+
+const dueText = (days) => {
+  if (days === null || days === undefined) return { text: '', cls: 'text-slate-400' }
+  if (days < 0) return { text: `Expired (${-days}d ago)`, cls: 'text-rose-600' }
+  if (days === 0) return { text: 'Expires (today)', cls: 'text-amber-600' }
+  return { text: `Expiring (in ${days}d)`, cls: days <= 30 ? 'text-amber-600' : 'text-emerald-600' }
+}
+
+const formatPremium = (value) => (
+  value != null && value !== '' ? `₹${Number(value).toLocaleString('en-IN', { maximumFractionDigits: 2 })}` : '—'
+)
+
+const FILTER_TONES = {
+  blue: { wrap: 'from-blue-50 to-sky-50 border-blue-200', badge: 'bg-blue-600' },
+  emerald: { wrap: 'from-emerald-50 to-teal-50 border-emerald-200', badge: 'bg-emerald-600' },
+  amber: { wrap: 'from-amber-50 to-orange-50 border-amber-200', badge: 'bg-amber-500' },
+}
+
+const FilterSection = ({ n, title, tone, children }) => (
+  <section className={`rounded-xl border-2 bg-gradient-to-r p-3 md:p-5 ${FILTER_TONES[tone].wrap}`}>
+    <h3 className='mb-3 flex items-center gap-2 text-base font-bold text-gray-800'>
+      <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs text-white md:h-7 md:w-7 ${FILTER_TONES[tone].badge}`}>{n}</span>
+      {title}
+    </h3>
+    <div className='grid grid-cols-1 gap-3 sm:grid-cols-2'>{children}</div>
+  </section>
+)
+
+const fieldCls = 'w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm font-medium text-slate-800 outline-none transition focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+
+const FilterSelect = ({ label, value, onChange, children }) => (
+  <label className='block'>
+    <span className='mb-1 block text-xs font-semibold text-gray-700 md:text-sm'>{label}</span>
+    <select value={value} onChange={(e) => onChange(e.target.value)} className={`${fieldCls} cursor-pointer`}>
+      {children}
+    </select>
+  </label>
+)
+
+const FilterDate = ({ label, value, onChange }) => (
+  <label className='block'>
+    <span className='mb-1 block text-xs font-semibold text-gray-700 md:text-sm'>{label}</span>
+    <input type='date' value={value} onChange={(e) => onChange(e.target.value)} className={fieldCls} />
+  </label>
+)
+
 const Search = () => {
-  const navigate = useNavigate()
   const { features } = useCurrentPlan()
   const [inputValue, setInputValue] = useState('')
   const [searchQuery, setSearchQuery] = useState('')
@@ -50,6 +126,10 @@ const Search = () => {
   const [loadingMore, setLoadingMore] = useState(false)
   const [searched, setSearched] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
+  const [viewingRecord, setViewingRecord] = useState(null)
+  const [editingRecord, setEditingRecord] = useState(null)
+  const [deletingRecord, setDeletingRecord] = useState(null)
+  const [isDeleting, setIsDeleting] = useState(false)
 
   // Filter state
   const [showFilterPanel, setShowFilterPanel] = useState(false)
@@ -69,7 +149,6 @@ const Search = () => {
   const [imdList, setImdList] = useState([])
   const [companiesList, setCompaniesList] = useState([])
   const [productTypesList, setProductTypesList] = useState([])
-  const filterPanelRef = useRef(null)
   const debounceRef = useRef(null)
 
   const insuranceFilterCount = filterType === 'Insurance' ? [filterCompany, filterProductType, filterPolicyType, filterReference, filterImd, filterClaimStatus, filterFinancialYear].filter(Boolean).length : 0
@@ -186,6 +265,8 @@ const Search = () => {
     setFilterDateTo('')
     setFilterReference('')
     setFilterImd('')
+    setFilterClaimStatus('')
+    setFilterFinancialYear('')
     setSearched(false)
     setShowFilterPanel(false)
   }, [filterType])
@@ -206,17 +287,6 @@ const Search = () => {
       document.body.style.overflow = ''
     }
     return () => { document.body.style.overflow = '' }
-  }, [showFilterPanel])
-
-  // Close filter panel on outside click
-  useEffect(() => {
-    const handleClick = (e) => {
-      if (filterPanelRef.current && !filterPanelRef.current.contains(e.target)) {
-        setShowFilterPanel(false)
-      }
-    }
-    if (showFilterPanel) document.addEventListener('mousedown', handleClick)
-    return () => document.removeEventListener('mousedown', handleClick)
   }, [showFilterPanel])
 
   // Close filter panel on Esc
@@ -242,6 +312,8 @@ const Search = () => {
     setFilterDateTo('')
     setFilterReference('')
     setFilterImd('')
+    setFilterClaimStatus('')
+    setFilterFinancialYear('')
   }
 
   const handleExport = async () => {
@@ -315,18 +387,6 @@ const Search = () => {
     }
   }
 
-  // Validity filter applied client-side on loaded records
-
-  const getValidityDays = (rec) => {
-    if (!rec.validTo) return null
-    const parts = rec.validTo.split('-')
-    if (parts.length !== 3) return null
-    const expiry = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24))
-  }
-
   const filteredRecords = records
 
   const filterMode = computeFilterMode(inputValue, filterCompany, filterProductType, filterPolicyType, filterValidity, filterDateFrom, filterDateTo, filterReference, filterImd, filterClaimStatus, filterFinancialYear)
@@ -336,939 +396,519 @@ const Search = () => {
     const parts = dateStr.split('-')
     if (parts.length !== 3) return null
     const expiry = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
+    if (Number.isNaN(expiry.getTime())) return null
     const today = new Date()
     today.setHours(0, 0, 0, 0)
-    const diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24))
-    return diff
+    return Math.ceil((expiry - today) / (1000 * 60 * 60 * 24))
   }
 
-  const getExpiryField = (record) => record.validTo || record.taxTo
+  const isInsurance = filterType === 'Insurance'
+  const typeLabel = DOCUMENT_TYPES.find((t) => t.value === filterType)?.label || filterType
+  const fyLabel = (y) => `FY ${y}-${String(Number(y) + 1).slice(2)}`
 
-  const getStatusBadge = (record) => {
-    const expiryField = getExpiryField(record)
-    if (!expiryField) return null
-    const parts = expiryField.split('-')
-    if (parts.length !== 3) return null
-    const expiry = new Date(`${parts[2]}-${parts[1]}-${parts[0]}`)
-    const today = new Date()
-    today.setHours(0, 0, 0, 0)
-    const diff = Math.ceil((expiry - today) / (1000 * 60 * 60 * 24))
-    if (diff < 0) return { label: 'Expired', class: 'bg-rose-100 text-rose-700 ring-rose-600/20' }
-    if (diff <= 30) return { label: `${diff}d left`, class: 'bg-amber-100 text-amber-700 ring-amber-600/20' }
-    return { label: 'Active', class: 'bg-emerald-100 text-emerald-700 ring-emerald-600/20' }
+  const activeChips = [
+    isInsurance && filterCompany && { key: 'company', label: companyNameById(filterCompany), clear: () => setFilterCompany('') },
+    isInsurance && filterProductType && { key: 'product', label: filterProductType, clear: () => setFilterProductType('') },
+    isInsurance && filterPolicyType && { key: 'policy', label: filterPolicyType, clear: () => setFilterPolicyType('') },
+    isInsurance && filterReference && { key: 'client', label: `Client: ${referenceNameById(filterReference)}`, clear: () => setFilterReference('') },
+    isInsurance && filterImd && { key: 'agent', label: `Agent: ${imdNameById(filterImd)}`, clear: () => setFilterImd('') },
+    isInsurance && filterClaimStatus && { key: 'claim', label: filterClaimStatus === 'raised' ? 'Claim raised' : 'No claim', clear: () => setFilterClaimStatus('') },
+    isInsurance && filterFinancialYear && { key: 'fy', label: fyLabel(filterFinancialYear), clear: () => setFilterFinancialYear('') },
+    filterValidity && { key: 'validity', label: filterValidity === 'expired' ? 'Expired' : `Expires in ${filterValidity} days`, clear: () => setFilterValidity('') },
+    filterDateFrom && { key: 'from', label: `Issued from ${filterDateFrom}`, clear: () => setFilterDateFrom('') },
+    filterDateTo && { key: 'to', label: `Issued to ${filterDateTo}`, clear: () => setFilterDateTo('') },
+  ].filter(Boolean)
+
+  const openRecord = (record) => setViewingRecord({ type: filterType, id: record._id })
+
+  const refetch = () => {
+    fetchRecords(1, false, inputValue, filterType, filterCompany, filterProductType, filterPolicyType, filterValidity, filterDateFrom, filterDateTo, filterReference, filterImd, filterClaimStatus, filterFinancialYear)
   }
+
+  const startEdit = (e, record) => {
+    e.stopPropagation()
+    setEditingRecord({ type: filterType, record })
+  }
+
+  const startDelete = (e, record) => {
+    e.stopPropagation()
+    setDeletingRecord({ type: filterType, record })
+  }
+
+  const finishEdit = () => {
+    setEditingRecord(null)
+    refetch()
+  }
+
+  // PUC and GPS edit modals hand the form back instead of saving it themselves.
+  const saveEditedRecord = async (formData) => {
+    const { type, record } = editingRecord
+    try {
+      await axios.put(`${API_URL}${API_ENDPOINTS[type]}/${record._id}`, formData, { withCredentials: true })
+      toast.success('Record updated successfully')
+      finishEdit()
+    } catch (err) {
+      toast.error(err.response?.data?.message || 'Failed to update record')
+    }
+  }
+
+  const confirmDelete = async () => {
+    if (!deletingRecord) return
+    const { type, record } = deletingRecord
+    setIsDeleting(true)
+    try {
+      const res = await axios.delete(`${API_URL}${API_ENDPOINTS[type]}/${record._id}`, { withCredentials: true })
+      if (res.data?.success) {
+        toast.success(`${DOCUMENT_TYPES.find((t) => t.value === type)?.label || type} record deleted`)
+        setDeletingRecord(null)
+        refetch()
+      } else {
+        toast.error('Failed to delete record')
+      }
+    } catch {
+      toast.error('Failed to delete record')
+    } finally {
+      setIsDeleting(false)
+    }
+  }
+
+  const RowActions = ({ record, compact = false }) => (
+    <div className={`flex items-center ${compact ? 'gap-1.5' : 'justify-end gap-1.5'}`}>
+      <button
+        type='button'
+        onClick={(e) => { e.stopPropagation(); openRecord(record) }}
+        className='inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'
+        title='View'
+      >
+        <Svg d={ICON.eye} className='h-3.5 w-3.5' />
+        View
+      </button>
+      <button
+        type='button'
+        onClick={(e) => startEdit(e, record)}
+        className='inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'
+        title='Edit'
+      >
+        <Svg d={ICON.edit} className='h-3.5 w-3.5' />
+        Edit
+      </button>
+      <button
+        type='button'
+        onClick={(e) => startDelete(e, record)}
+        className='inline-flex items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600'
+        title='Delete'
+      >
+        <Svg d={ICON.trash} className='h-3.5 w-3.5' />
+        {compact ? 'Delete' : <span className='sr-only'>Delete</span>}
+      </button>
+    </div>
+  )
+
+  const exportButton = (
+    <button
+      type='button'
+      onClick={() => (!features.excelDownload ? setShowUpgradePopup(true) : handleExport())}
+      disabled={!filteredRecords.length}
+      className='inline-flex items-center gap-1.5 rounded-lg border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 transition hover:bg-emerald-100 disabled:cursor-not-allowed disabled:opacity-50'
+    >
+      <Svg d={ICON.download} className='h-4 w-4' />
+      Export Excel
+    </button>
+  )
 
   return (
-    <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f5f3ff,_#faf7f2_45%,_#fffdf9_100%)]'>
-      <main className='px-2 pt-3 pb-32 lg:px-8 lg:pt-4'>
-        <section className='w-full'>
-          <div className='w-full'>
-            <div className='rounded-[32px] border border-stone-200 bg-white p-4 shadow-[0_28px_60px_-34px_rgba(68,64,60,0.25)] md:p-5 lg:p-6'>
-
-              {/* Header */}
-              <div className='mb-4 flex items-center justify-between gap-3 border-b border-dashed border-stone-200 pb-3'>
-                <div className='flex items-center gap-2.5'>
-                  <div className='flex h-8 w-8 items-center justify-center rounded-lg bg-stone-900 text-white'>
-                    <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
-                    </svg>
-                  </div>
-                  <div>
-                    <h1 className='text-sm md:text-base font-black leading-tight text-stone-900'>Search {filterType === 'Tax' ? 'Road Tax' : filterType}</h1>
-                    <p className='text-[10px] font-semibold text-stone-400'>Browse, filter &amp; export records</p>
-                  </div>
-                </div>
-                <span className='shrink-0 rounded-full bg-violet-50 px-3 py-1 text-[11px] font-black text-violet-700 ring-1 ring-inset ring-violet-200'>
-                  {loading ? '…' : totalRecords} records
-                </span>
-              </div>
-
-              {/* Document Type Tabs */}
-              <div className='mb-3 flex items-center gap-2'>
-                <div className='flex min-w-0 gap-1 overflow-x-auto rounded-xl bg-stone-100 p-1'>
-                  {DOCUMENT_TYPES.map(t => (
-                    <button
-                      key={t.value}
-                      type='button'
-                      onClick={() => setFilterType(t.value)}
-                      className={`shrink-0 rounded-lg px-3 py-1.5 text-[11px] font-black transition-all ${filterType === t.value
-                        ? 'bg-white text-violet-700 shadow-sm ring-1 ring-stone-200'
-                        : 'text-stone-500 hover:text-stone-800'
-                        }`}
-                    >
-                      {t.label}
-                    </button>
-                  ))}
-                </div>
-                {activeFilterCount > 0 && (
-                  <button
-                    onClick={handleClearFilters}
-                    className='ml-auto shrink-0 text-xs font-bold text-rose-500 hover:text-rose-700 transition-colors flex items-center gap-1 px-2'
-                  >
-                    <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M6 18L18 6M6 6l12 12' />
-                    </svg>
-                    Clear filters
-                  </button>
-                )}
-              </div>
-
-              {/* Search Bar + Filter Icon */}
-              <div className='flex gap-2 items-center relative'>
-                <div className='relative flex-1'>
-                  <div className='absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none'>
-                    {loading ? (
-                      <div className='animate-spin h-4 w-4 border-2 border-violet-500 border-t-transparent rounded-full' />
-                    ) : (
-                      <svg className='w-4 h-4 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
-                      </svg>
-                    )}
-                  </div>
-                  <input
-                    type='text'
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                    placeholder='Search by name, vehicle number...'
-                    className='w-full rounded-2xl border-2 border-stone-200 bg-stone-50/60 py-3 pl-9 pr-4 text-xs focus:bg-white font-black text-stone-900 placeholder:text-[10px] md:placeholder:text-xs placeholder:text-stone-400 placeholder:font-semibold focus:border-violet-500 focus:outline-none focus:ring-4 focus:ring-violet-500/10 transition-all uppercase'
-                  />
-                </div>
-
-                {/* Filter Icon Button */}
-                <div className='relative' ref={filterPanelRef}>
-                  <button
-                    onClick={() => setShowFilterPanel(prev => !prev)}
-                    className={`relative flex items-center justify-center w-11 h-11 rounded-2xl border-2 transition-all ${showFilterPanel || activeFilterCount > 0
-                        ? 'border-violet-500 bg-violet-500 text-white shadow-lg shadow-violet-200'
-                        : 'border-stone-200 bg-white text-stone-500 hover:border-violet-400 hover:text-violet-500 hover:shadow-md'
-                      }`}
-                    title='Filter'
-                  >
-                    <svg className='w-4.5 h-4.5' style={{ width: '18px', height: '18px' }} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z' />
-                    </svg>
-                    {activeFilterCount > 0 && (
-                      <span className='absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-rose-500 text-white text-[9px] font-black flex items-center justify-center shadow'>
-                        {activeFilterCount}
-                      </span>
-                    )}
-                  </button>
-
-                  {/* Filter Dropdown Panel */}
-                  {showFilterPanel && (
-                    <>
-                      {/* Overlay backdrop */}
-                      <div
-                        className='fixed inset-0 z-[55] bg-black/60 backdrop-blur-sm lg:bg-black/20'
-                        onClick={() => setShowFilterPanel(false)}
-                      />
-
-                      <div className='fixed inset-0 z-[60] flex items-center justify-center'>
-                        <div
-                          onClick={(e) => e.stopPropagation()}
-                          className={`
-                            bg-white lg:bg-white/80 lg:backdrop-blur-xl
-                            rounded-2xl border border-stone-200 shadow-2xl shadow-stone-300/50
-                            overflow-hidden animate-in fade-in slide-in-from-top-2 duration-150
-                            w-[88vw] lg:w-[30rem] max-h-[85vh] lg:max-h-[90vh] flex flex-col
-                          `}
-                        >
-                          {/* Panel Header */}
-                           <div className='flex items-center justify-between px-4 py-3 bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white'>
-                            <div className='flex items-center gap-2'>
-                              <svg className='w-4 h-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z' />
-                              </svg>
-                              <span className='text-sm font-bold'>Filters</span>
-                            </div>
-                            <div className='flex items-center gap-3'>
-                              {activeFilterCount > 0 && (
-                                <button
-                                  onClick={handleClearFilters}
-                                  className='text-[10px] font-bold text-white/85 hover:text-white transition-colors underline underline-offset-2'
-                                >
-                                  Clear all
-                                </button>
-                              )}
-                              <button
-                                onClick={() => setShowFilterPanel(false)}
-                                className='text-white/85 hover:text-white transition-colors p-0.5 rounded-lg hover:bg-white/10'
-                                title='Close'
-                              >
-                                <svg className='w-4.5 h-4.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M6 18L18 6M6 6l12 12' />
-                                </svg>
-                              </button>
-                            </div>
-                          </div>
-
-                          <div className='p-4 lg:p-6 space-y-4 lg:space-y-5 flex-1 overflow-y-auto'>
-
-                            {filterType === 'Insurance' && (
-                              <>
-                                {/* Insurance Company */}
-                                <div>
-                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                    Insurance Company
-                                  </label>
-                                  <div className='relative'>
-                                    <select
-                                      value={filterCompany}
-                                      onChange={(e) => setFilterCompany(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
-                                    >
-                                      <option value=''>All Companies</option>
-                                      {companiesList.map(c => (
-                                        <option key={c._id} value={c._id}>{c.name}</option>
-                                      ))}
-                                    </select>
-                                    <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                  {filterCompany && (
-                                    <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{companyNameById(filterCompany)}</span>
-                                      <button onClick={() => setFilterCompany('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Product Type */}
-                                <div>
-                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                    Product Type
-                                  </label>
-                                  <div className='relative'>
-                                    <select
-                                      value={filterProductType}
-                                      onChange={(e) => setFilterProductType(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
-                                    >
-                                       <option value=''>All Product Types</option>
-                                       {productTypesList.map(p => {
-                                         const name = typeof p === 'string' ? p : p.name
-                                         return <option key={p._id || name} value={name}>{name}</option>
-                                       })}
-                                    </select>
-                                    <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                  {filterProductType && (
-                                    <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{filterProductType}</span>
-                                      <button onClick={() => setFilterProductType('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Policy Type */}
-                                <div>
-                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                    Policy Type
-                                  </label>
-                                  <div className='relative'>
-                                    <select
-                                      value={filterPolicyType}
-                                      onChange={(e) => setFilterPolicyType(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
-                                    >
-                                      <option value=''>All Policy Types</option>
-                                      {POLICY_TYPES.map(p => (
-                                        <option key={p} value={p}>{p}</option>
-                                      ))}
-                                    </select>
-                                    <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                  {filterPolicyType && (
-                                    <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{filterPolicyType}</span>
-                                      <button onClick={() => setFilterPolicyType('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Client Name */}
-                                <div>
-                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                    Client Name
-                                  </label>
-                                  <div className='relative'>
-                                    <select
-                                      value={filterReference}
-                                      onChange={(e) => setFilterReference(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
-                                    >
-                                      <option value=''>All Client Names</option>
-                                      {referencesList.map((r) => (
-                                        <option key={r._id} value={r._id}>{r.name}</option>
-                                      ))}
-                                    </select>
-                                    <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                  {filterReference && (
-                                    <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>{referenceNameById(filterReference)}</span>
-                                      <button onClick={() => setFilterReference('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                  </div>
-
-                                {/* Agent name */}
-                                <div>
-                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                    Agent name (IMD)
-                                  </label>
-                                  <div className='relative'>
-                                    <select
-                                      value={filterImd}
-                                      onChange={(e) => setFilterImd(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-purple-500 focus:outline-none focus:ring-2 focus:ring-purple-500/10 transition-all cursor-pointer'
-                                    >
-                                      <option value=''>All Agent names</option>
-                                      {imdList.map((r) => (
-                                        <option key={r._id} value={r._id}>{r.name}</option>
-                                      ))}
-                                    </select>
-                                    <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                  {filterImd && (
-                                    <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-purple-600 truncate max-w-[200px]'>{imdNameById(filterImd)}</span>
-                                      <button onClick={() => setFilterImd('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Claim Status */}
-                                <div>
-                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                    Claim Status
-                                  </label>
-                                  <div className='relative'>
-                                    <select
-                                      value={filterClaimStatus}
-                                      onChange={(e) => setFilterClaimStatus(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer'
-                                    >
-                                      <option value=''>All — Any Claim</option>
-                                      <option value='raised'>Claim Raised</option>
-                                      <option value='not_raised'>No Claim</option>
-                                    </select>
-                                    <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                  {filterClaimStatus && (
-                                    <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-teal-600 truncate max-w-[200px]'>{filterClaimStatus === 'raised' ? 'Claim Raised' : 'No Claim'}</span>
-                                      <button onClick={() => setFilterClaimStatus('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-
-                                {/* Financial Year */}
-                                <div>
-                                  <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                    Financial Year
-                                  </label>
-                                  <div className='relative'>
-                                    <select
-                                      value={filterFinancialYear}
-                                      onChange={(e) => setFilterFinancialYear(e.target.value)}
-                                      className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-teal-500 focus:outline-none focus:ring-2 focus:ring-teal-500/10 transition-all cursor-pointer'
-                                    >
-                                      <option value=''>All Financial Years</option>
-                                      {availableFinancialYears.map((y) => (
-                                        <option key={y} value={String(y)}>{y}-{String(y + 1).slice(2)}</option>
-                                      ))}
-                                    </select>
-                                    <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                      <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                      </svg>
-                                    </div>
-                                  </div>
-                                  {filterFinancialYear && (
-                                    <div className='mt-1.5 flex items-center justify-between'>
-                                      <span className='text-[10px] font-bold text-teal-600 truncate max-w-[200px]'>FY {filterFinancialYear}-{String(Number(filterFinancialYear) + 1).slice(2)}</span>
-                                      <button onClick={() => setFilterFinancialYear('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                        <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              </>
-                            )}
-
-                            {/* Validity */}
-                            <div>
-                              <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                Validity Period
-                              </label>
-                              <div className='relative'>
-                                <select
-                                  value={filterValidity}
-                                  onChange={(e) => setFilterValidity(e.target.value)}
-                                  className='w-full appearance-none rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 pl-3 pr-8 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all cursor-pointer'
-                                >
-                                  <option value=''>All — Any Validity</option>
-                                  <option value='expired'>❌ Expired</option>
-                                  <option value='7'>⚠️ Expires in 7 Days</option>
-                                  <option value='30'>🔔 Expires in 30 Days</option>
-                                  <option value='45'>🔔 Expires in 45 Days</option>
-                                  <option value='60'>✅ Expires in 60 Days</option>
-                                </select>
-                                <div className='pointer-events-none absolute inset-y-0 right-2.5 flex items-center'>
-                                  <svg className='w-3.5 h-3.5 text-stone-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                                  </svg>
-                                </div>
-                              </div>
-                              {filterValidity && (
-                                <div className='mt-1.5 flex items-center justify-between'>
-                                  <span className='text-[10px] font-bold text-violet-600 truncate max-w-[200px]'>
-                                    {filterValidity === 'expired' ? 'Expired' : `Expires in ${filterValidity} Days`}
-                                  </span>
-                                  <button onClick={() => setFilterValidity('')} className='text-stone-400 hover:text-rose-500 transition-colors ml-1'>
-                                    <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                    </svg>
-                                  </button>
-                                </div>
-                              )}
-                            </div>
-
-                            {/* Policy Issue Date */}
-                            <div>
-                              <label className='block text-[10px] font-black text-stone-500 uppercase tracking-wider mb-1.5'>
-                                Policy Issue Date
-                              </label>
-                              <div className='flex gap-2'>
-                                <div className='flex-1'>
-                                  <input
-                                    type='date'
-                                    value={filterDateFrom}
-                                    onChange={(e) => setFilterDateFrom(e.target.value)}
-                                    className='w-full rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 px-3 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all'
-                                  />
-                                  {filterDateFrom && (
-                                    <div className='mt-1 flex items-center justify-between'>
-                                      <span className='text-[9px] font-bold text-violet-600'>From</span>
-                                      <button onClick={() => setFilterDateFrom('')} className='text-stone-400 hover:text-rose-500 transition-colors'>
-                                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                                <div className='flex-1'>
-                                  <input
-                                    type='date'
-                                    value={filterDateTo}
-                                    onChange={(e) => setFilterDateTo(e.target.value)}
-                                    className='w-full rounded-xl border-2 border-stone-200 bg-white py-2 lg:py-2.5 px-3 text-xs font-bold text-stone-700 focus:border-violet-500 focus:outline-none focus:ring-2 focus:ring-violet-500/10 transition-all'
-                                  />
-                                  {filterDateTo && (
-                                    <div className='mt-1 flex items-center justify-between'>
-                                      <span className='text-[9px] font-bold text-violet-600'>To</span>
-                                      <button onClick={() => setFilterDateTo('')} className='text-stone-400 hover:text-rose-500 transition-colors'>
-                                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                                        </svg>
-                                      </button>
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-
-                          <div className='flex-shrink-0 border-t border-stone-100 bg-white px-4 pb-4 pt-3 lg:px-6 lg:pb-6'>
-                            <button
-                              onClick={() => setShowFilterPanel(false)}
-                              className='w-full py-2 lg:py-2.5 rounded-xl bg-gradient-to-r from-violet-600 to-fuchsia-600 text-white text-xs lg:text-sm font-bold shadow-lg shadow-violet-200 transition-all hover:shadow-xl hover:from-violet-700 hover:to-indigo-700 active:scale-95'
-                            >
-                              Apply Filters
-                              {activeFilterCount > 0 && (
-                                <span className='ml-2 bg-white/30 text-white text-[10px] font-black px-1.5 py-0.5 rounded-md'>
-                                  {activeFilterCount} active
-                                </span>
-                              )}
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* Active Filter Chips */}
-              {activeFilterCount > 0 && (
-                <div className='mt-3 flex flex-wrap gap-2'>
-                  {filterType === 'Insurance' && filterCompany && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-violet-50 px-2.5 py-1 text-[10px] font-bold text-violet-700 ring-1 ring-inset ring-violet-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16' />
-                      </svg>
-                      {companyNameById(filterCompany)}
-                      <button onClick={() => setFilterCompany('')} className='ml-0.5 hover:text-rose-500 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterType === 'Insurance' && filterProductType && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-purple-50 px-2.5 py-1 text-[10px] font-bold text-purple-700 ring-1 ring-inset ring-purple-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-                      </svg>
-                      {filterProductType}
-                      <button onClick={() => setFilterProductType('')} className='ml-0.5 hover:text-rose-500 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterType === 'Insurance' && filterPolicyType && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-indigo-50 px-2.5 py-1 text-[10px] font-bold text-indigo-700 ring-1 ring-inset ring-indigo-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' />
-                      </svg>
-                      {filterPolicyType}
-                      <button onClick={() => setFilterPolicyType('')} className='ml-0.5 hover:text-rose-500 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterType === 'Insurance' && filterReference && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-teal-50 px-2.5 py-1 text-[10px] font-bold text-teal-700 ring-1 ring-inset ring-teal-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z' />
-                      </svg>
-                      {referenceNameById(filterReference)}
-                      <button onClick={() => setFilterReference('')} className='ml-0.5 hover:text-rose-500 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterType === 'Insurance' && filterImd && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-purple-50 px-2.5 py-1 text-[10px] font-bold text-purple-700 ring-1 ring-inset ring-purple-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z' />
-                      </svg>
-                      {imdNameById(filterImd)}
-                      <button onClick={() => setFilterImd('')} className='ml-0.5 hover:text-rose-500 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterType === 'Insurance' && filterClaimStatus && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-teal-50 px-2.5 py-1 text-[10px] font-bold text-teal-700 ring-1 ring-inset ring-teal-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' />
-                      </svg>
-                      {filterClaimStatus === 'raised' ? 'Claim Raised' : 'No Claim'}
-                      <button onClick={() => setFilterClaimStatus('')} className='ml-0.5 hover:text-rose-500 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterType === 'Insurance' && filterFinancialYear && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-cyan-50 px-2.5 py-1 text-[10px] font-bold text-cyan-700 ring-1 ring-inset ring-cyan-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' />
-                      </svg>
-                      FY {filterFinancialYear}-{String(Number(filterFinancialYear) + 1).slice(2)}
-                      <button onClick={() => setFilterFinancialYear('')} className='ml-0.5 hover:text-rose-500 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterValidity && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-rose-50 px-2.5 py-1 text-[10px] font-bold text-rose-700 ring-1 ring-inset ring-rose-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
-                      </svg>
-                      {filterValidity === 'expired' ? 'Expired' : `Expires in ${filterValidity} Days`}
-                      <button onClick={() => setFilterValidity('')} className='ml-0.5 hover:text-rose-700 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterDateFrom && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-orange-50 px-2.5 py-1 text-[10px] font-bold text-orange-700 ring-1 ring-inset ring-orange-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-                      </svg>
-                      Issue From: {filterDateFrom}
-                      <button onClick={() => setFilterDateFrom('')} className='ml-0.5 hover:text-rose-700 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                  {filterDateTo && (
-                    <span className='inline-flex items-center gap-1.5 rounded-lg bg-orange-50 px-2.5 py-1 text-[10px] font-bold text-orange-700 ring-1 ring-inset ring-orange-200'>
-                      <svg className='w-3 h-3' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-                      </svg>
-                      Issue To: {filterDateTo}
-                      <button onClick={() => setFilterDateTo('')} className='ml-0.5 hover:text-rose-700 transition-colors'>
-                        <svg className='w-2.5 h-2.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={3} d='M6 18L18 6M6 6l12 12' />
-                        </svg>
-                      </button>
-                    </span>
-                  )}
-                </div>
-              )}
-
-              {/* Loading */}
-              {loading && (
-                <div className='mt-6 text-center py-12 bg-stone-50/50 rounded-2xl border-2 border-dashed border-stone-200'>
-                  <div className='animate-spin h-8 w-8 border-4 border-violet-600 border-t-transparent rounded-full mx-auto'></div>
-                  <p className='text-xs text-stone-500 mt-2 font-bold uppercase tracking-widest'>Loading records...</p>
-                </div>
-              )}
-
-              {/* No Results */}
-              {!loading && searched && records.length === 0 && (
-                <div className='mt-6 text-center py-12 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200'>
-                  <div className='mx-auto mb-4 flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-stone-50 to-stone-100 shadow-inner'>
-                    <svg className='h-10 w-10 text-stone-300' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                      <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={1.5} d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z' />
-                    </svg>
-                  </div>
-                  <h3 className='text-lg font-black text-stone-800'>No Records Found</h3>
-                  <p className='mt-1 text-xs font-semibold text-stone-400'>
-                    {activeFilterCount > 0 ? 'Try adjusting your filters.' : 'Try a different search term.'}
-                  </p>
-                  {activeFilterCount > 0 && (
-                    <button onClick={handleClearFilters} className='mt-3 text-xs font-bold text-violet-600 hover:text-violet-700 underline underline-offset-2'>
-                      Clear all filters
-                    </button>
-                  )}
-                </div>
-              )}
-
-              {/* Results */}
-              {!loading && records.length > 0 && (
-                <>
-                  <div className='mt-5 mb-3 flex items-center justify-between flex-wrap gap-2 rounded-2xl bg-stone-50 px-3 py-2 ring-1 ring-inset ring-stone-200/70'>
-                    <p className='text-xs font-bold text-stone-500'>
-                      Showing <span className='font-black text-violet-700'>{filteredRecords.length}</span> of <span className='font-black text-stone-800'>{totalRecords}</span> results
-                    </p>
-                    <div className='flex items-center gap-2'>
-                      {filteredRecords.length > 0 && (
-                        <button
-                          onClick={() => !features.excelDownload ? setShowUpgradePopup(true) : handleExport()}
-                          className='flex items-center gap-1.5 rounded-lg bg-emerald-50 px-3 py-1.5 text-[10px] font-bold text-emerald-600 hover:bg-emerald-100 transition-all border border-emerald-200'
-                        >
-                          <svg className='w-3.5 h-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z' />
-                          </svg>
-                          Export Excel
-                        </button>
-                      )}
-                      {activeFilterCount > 0 && (
-                        <span className='text-[10px] font-bold text-violet-600 bg-violet-50 px-2 py-0.5 rounded-lg'>
-                          {activeFilterCount} filter{activeFilterCount > 1 ? 's' : ''} applied
-                        </span>
-                      )}
-                    </div>
-                  </div>
-
-                  {filteredRecords.length === 0 && filterValidity && (
-                    <div className='text-center py-10 bg-stone-50 rounded-2xl border-2 border-dashed border-stone-200'>
-                      <p className='text-sm font-black text-stone-400'>No records match the validity filter</p>
-                      <button onClick={() => setFilterValidity('')} className='mt-2 text-xs font-bold text-violet-600 hover:text-violet-700 underline underline-offset-2'>Clear validity filter</button>
-                    </div>
-                  )}
-
-                  <div className='hidden md:block overflow-x-auto rounded-2xl border border-stone-200 bg-white shadow-[0_12px_32px_-20px_rgba(68,64,60,0.35)]'>
-                    <table className='w-full min-w-[720px] text-left'>
-                      <thead>
-                        <tr className='bg-violet-950'>
-                          <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-300'>#</th>
-                          <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>{filterType === 'Insurance' ? 'Policy Holder / Vehicle' : 'Name / Vehicle'}</th>
-                          {filterType === 'Insurance' && <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>Company / Product</th>}
-                          {filterType === 'Insurance' && <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>Client / Agent</th>}
-                          <th className='px-4 py-3.5 text-[10px] font-black uppercase tracking-wider text-violet-100'>Validity (From / To)</th>
-                          {filterType === 'Insurance' && <th className='px-4 py-3.5 text-right text-[10px] font-black uppercase tracking-wider text-violet-100'>Premium</th>}
-                          <th className='px-4 py-3.5 text-right text-[10px] font-black uppercase tracking-wider text-violet-100'>Status</th>
-                        </tr>
-                      </thead>
-                      <tbody className='divide-y divide-stone-100'>
-                        {filteredRecords.map((record, idx) => {
-                          const badge = getStatusBadge(record)
-                          const recordName = record.policyHolderName || record.ownerName || record.name || 'Unknown'
-                          const initials = recordName.split(/\s+/).filter(Boolean).slice(0, 2).map(w => w[0]).join('').toUpperCase()
-                          const days = getDaysLeft(record.validTo || record.taxTo)
-                          return (
-                            <tr
-                              key={record._id}
-                              onClick={() => navigate(`/rto-documents/${filterType}/${record._id}`)}
-                              className='group cursor-pointer transition-colors hover:bg-violet-50/50'
-                            >
-                              <td className='relative px-4 py-3 text-[11px] font-bold text-stone-400'>
-                                <span className='absolute inset-y-0 left-0 w-1 bg-violet-500 opacity-0 transition-opacity group-hover:opacity-100' />
-                                {idx + 1}
-                              </td>
-                              <td className='px-4 py-3'>
-                                <div className='flex items-center gap-3'>
-                                  <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-violet-100 to-fuchsia-100 text-[11px] font-black text-violet-700'>
-                                    {initials || '?'}
-                                  </div>
-                                  <div className='min-w-0'>
-                                    <p className='text-sm font-black text-stone-900 group-hover:text-violet-700 transition-colors'>{recordName}</p>
-                                    <span className='mt-1 inline-block rounded-md border border-stone-300 bg-amber-50 px-1.5 py-0.5 font-mono text-[11px] font-black uppercase tracking-wider text-stone-800'>{record.vehicleNumber || 'N/A'}</span>
-                                    {record.mobileNumber && <p className='mt-0.5 text-[10px] font-bold text-stone-400'>{record.mobileNumber}</p>}
-                                  </div>
-                                </div>
-                              </td>
-                              {filterType === 'Insurance' && (
-                                <td className='px-4 py-3'>
-                                  <p className='text-xs font-bold text-stone-700'>{recordCompanyName(record) || '—'}</p>
-                                  <p className='text-[10px] font-semibold text-stone-400'>{[record.product, record.insuranceClass].filter(Boolean).join(' · ')}</p>
-                                  {record.policyNumber && <p className='font-mono text-[10px] text-stone-400'>{record.policyNumber}</p>}
-                                </td>
-                              )}
-                              {filterType === 'Insurance' && (
-                                <td className='px-4 py-3'>
-                                  <p className='text-xs font-bold text-stone-700'>{recordReferenceName(record) || '—'}</p>
-                                  <p className='text-[10px] font-semibold text-stone-400'>{recordImdName(record)}</p>
-                                </td>
-                              )}
-                              <td className='whitespace-nowrap px-4 py-3'>
-                                <p className='text-xs font-medium text-stone-500'>
-                                  <span className='mr-1 text-[8px] font-black uppercase tracking-wider text-stone-400'>From</span>
-                                  {record.validFrom || record.taxFrom || 'N/A'}
-                                </p>
-                                <p className='mt-0.5 text-xs font-black text-stone-900'>
-                                  <span className='mr-1 text-[8px] font-black uppercase tracking-wider text-stone-400'>To</span>
-                                  {record.validTo || record.taxTo || 'N/A'}
-                                  {days !== null && <span className={`ml-1 ${days < 0 ? 'text-rose-600' : 'text-stone-400'}`}>({days}d)</span>}
-                                </p>
-                              </td>
-                              {filterType === 'Insurance' && (
-                                <td className='whitespace-nowrap px-4 py-3 text-right text-xs font-black text-emerald-700'>
-                                  {record.premium != null ? `₹${record.premium.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}` : '—'}
-                                </td>
-                              )}
-                              <td className='px-4 py-3 text-right'>
-                                {badge && (
-                                  <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[9px] font-black uppercase leading-none tracking-wider ring-1 ring-inset ${badge.class}`}>
-                                    <span className='h-1.5 w-1.5 rounded-full bg-current' />
-                                    {badge.label}
-                                  </span>
-                                )}
-                              </td>
-                            </tr>
-                          )
-                        })}
-                      </tbody>
-                    </table>
-                  </div>
-
-                  <div className='grid gap-4 md:hidden'>
-                    {filteredRecords.map((record) => {
-                      const badge = getStatusBadge(record)
-                      const recordName = record.policyHolderName || record.ownerName || record.name || 'Unknown'
-                      return (
-                        <div
-                          key={record._id}
-                          onClick={() => navigate(`/rto-documents/${filterType}/${record._id}`)}
-                          className='group relative overflow-hidden rounded-2xl border-2 border-stone-200 bg-white p-4 shadow-sm transition-all hover:border-violet-500 hover:shadow-xl hover:shadow-violet-100/40 hover:-transtone-y-0.5 cursor-pointer'
-                        >
-                          <div className='flex items-start justify-between'>
-                            <div className='flex-1 min-w-0'>
-                              <div className='flex items-center gap-2 flex-wrap'>
-                                <h3 className='text-xs sm:text-sm font-black text-stone-900 truncate sm:overflow-visible sm:whitespace-normal max-w-[200px] sm:max-w-none'>
-                                  {recordName}
-                                </h3>
-                                {filterType === 'Insurance' && record.premium != null && (
-                                  <span className='inline-flex items-center rounded-lg bg-emerald-50 px-2 py-0.5 text-[10px] font-black text-emerald-700 ring-1 ring-inset ring-emerald-600/20 shadow-sm'>
-                                    ₹{record.premium.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 2 })}
-                                  </span>
-                                )}
-                              </div>
-                              <p className='text-[10px] font-black tracking-wider text-stone-400 uppercase font-mono mt-0.5'>
-                                {record.vehicleNumber || 'N/A'}
-                              </p>
-                              {record.mobileNumber && (
-                                <p className='text-[10px] font-bold text-stone-400 mt-0.5'>{record.mobileNumber}</p>
-                              )}
-                              <div className='mt-2.5 flex flex-wrap gap-1.5'>
-                                <span className='inline-flex items-center rounded-md bg-stone-100 px-2 py-0.5 text-[9px] font-black text-stone-600 ring-1 ring-inset ring-stone-300/50 whitespace-nowrap shadow-sm'>
-                                  {filterType}
-                                </span>
-                                {filterType === 'Insurance' && recordCompanyName(record) && (
-                                  <span className='inline-flex items-center rounded-md bg-violet-50 px-2 py-0.5 text-[9px] font-black text-violet-700 ring-1 ring-inset ring-violet-700/10 whitespace-nowrap shadow-sm'>
-                                    {recordCompanyName(record)}
-                                  </span>
-                                )}
-                                {filterType === 'Insurance' && record.product && (
-                                  <span className='inline-flex items-center rounded-md bg-purple-50 px-2 py-0.5 text-[9px] font-black text-purple-700 ring-1 ring-inset ring-purple-700/10 whitespace-nowrap shadow-sm'>
-                                    {record.product}
-                                  </span>
-                                )}
-                                {filterType === 'Insurance' && record.insuranceClass && (
-                                  <span className='inline-flex items-center rounded-md bg-indigo-50 px-2 py-0.5 text-[9px] font-black text-indigo-700 ring-1 ring-inset ring-indigo-700/10 whitespace-nowrap shadow-sm'>
-                                    {record.insuranceClass}
-                                  </span>
-                                )}
-                                {filterType === 'Insurance' && recordReferenceName(record) && (
-                                  <span className='inline-flex items-center rounded-md bg-teal-50 px-2 py-0.5 text-[9px] font-black text-teal-700 ring-1 ring-inset ring-teal-700/10 whitespace-nowrap shadow-sm'>
-                                    {recordReferenceName(record)}
-                                  </span>
-                                )}
-                                {filterType === 'Insurance' && recordImdName(record) && (
-                                  <span className='inline-flex items-center rounded-md bg-purple-50 px-2 py-0.5 text-[9px] font-black text-purple-700 ring-1 ring-inset ring-purple-700/10 whitespace-nowrap shadow-sm'>
-                                    {recordImdName(record)}
-                                  </span>
-                                )}
-                              </div>
-                            </div>
-                            {badge && (
-                              <span className={`shrink-0 rounded-lg px-2 py-1 text-[9px] font-black uppercase leading-none tracking-wider shadow-sm ring-1 ring-inset ${badge.class}`}>
-                                {badge.label}
-                              </span>
-                            )}
-                          </div>
-                          <div className='mt-4 flex items-center justify-between border-t border-stone-100 pt-3'>
-                            <div className='flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-bold text-stone-500'>
-                              <span className='whitespace-nowrap'>
-                                <span className='text-[8px] font-black uppercase tracking-wider text-stone-400 mr-1'>From</span>
-                                <span className='text-stone-700 font-semibold'>{record.validFrom || record.taxFrom || 'N/A'}</span>
-                              </span>
-                              <span className='text-stone-300 hidden min-[320px]:inline'>•</span>
-                              <span className='whitespace-nowrap'>
-                                <span className='text-[8px] font-black uppercase tracking-wider text-stone-400 mr-1'>To</span>
-                                <span className='font-black text-stone-900'>
-                                  {record.validTo || record.taxTo || 'N/A'}
-                                  {(() => {
-                                    const days = getDaysLeft(record.validTo || record.taxTo)
-                                    if (days === null) return null
-                                    return (
-                                      <span className='text-rose-600 ml-1'>({days}d)</span>
-                                    )
-                                  })()}
-                                </span>
-                              </span>
-                              {filterType === 'Insurance' && record.issueDate && (
-                                <>
-                                  <span className='text-stone-300 hidden min-[320px]:inline'>•</span>
-                                  <span className='whitespace-nowrap'>
-                                    <span className='text-[8px] font-black uppercase tracking-wider text-stone-400 mr-1'>Issued</span>
-                                    <span className='text-stone-700 font-semibold'>{record.issueDate}</span>
-                                  </span>
-                                </>
-                              )}
-                            </div>
-                            {filterType === 'Insurance' && record.policyNumber && (
-                              <span className='hidden sm:inline-block self-start sm:self-auto -mt-1 sm:mt-0 text-[9px] font-extrabold text-stone-400 bg-stone-50 px-2 py-0.5 rounded border border-stone-150 uppercase tracking-wider truncate sm:overflow-visible sm:whitespace-normal max-w-[130px] sm:max-w-none shadow-sm'>
-                                {record.policyNumber}
-                              </span>
-                            )}
-                          </div>
-                        </div>
-                      )
-                    })}
-                  </div>
-
-                  {!filterMode && hasMore && (
-                    <div className='mt-8 text-center'>
-                      <button
-                        onClick={handleLoadMore}
-                        disabled={loadingMore}
-                        className='inline-flex items-center gap-2 rounded-xl bg-white border-2 border-stone-200 px-8 py-3 text-xs font-black text-stone-700 uppercase tracking-wider transition-all hover:border-violet-400 hover:text-violet-600 hover:shadow-lg hover:shadow-violet-100/50 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed'
-                      >
-                        {loadingMore ? (
-                          <>
-                            <div className='animate-spin h-4 w-4 border-2 border-violet-600 border-t-transparent rounded-full'></div>
-                            Loading...
-                          </>
-                        ) : (
-                          <>
-                            <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19 9l-7 7-7-7' />
-                            </svg>
-                            Load More
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
-                </>
-              )}
-
+    <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
+      <main className='w-full space-y-4 px-3 pt-4 pb-32 md:space-y-5 lg:px-8 lg:pt-6 lg:pb-10'>
+        {/* Search panel */}
+        <section className='rounded-2xl bg-white p-3 shadow-sm ring-1 ring-slate-200 md:p-5'>
+          <div className='flex flex-col gap-3 md:flex-row md:items-center md:justify-between'>
+            <div className='flex gap-1 overflow-x-auto rounded-lg bg-slate-100 p-1 [&::-webkit-scrollbar]:hidden'>
+              {DOCUMENT_TYPES.map((t) => (
+                <button
+                  key={t.value}
+                  type='button'
+                  onClick={() => setFilterType(t.value)}
+                  className={`shrink-0 rounded-md px-3 py-1.5 text-sm font-semibold transition ${filterType === t.value ? 'bg-white text-slate-900 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+                >
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <div className='hidden items-center gap-2 md:flex'>
+              <span className='rounded-full bg-blue-50 px-3 py-1 text-xs font-semibold text-blue-700 ring-1 ring-inset ring-blue-200'>
+                {loading ? '…' : totalRecords} records
+              </span>
+              {exportButton}
             </div>
           </div>
+
+          <div className='mt-3 flex gap-2'>
+            <label className='relative block flex-1'>
+              <span className='pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-slate-400'>
+                {loading ? (
+                  <span className='h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-r-transparent' />
+                ) : (
+                  <Svg d={ICON.search} className='h-5 w-5' />
+                )}
+              </span>
+              <input
+                type='text'
+                value={inputValue}
+                onChange={(e) => setInputValue(e.target.value)}
+                placeholder={isInsurance ? 'Search by policy holder, vehicle number, mobile or policy number' : `Search ${typeLabel} by name, vehicle number or mobile`}
+                className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-4 text-[15px] font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+              />
+            </label>
+            <button
+              type='button'
+              onClick={() => setShowFilterPanel(true)}
+              className={`relative inline-flex shrink-0 items-center gap-2 rounded-lg border px-3.5 text-sm font-semibold transition md:px-4 ${activeFilterCount > 0 ? 'border-blue-600 bg-blue-600 text-white shadow-md shadow-blue-700/20' : 'border-slate-300 bg-white text-slate-700 hover:bg-slate-50'}`}
+            >
+              <Svg d={ICON.filter} className='h-5 w-5' />
+              <span className='hidden sm:inline'>Filters</span>
+              {activeFilterCount > 0 && (
+                <span className='flex h-5 min-w-5 items-center justify-center rounded-full bg-white px-1 text-[11px] font-bold text-blue-700'>{activeFilterCount}</span>
+              )}
+            </button>
+          </div>
+
+          {activeChips.length > 0 && (
+            <div className='mt-3 flex flex-wrap items-center gap-2'>
+              {activeChips.map((c) => (
+                <span key={c.key} className='inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-blue-50 py-1 pl-3 pr-1.5 text-xs font-semibold text-blue-800'>
+                  {c.label}
+                  <button type='button' onClick={c.clear} className='rounded-full p-0.5 text-blue-500 transition hover:bg-blue-100 hover:text-blue-800' aria-label={`Remove ${c.label}`}>
+                    <Svg d={ICON.close} className='h-3.5 w-3.5' strokeWidth={2.5} />
+                  </button>
+                </span>
+              ))}
+              <button type='button' onClick={handleClearFilters} className='text-xs font-semibold text-rose-600 hover:text-rose-700'>
+                Clear all
+              </button>
+            </div>
+          )}
+
+          <div className='mt-3 flex items-center justify-between md:hidden'>
+            <span className='text-xs font-medium text-slate-500'>{loading ? 'Searching…' : `${totalRecords} records`}</span>
+            {exportButton}
+          </div>
+        </section>
+
+        {/* Results */}
+        <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
+          {loading ? (
+            <div className='flex flex-col items-center gap-3 py-20'>
+              <div className='h-9 w-9 animate-spin rounded-full border-4 border-blue-600 border-r-transparent' />
+              <p className='text-sm text-slate-400'>Loading records…</p>
+            </div>
+          ) : searched && records.length === 0 ? (
+            <div className='flex flex-col items-center gap-2 px-6 py-20 text-center'>
+              <span className='flex h-14 w-14 items-center justify-center rounded-full bg-slate-100 text-slate-400'>
+                <Svg d={ICON.search} className='h-7 w-7' />
+              </span>
+              <p className='font-semibold text-slate-800'>No records found</p>
+              <p className='text-sm text-slate-500'>{activeFilterCount > 0 ? 'Try removing some filters.' : 'Try a different name or vehicle number.'}</p>
+              {activeFilterCount > 0 && (
+                <button type='button' onClick={handleClearFilters} className='mt-1 text-sm font-semibold text-blue-700 hover:text-blue-800'>
+                  Clear all filters
+                </button>
+              )}
+            </div>
+          ) : (
+            <>
+              <div className='flex items-center justify-between border-b border-slate-100 px-4 py-3 md:px-6'>
+                <p className='text-sm text-slate-500'>
+                  Showing <span className='font-semibold text-slate-800'>{filteredRecords.length}</span> of{' '}
+                  <span className='font-semibold text-slate-800'>{totalRecords}</span> {typeLabel} records
+                </p>
+              </div>
+
+              {/* Desktop table */}
+              <div className='hidden overflow-x-auto md:block'>
+                <table className='w-full min-w-[760px] text-left'>
+                  <thead>
+                    <tr className='bg-slate-50 text-xs font-semibold uppercase tracking-wide text-slate-500'>
+                      <th className='px-6 py-3'>Vehicle &amp; {isInsurance ? 'Policy Holder' : 'Owner'}</th>
+                      {isInsurance && <th className='px-6 py-3'>Company &amp; Policy</th>}
+                      {isInsurance && <th className='px-6 py-3'>Client &amp; Agent</th>}
+                      <th className='px-6 py-3'>Validity</th>
+                      {isInsurance && <th className='px-6 py-3 text-right'>Premium</th>}
+                      <th className='px-6 py-3 text-right'>Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className='divide-y divide-slate-100'>
+                    {filteredRecords.map((record) => {
+                      const name = record.policyHolderName || record.ownerName || record.name || ''
+                      const due = dueText(getDaysLeft(record.validTo || record.taxTo))
+                      return (
+                        <tr key={record._id} onClick={() => openRecord(record)} className='cursor-pointer transition hover:bg-slate-50'>
+                          <td className='px-6 py-3.5'>
+                            <Plate value={record.vehicleNumber} />
+                            <p className='mt-1 max-w-[240px] truncate text-sm font-semibold text-slate-800' title={name}>{name || '—'}</p>
+                            {record.mobileNumber && <p className='text-xs text-slate-500'>{record.mobileNumber}</p>}
+                          </td>
+                          {isInsurance && (
+                            <td className='px-6 py-3.5'>
+                              <p className='max-w-[220px] truncate text-sm font-medium text-slate-800'>{recordCompanyName(record) || '—'}</p>
+                              <p className='text-xs text-slate-500'>{[record.product, record.insuranceClass].filter(Boolean).join(' · ') || '—'}</p>
+                              {record.policyNumber && <p className='font-mono text-[11px] text-slate-400'>{record.policyNumber}</p>}
+                            </td>
+                          )}
+                          {isInsurance && (
+                            <td className='px-6 py-3.5'>
+                              <p className='text-sm font-medium text-slate-800'>{recordReferenceName(record) || '—'}</p>
+                              <p className='text-xs text-slate-500'>{recordImdName(record)}</p>
+                            </td>
+                          )}
+                          <td className='whitespace-nowrap px-6 py-3.5'>
+                            <p className='text-xs text-slate-500'>From {record.validFrom || record.taxFrom || '—'}</p>
+                            <p className='text-sm font-semibold text-slate-800'>To {record.validTo || record.taxTo || '—'}</p>
+                            <p className={`text-xs font-semibold ${due.cls}`}>{due.text}</p>
+                          </td>
+                          {isInsurance && (
+                            <td className='whitespace-nowrap px-6 py-3.5 text-right text-sm font-semibold text-emerald-700'>
+                              {formatPremium(record.premium)}
+                            </td>
+                          )}
+                          <td className='px-6 py-3.5'>
+                            <RowActions record={record} />
+                          </td>
+                        </tr>
+                      )
+                    })}
+                  </tbody>
+                </table>
+              </div>
+
+              {/* Mobile list */}
+              <ul className='divide-y divide-slate-100 md:hidden'>
+                {filteredRecords.map((record) => {
+                  const name = record.policyHolderName || record.ownerName || record.name || ''
+                  const due = dueText(getDaysLeft(record.validTo || record.taxTo))
+                  const company = isInsurance ? recordCompanyName(record) : ''
+                  return (
+                    <li key={record._id} className='px-4 py-3'>
+                      <button type='button' onClick={() => openRecord(record)} className='flex w-full items-start gap-3 text-left active:bg-slate-50'>
+                        <span className='min-w-0 flex-1'>
+                          <Plate value={record.vehicleNumber} small />
+                          <span className='mt-1 block truncate text-sm font-semibold text-slate-800'>{name || '—'}</span>
+                          {company && <span className='block truncate text-xs text-slate-500'>{company}{record.product ? ` · ${record.product}` : ''}</span>}
+                          {record.mobileNumber && <span className='block text-xs text-slate-400'>{record.mobileNumber}</span>}
+                        </span>
+                        <span className='shrink-0 text-right'>
+                          <span className='block text-xs font-semibold text-slate-700'>{record.validTo || record.taxTo || '—'}</span>
+                          <span className={`block text-[11px] font-semibold ${due.cls}`}>{due.text}</span>
+                          {isInsurance && record.premium != null && (
+                            <span className='mt-1 block text-xs font-semibold text-emerald-700'>{formatPremium(record.premium)}</span>
+                          )}
+                        </span>
+                      </button>
+                      <div className='mt-2.5 border-t border-dashed border-slate-100 pt-2.5'>
+                        <RowActions record={record} compact />
+                      </div>
+                    </li>
+                  )
+                })}
+              </ul>
+
+              {!filterMode && hasMore && (
+                <div className='border-t border-slate-100 p-4 text-center'>
+                  <button
+                    type='button'
+                    onClick={handleLoadMore}
+                    disabled={loadingMore}
+                    className='inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-6 py-2.5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50'
+                  >
+                    {loadingMore ? (
+                      <>
+                        <span className='h-4 w-4 animate-spin rounded-full border-2 border-blue-600 border-r-transparent' />
+                        Loading…
+                      </>
+                    ) : (
+                      <>
+                        <Svg d={ICON.chevronDown} className='h-4 w-4' />
+                        Load more
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
+            </>
+          )}
         </section>
       </main>
+
+      {/* Filter popup */}
+      {showFilterPanel && (
+        <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-2 md:p-4' onClick={() => setShowFilterPanel(false)}>
+          <div
+            className='flex max-h-[90vh] w-full max-w-2xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl md:rounded-2xl'
+            onClick={(e) => e.stopPropagation()}
+            role='dialog'
+            aria-modal='true'
+            aria-label='Filters'
+          >
+            <div className='flex flex-shrink-0 items-center justify-between bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] p-3 text-white md:p-4'>
+              <div>
+                <h2 className='text-lg font-bold md:text-xl'>Filter {typeLabel}</h2>
+                <p className='text-xs text-slate-300 md:text-sm'>Results update as you choose</p>
+              </div>
+              <button type='button' onClick={() => setShowFilterPanel(false)} className='rounded-lg p-1.5 text-white transition hover:bg-white/20 md:p-2' aria-label='Close'>
+                <Svg d={ICON.close} className='h-5 w-5 md:h-6 md:w-6' />
+              </button>
+            </div>
+
+            <div className='flex-1 space-y-4 overflow-y-auto p-3 md:p-6'>
+              {isInsurance && (
+                <FilterSection n={1} title='Policy' tone='blue'>
+                  <FilterSelect label='Insurance Company' value={filterCompany} onChange={setFilterCompany}>
+                    <option value=''>All companies</option>
+                    {companiesList.map((c) => <option key={c._id} value={c._id}>{c.name}</option>)}
+                  </FilterSelect>
+                  <FilterSelect label='Product Type' value={filterProductType} onChange={setFilterProductType}>
+                    <option value=''>All product types</option>
+                    {productTypesList.map((p) => {
+                      const name = typeof p === 'string' ? p : p.name
+                      return <option key={p._id || name} value={name}>{name}</option>
+                    })}
+                  </FilterSelect>
+                  <FilterSelect label='Policy Type' value={filterPolicyType} onChange={setFilterPolicyType}>
+                    <option value=''>All policy types</option>
+                    {POLICY_TYPES.map((p) => <option key={p} value={p}>{p}</option>)}
+                  </FilterSelect>
+                  <FilterSelect label='Financial Year' value={filterFinancialYear} onChange={setFilterFinancialYear}>
+                    <option value=''>All financial years</option>
+                    {availableFinancialYears.map((y) => <option key={y} value={String(y)}>{fyLabel(y)}</option>)}
+                  </FilterSelect>
+                </FilterSection>
+              )}
+
+              {isInsurance && (
+                <FilterSection n={2} title='Client & Claim' tone='emerald'>
+                  <FilterSelect label='Client Name' value={filterReference} onChange={setFilterReference}>
+                    <option value=''>All clients</option>
+                    {referencesList.map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
+                  </FilterSelect>
+                  <FilterSelect label='Agent Name (IMD)' value={filterImd} onChange={setFilterImd}>
+                    <option value=''>All agents</option>
+                    {imdList.map((r) => <option key={r._id} value={r._id}>{r.name}</option>)}
+                  </FilterSelect>
+                  <FilterSelect label='Claim Status' value={filterClaimStatus} onChange={setFilterClaimStatus}>
+                    <option value=''>Any</option>
+                    <option value='raised'>Claim raised</option>
+                    <option value='not_raised'>No claim</option>
+                  </FilterSelect>
+                </FilterSection>
+              )}
+
+              <FilterSection n={isInsurance ? 3 : 1} title='Dates' tone='amber'>
+                <FilterSelect label='Validity' value={filterValidity} onChange={setFilterValidity}>
+                  <option value=''>Any validity</option>
+                  <option value='expired'>Expired</option>
+                  <option value='7'>Expires in 7 days</option>
+                  <option value='30'>Expires in 30 days</option>
+                  <option value='45'>Expires in 45 days</option>
+                  <option value='60'>Expires in 60 days</option>
+                </FilterSelect>
+                <div />
+                <FilterDate label='Issue Date From' value={filterDateFrom} onChange={setFilterDateFrom} />
+                <FilterDate label='Issue Date To' value={filterDateTo} onChange={setFilterDateTo} />
+              </FilterSection>
+            </div>
+
+            <div className='flex flex-shrink-0 items-center justify-between gap-3 border-t border-gray-200 bg-gray-50 p-3 md:p-4'>
+              <button
+                type='button'
+                onClick={handleClearFilters}
+                disabled={activeFilterCount === 0}
+                className='rounded-lg px-4 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 disabled:cursor-not-allowed disabled:text-slate-300 disabled:hover:bg-transparent'
+              >
+                Clear all
+              </button>
+              <button
+                type='button'
+                onClick={() => setShowFilterPanel(false)}
+                className='rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-2 font-semibold text-white shadow-md shadow-blue-700/20 transition hover:from-blue-800 hover:to-blue-700 md:px-8'
+              >
+                Show {loading ? '' : totalRecords} results
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {viewingRecord && (
+        <DocumentDetailModal
+          type={viewingRecord.type}
+          id={viewingRecord.id}
+          onClose={() => setViewingRecord(null)}
+          onChanged={refetch}
+        />
+      )}
+
+      {editingRecord?.type === 'Insurance' && (
+        <AddInsuranceModal
+          isOpen
+          isEditMode
+          initialData={editingRecord.record}
+          onClose={() => setEditingRecord(null)}
+          onSubmit={finishEdit}
+        />
+      )}
+      {editingRecord?.type === 'Tax' && (
+        <EditTaxModal isOpen tax={editingRecord.record} onClose={() => setEditingRecord(null)} onSubmit={finishEdit} />
+      )}
+      {editingRecord?.type === 'Permit' && (
+        <EditPermitModal isOpen permit={editingRecord.record} onClose={() => setEditingRecord(null)} onSubmit={finishEdit} />
+      )}
+      {editingRecord?.type === 'Fitness' && (
+        <EditFitnessModal isOpen fitness={editingRecord.record} onClose={() => setEditingRecord(null)} onSuccess={finishEdit} />
+      )}
+      {editingRecord?.type === 'PUC' && (
+        <EditPucModal isOpen puc={editingRecord.record} onClose={() => setEditingRecord(null)} onSubmit={saveEditedRecord} />
+      )}
+      {editingRecord?.type === 'GPS' && (
+        <EditGpsModal isOpen gps={editingRecord.record} onClose={() => setEditingRecord(null)} onSubmit={saveEditedRecord} />
+      )}
+
+      {deletingRecord && (
+        <div className='fixed inset-0 z-[85] flex items-center justify-center bg-black/60 p-4' onClick={() => !isDeleting && setDeletingRecord(null)}>
+          <div className='w-full max-w-sm overflow-hidden rounded-2xl bg-white shadow-2xl' onClick={(e) => e.stopPropagation()} role='alertdialog' aria-modal='true'>
+            <div className='p-6'>
+              <span className='flex h-12 w-12 items-center justify-center rounded-full bg-rose-50 text-rose-600'>
+                <Svg d={ICON.warn} className='h-6 w-6' />
+              </span>
+              <h3 className='mt-4 text-lg font-bold text-slate-900'>Delete this record?</h3>
+              <p className='mt-1 text-sm text-slate-500'>
+                The {DOCUMENT_TYPES.find((t) => t.value === deletingRecord.type)?.label || deletingRecord.type} record for{' '}
+                <span className='font-semibold text-slate-800'>{deletingRecord.record.vehicleNumber || 'this vehicle'}</span>
+                {(deletingRecord.record.policyHolderName || deletingRecord.record.ownerName || deletingRecord.record.name) && (
+                  <> ({deletingRecord.record.policyHolderName || deletingRecord.record.ownerName || deletingRecord.record.name})</>
+                )}{' '}
+                will be permanently deleted. This cannot be undone.
+              </p>
+            </div>
+            <div className='flex justify-end gap-2 border-t border-gray-200 bg-gray-50 px-6 py-4'>
+              <button
+                type='button'
+                onClick={() => setDeletingRecord(null)}
+                disabled={isDeleting}
+                className='rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-semibold text-gray-700 transition hover:bg-gray-100 disabled:opacity-50'
+              >
+                Cancel
+              </button>
+              <button
+                type='button'
+                onClick={confirmDelete}
+                disabled={isDeleting}
+                className='rounded-lg bg-rose-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-rose-700 disabled:opacity-50'
+              >
+                {isDeleting ? 'Deleting…' : 'Delete'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <UpgradePopup
         isOpen={showUpgradePopup}

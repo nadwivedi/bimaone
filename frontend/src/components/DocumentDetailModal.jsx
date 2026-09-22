@@ -877,7 +877,7 @@ const DocumentDetailModal = ({ type, id, onClose, onChanged }) => {
         />
       )}
       {showEditModal && type === 'Tax' && (
-        <EditTaxModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onSubmit={handleEditSubmit} tax={record} />
+        <EditTaxModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onSubmit={() => { setShowEditModal(false); fetchRecord(); onChanged?.() }} tax={record} />
       )}
       {showEditModal && type === 'PUC' && (
         <EditPucModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onSubmit={handleEditSubmit} puc={record} />
@@ -886,7 +886,7 @@ const DocumentDetailModal = ({ type, id, onClose, onChanged }) => {
         <EditGpsModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onSubmit={handleEditSubmit} gps={record} />
       )}
       {showEditModal && type === 'Permit' && (
-        <EditPermitModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onSubmit={handleEditSubmit} permit={record} />
+        <EditPermitModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onSubmit={() => { setShowEditModal(false); fetchRecord(); onChanged?.() }} permit={record} />
       )}
       {showEditModal && type === 'RC' && (
         <EditRcModal isOpen={showEditModal} onClose={() => setShowEditModal(false)} onSubmit={handleEditSubmit} rc={record} />

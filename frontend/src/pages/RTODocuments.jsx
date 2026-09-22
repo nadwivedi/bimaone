@@ -616,7 +616,7 @@ const RTODocuments = () => {
         <EditTaxModal
           isOpen={!!editingDoc}
           onClose={() => setEditingDoc(null)}
-          onSubmit={handleEditSubmit}
+          onSubmit={() => { setEditingDoc(null); fetchAllDocuments() }}
           tax={editingDoc.rawRecord}
         />
       )}
@@ -640,7 +640,7 @@ const RTODocuments = () => {
         <EditPermitModal
           isOpen={!!editingDoc}
           onClose={() => setEditingDoc(null)}
-          onSubmit={handleEditSubmit}
+          onSubmit={() => { setEditingDoc(null); fetchAllDocuments() }}
           permit={editingDoc.rawRecord}
         />
       )}
