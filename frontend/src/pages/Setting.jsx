@@ -33,7 +33,6 @@ const ICONS = {
   help: 'M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
   lock: 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z',
   doc: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
-  instagram: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7 2h10a5 5 0 015 5v10a5 5 0 01-5 5H7a5 5 0 01-5-5V7a5 5 0 015-5z',
   facebook: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z',
 }
 
@@ -311,10 +310,9 @@ const Setting = () => {
         </SettingGroup>
 
         <SettingGroup title='Support'>
-          <SettingRow icon={ICONS.email} color='bg-sky-500' label='Email Helpdesk' value='mybimabox@gmail.com' href='mailto:mybimabox@gmail.com' />
-          <SettingRow icon={ICONS.phone} color='bg-emerald-500' label='Call Us' value='+91 7004534508' href='tel:+917004534508' />
+          <SettingRow icon={ICONS.email} color='bg-sky-500' label='Email Helpdesk' value='bimaoneofficial@gmail.com' href='mailto:bimaoneofficial@gmail.com' />
+          <SettingRow icon={ICONS.phone} color='bg-emerald-500' label='Call Us' value='+91 9202469725' href='tel:+919202469725' />
           <SettingRow icon={ICONS.help} color='bg-stone-500' label='Support Center' to='/contact-us' />
-          <SettingRow icon={ICONS.instagram} color='bg-pink-500' label='Instagram' href='https://www.instagram.com/bimabox.in/' external />
           <SettingRow icon={ICONS.facebook} color='bg-blue-600' label='Facebook' href='https://www.facebook.com/profile.php?viewas=100000686899395&id=61590698249898' external />
         </SettingGroup>
 
@@ -474,8 +472,8 @@ const Setting = () => {
           {/* Support, legal, sign out */}
           <div className='space-y-6'>
             <SettingGroup title='Support'>
-              <SettingRow icon={ICONS.email} color='bg-sky-500' label='Email Helpdesk' href='mailto:mybimabox@gmail.com' />
-              <SettingRow icon={ICONS.phone} color='bg-emerald-500' label='Call Us' value='7004534508' href='tel:+917004534508' />
+              <SettingRow icon={ICONS.email} color='bg-sky-500' label='Email Helpdesk' href='mailto:bimaoneofficial@gmail.com' />
+              <SettingRow icon={ICONS.phone} color='bg-emerald-500' label='Call Us' value='9202469725' href='tel:+919202469725' />
               <SettingRow icon={ICONS.help} color='bg-stone-500' label='Support Center' to='/contact-us' />
             </SettingGroup>
 
@@ -487,9 +485,6 @@ const Setting = () => {
             <div className='flex items-center justify-between rounded-2xl bg-white px-4 py-3 ring-1 ring-stone-200/70'>
               <span className='text-[11px] font-bold uppercase tracking-wider text-stone-400'>Follow us</span>
               <div className='flex gap-2'>
-                <a href='https://www.instagram.com/bimabox.in/' target='_blank' rel='noopener noreferrer' aria-label='Instagram' className='flex h-8 w-8 items-center justify-center rounded-lg bg-pink-500 text-white hover:opacity-90'>
-                  <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={ICONS.instagram} /></svg>
-                </a>
                 <a href='https://www.facebook.com/profile.php?viewas=100000686899395&id=61590698249898' target='_blank' rel='noopener noreferrer' aria-label='Facebook' className='flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white hover:opacity-90'>
                   <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={ICONS.facebook} /></svg>
                 </a>

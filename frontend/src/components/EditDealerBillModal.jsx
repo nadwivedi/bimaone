@@ -245,7 +245,7 @@ const EditDealerBillModal = ({ isOpen, onClose, onSuccess, billData }) => {
                   {userInfo?.billDescription ? `(${userInfo.billDescription})` : '(Transport Consultant)'}
                 </p>
                 <p className='text-[9px] md:text-xs mb-3'>
-                  {userInfo?.address || 'GF-17, Ground Floor, Shyam Plaza, Opp. Bus Stand, Pandri, RAIPUR'}
+                  {userInfo?.address}
                   {userInfo?.email && (
                     <>
                       <br />

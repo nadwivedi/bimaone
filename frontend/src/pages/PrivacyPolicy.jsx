@@ -165,13 +165,13 @@ const PrivacyPolicy = () => {
           <p className='text-xs font-bold text-blue-100 uppercase tracking-wider mb-1'>Questions about Privacy?</p>
           <p className='text-white font-black text-base mb-3'>We're here to help</p>
           <a
-            href='mailto:mybimabox@gmail.com'
+            href='mailto:bimaoneofficial@gmail.com'
             className='inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all'
           >
             <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
               <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z' />
             </svg>
-            mybimabox@gmail.com
+            bimaoneofficial@gmail.com
           </a>
         </div>
 

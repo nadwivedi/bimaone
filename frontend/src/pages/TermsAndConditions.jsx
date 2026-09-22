@@ -110,7 +110,7 @@ const TermsAndConditions = () => {
       title: 'Governing Law',
       content: [
         'These Terms and Conditions are governed by and construed in accordance with the laws of India.',
-        'Any disputes arising from these terms shall be subject to the exclusive jurisdiction of courts in Raipur, Chhattisgarh.',
+        'Any disputes arising from these terms shall be subject to the exclusive jurisdiction of courts in Bhopal, Madhya Pradesh.',
         'Any claims must be brought within one year of the cause of action arising.',
         'If any provision of these terms is found invalid, the remaining provisions continue to be in effect.',
       ],
@@ -174,7 +174,7 @@ const TermsAndConditions = () => {
           <p className='text-white font-black text-base mb-1'>By using BimaOne, you agree</p>
           <p className='text-indigo-200 text-xs mb-3'>to all the terms and conditions stated above.</p>
           <a
-            href='mailto:mybimabox@gmail.com'
+            href='mailto:bimaoneofficial@gmail.com'
             className='inline-flex items-center gap-2 bg-white/20 hover:bg-white/30 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all'
           >
             <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>

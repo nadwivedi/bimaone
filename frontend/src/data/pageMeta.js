@@ -21,6 +21,6 @@ export const PAGE_META = {
   },
   '/contact-us': {
     title: 'Contact BimaOne – Insurance Agent Software Support',
-    description: 'Talk to the BimaOne team about our insurance agent software. Reach us on WhatsApp, phone or email — Raipur, Chhattisgarh.',
+    description: 'Talk to the BimaOne team about our insurance agent software. Reach us on WhatsApp, phone or email — Bhopal, Madhya Pradesh.',
   },
 }

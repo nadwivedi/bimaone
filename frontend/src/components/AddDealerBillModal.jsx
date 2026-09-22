@@ -296,7 +296,7 @@ const AddDealerBillModal = ({ isOpen, onClose, onSuccess }) => {
                   {userInfo?.billDescription ? `(${userInfo.billDescription})` : '(Transport Consultant)'}
                 </p>
                 <p className='text-[8.5px] 2xl:text-xs mb-2.5 2xl:mb-3'>
-                  {userInfo?.address || 'GF-17, Ground Floor, Shyam Plaza, Opp. Bus Stand, Pandri, RAIPUR'}
+                  {userInfo?.address}
                   {userInfo?.email && (
                     <>
                       <br />

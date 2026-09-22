@@ -31,12 +31,6 @@ const ALLOWED_ORIGINS = new Set([
   'https://www.bimaone.in',
   'https://api.bimaone.in',
   'https://adm.bimaone.in',
-  'https://bimabox.in',
-  'https://www.bimabox.in',
-  'https://api.bimabox.in',
-  'https://adm.bimabox.in',
-  'http://bimabox.in',
-  'http://api.bimabox.in',
 ])
 
 app.use(express.json({ limit: '25mb' }))
