@@ -623,7 +623,7 @@ const AddFitnessModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '
   return (
     <>
       <AiLimitModal isOpen={limitModalOpen} onClose={closeLimitModal} used={aiUsed} limit={aiLimit} />
-      <div className='fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-2 md:p-4'>
+      <div className='fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-2 md:p-4'>
         <div className='bg-white rounded-xl md:rounded-2xl shadow-2xl max-w-5xl w-full max-h-[95vh] overflow-hidden flex flex-col'>
           {/* Header */}
           <div className='bg-gradient-to-r from-blue-600 to-indigo-600 p-2 md:p-3 text-white flex-shrink-0'>

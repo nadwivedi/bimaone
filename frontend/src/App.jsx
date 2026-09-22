@@ -25,6 +25,8 @@ import IMD from './pages/IMD'
 import PrivacyPolicy from './pages/PrivacyPolicy'
 import TermsAndConditions from './pages/TermsAndConditions'
 import ContactUs from './pages/ContactUs'
+import About from './pages/About'
+import Features from './pages/Features'
 import PricingPage from './pages/Pricing/PricingPage'
 import SubscribePage from './pages/Pricing/SubscribePage'
 import ReferralPage from './pages/ReferralPage'
@@ -37,9 +39,10 @@ function AppContent() {
   const { isAuthenticated, user, loading } = useAuth()
   const isLoginPage = location.pathname === '/login'
   const isLandingPage = location.pathname === '/'
+  const isMarketingPage = ['/', '/about', '/features'].includes(location.pathname)
   const publicPages = ['/privacy-policy', '/terms-and-conditions', '/contact-us', '/pricing']
   const isPublicPage = publicPages.includes(location.pathname)
-  const showNav = !isLoginPage && !isLandingPage && (isAuthenticated || !isPublicPage)
+  const showNav = !isLoginPage && !isMarketingPage && (isAuthenticated || !isPublicPage)
   const theme = getTheme()
 
   const needsEmailVerification = isAuthenticated && user && !user.emailVerified && !user.googleId
@@ -115,6 +118,8 @@ function AppContent() {
             <Route path='/privacy-policy' element={<PrivacyPolicy />} />
             <Route path='/terms-and-conditions' element={<TermsAndConditions />} />
             <Route path='/contact-us' element={<ContactUs />} />
+            <Route path='/about' element={<About />} />
+            <Route path='/features' element={<Features />} />
             <Route path='/refer-and-earn' element={<ProtectedRoute><ReferralPage /></ProtectedRoute>} />
           </Routes>
         </div>

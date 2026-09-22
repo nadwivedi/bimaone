@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import * as XLSX from 'xlsx'
@@ -16,6 +15,7 @@ import EditTaxModal from './Tax/EditTaxModal'
 import EditPermitModal from './Permit/components/EditPermitModal'
 import EditRcModal from './Rc/EditRcModal'
 import ImportModal from '../components/ImportModal'
+import DocumentDetailModal from '../components/DocumentDetailModal'
 import useCurrentPlan from '../hooks/useCurrentPlan'
 import UpgradePopup from '../components/UpgradePopup'
 import { getDaysRemaining } from '../utils/dateHelpers'
@@ -25,7 +25,6 @@ const API_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5000"
 
 
 const RTODocuments = () => {
-  const navigate = useNavigate()
   const { features } = useCurrentPlan()
   const [searchQuery, setSearchQuery] = useState('')
   const [statusFilter, setStatusFilter] = useState('All')
@@ -44,6 +43,7 @@ const RTODocuments = () => {
   
   const [editingDoc, setEditingDoc] = useState(null)
   const [deletingDoc, setDeletingDoc] = useState(null)
+  const [viewingDoc, setViewingDoc] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
 
   const fetchAllDocuments = useCallback(async () => {
@@ -251,6 +251,16 @@ const RTODocuments = () => {
   const ActionButtons = ({ doc }) => (
     <div className='flex items-center justify-end gap-1'>
       <button
+        onClick={(e) => { e.stopPropagation(); setViewingDoc(doc) }}
+        className='cursor-pointer rounded-lg p-2 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700'
+        title='View Details'
+      >
+        <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M15 12a3 3 0 11-6 0 3 3 0 016 0z' />
+          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z' />
+        </svg>
+      </button>
+      <button
         onClick={(e) => handleEditClick(e, doc)}
         className='cursor-pointer rounded-lg p-2 text-slate-400 transition hover:bg-blue-50 hover:text-blue-600'
         title='Edit Record'
@@ -439,7 +449,7 @@ const RTODocuments = () => {
                     return (
                       <div
                         key={doc.id}
-                        onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
+                        onClick={() => setViewingDoc(doc)}
                         className='flex cursor-pointer items-start gap-3 p-4 transition hover:bg-slate-50'
                       >
                         <TypeIcon type={doc.type} />
@@ -502,7 +512,7 @@ const RTODocuments = () => {
                         return (
                           <tr
                             key={doc.id}
-                            onClick={() => navigate(`/rto-documents/${doc.type}/${doc.id}`)}
+                            onClick={() => setViewingDoc(doc)}
                             className='cursor-pointer transition hover:bg-slate-50'
                           >
                             <td className='px-5 py-3.5'>
@@ -771,6 +781,15 @@ const RTODocuments = () => {
         title='Excel Download'
         message='Excel download is available on the Plus plan. Upgrade to Plus to unlock Excel exports of all your records.'
       />
+
+      {viewingDoc && (
+        <DocumentDetailModal
+          type={viewingDoc.type}
+          id={viewingDoc.id}
+          onClose={() => setViewingDoc(null)}
+          onChanged={fetchAllDocuments}
+        />
+      )}
     </div>
   )
 }

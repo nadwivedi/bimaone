@@ -291,7 +291,7 @@ const EditPermitModal = ({ isOpen, onClose, onSubmit, permit }) => {
   if (!isOpen) return null
 
   return (
-    <div className='fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-2 md:p-4'>
+    <div className='fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-2 md:p-4'>
       <div className='bg-white rounded-xl md:rounded-2xl shadow-2xl max-w-2xl w-full max-h-[95vh] overflow-hidden flex flex-col'>
         <div className='bg-gradient-to-r from-teal-600 to-emerald-600 p-3 md:p-4 text-white flex-shrink-0'>
           <div className='flex justify-between items-center'>

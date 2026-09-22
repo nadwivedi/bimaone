@@ -1,69 +1,69 @@
 import { Link } from 'react-router-dom'
 
+const columns = [
+  {
+    title: 'Product',
+    links: [
+      { to: '/features', label: 'Features' },
+      { to: '/pricing', label: 'Pricing' },
+      { to: '/login', label: 'Login' },
+    ],
+  },
+  {
+    title: 'Company',
+    links: [
+      { to: '/about', label: 'About Us' },
+      { to: '/contact-us', label: 'Contact Us' },
+      { to: '/privacy-policy', label: 'Privacy Policy' },
+      { to: '/terms-and-conditions', label: 'Terms & Conditions' },
+    ],
+  },
+]
+
 const Footer = () => {
   return (
-    <footer className='bg-slate-300 border-t border-slate-400'>
-      <div className='max-w-6xl mx-auto px-4 md:px-8 py-14'>
-        <div className='grid grid-cols-1 md:grid-cols-3 gap-10'>
-          <div className='space-y-4'>
-            <div className='flex items-center gap-1.5'>
-              <img src='/bimalogo.png' alt='BimaOne' className='h-[45px] w-auto' />
-              <div className='flex flex-col'>
-                <span className='text-lg font-bold leading-none text-slate-900' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                  Bima<span style={{ color: '#003afd' }}>One</span>
-                </span>
-                <span className='mt-0.5 text-[7px] font-medium tracking-wide text-slate-600' style={{ fontFamily: "'Inter', sans-serif" }}>
-                  All your policies. One smart place.
-                </span>
-              </div>
-            </div>
-            <p className='text-sm text-slate-700 leading-relaxed max-w-xs'>
-              A powerful software built for insurance agents to digitalize workflow, track policies, manage clients, and grow their business.
+    <footer className='border-t border-slate-200 bg-white'>
+      <div className='mx-auto max-w-6xl px-4 md:px-8 py-14'>
+        <div className='grid grid-cols-2 md:grid-cols-12 gap-10'>
+          <div className='col-span-2 md:col-span-5 space-y-4'>
+            <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-10 w-auto' />
+            <p className='text-sm text-slate-500 leading-relaxed max-w-sm'>
+              Insurance agent software made for insurance agents. Serving agents across India since 2020.
             </p>
           </div>
 
-          <div className='md:mx-auto'>
-            <h4 className='text-xs font-bold uppercase tracking-widest text-slate-700 mb-4'>Quick Links</h4>
-            <ul className='space-y-3'>
-              <li>
-                <Link to='/' className='text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors'>Home</Link>
-              </li>
-              <li>
-                <Link to='/contact-us' className='text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors'>Contact Us</Link>
-              </li>
-              <li>
-                <Link to='/privacy-policy' className='text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors'>Privacy Policy</Link>
-              </li>
-              <li>
-                <Link to='/terms-and-conditions' className='text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors'>Terms & Conditions</Link>
-              </li>
-            </ul>
-          </div>
+          {columns.map((col) => (
+            <div key={col.title} className='md:col-span-2'>
+              <h4 className='text-xs font-semibold uppercase tracking-wider text-ink mb-4'>{col.title}</h4>
+              <ul className='space-y-3'>
+                {col.links.map((l) => (
+                  <li key={l.to}>
+                    <Link to={l.to} className='text-sm text-slate-500 hover:text-brand transition-colors'>{l.label}</Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
 
-          <div className='md:text-right'>
-            <h4 className='text-xs font-bold uppercase tracking-widest text-slate-700 mb-4'>Contact</h4>
-            <ul className='space-y-3'>
-              <li>
-                <a href='mailto:mybimabox@gmail.com' className='text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors'>mybimabox@gmail.com</a>
-              </li>
-              <li>
-                <a href='tel:+917004534508' className='text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors'>+91 7004534508</a>
-              </li>
-              <li>
-                <p className='text-sm text-slate-600'>Raipur, Chhattisgarh</p>
-              </li>
+          <div className='col-span-2 md:col-span-3'>
+            <h4 className='text-xs font-semibold uppercase tracking-wider text-ink mb-4'>Contact</h4>
+            <ul className='space-y-3 text-sm text-slate-500'>
+              <li><a href='mailto:mybimabox@gmail.com' className='hover:text-brand transition-colors'>mybimabox@gmail.com</a></li>
+              <li><a href='tel:+917004534508' className='hover:text-brand transition-colors'>+91 7004534508</a></li>
+              <li><a href='https://wa.me/919202469725' target='_blank' rel='noopener noreferrer' className='hover:text-leaf transition-colors'>WhatsApp: +91 9202469725</a></li>
+              <li>Raipur, Chhattisgarh</li>
             </ul>
           </div>
         </div>
 
-        <div className='mt-12 pt-6 border-t border-slate-400 flex flex-col md:flex-row items-center justify-between gap-4'>
-          <p className='text-xs text-slate-600 font-medium'>&copy; 2025 BimaOne. All rights reserved.</p>
+        <div className='mt-12 pt-6 border-t border-slate-100 flex flex-col md:flex-row items-center justify-between gap-4'>
+          <p className='text-xs text-slate-400'>&copy; {new Date().getFullYear()} BimaOne. All rights reserved.</p>
           <div className='flex items-center gap-4'>
             <a
               href='https://www.instagram.com/bimabox.in/'
               target='_blank'
               rel='noopener noreferrer'
-              className='text-slate-600 hover:text-slate-900 transition-colors'
+              className='text-slate-400 hover:text-brand transition-colors'
               aria-label='Instagram'
             >
               <svg className='h-5 w-5' viewBox='0 0 24 24' fill='currentColor'>
@@ -74,7 +74,7 @@ const Footer = () => {
               href='https://www.facebook.com/profile.php?viewas=100000686899395&id=61590698249898'
               target='_blank'
               rel='noopener noreferrer'
-              className='text-slate-600 hover:text-slate-900 transition-colors'
+              className='text-slate-400 hover:text-brand transition-colors'
               aria-label='Facebook'
             >
               <svg className='h-5 w-5' viewBox='0 0 24 24' fill='currentColor'>

@@ -1,71 +1,22 @@
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { useEffect } from 'react'
-import Navbar from '../components/Navbar'
+import PublicLayout from '../components/PublicLayout'
 import Hero from '../components/Hero'
-import Footer from '../components/Footer'
-
-const features = [
-  {
-    icon: (
-      <svg className='h-6 w-6 text-blue-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z' />
-      </svg>
-    ),
-    title: 'Insurance Tracking',
-    description: 'Keep all your vehicle insurance policies in one place with expiry alerts and renewal reminders.',
-  },
-  {
-    icon: (
-      <svg className='h-6 w-6 text-emerald-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2' />
-      </svg>
-    ),
-    title: 'Document Management',
-    description: 'Manage tax, PUC, fitness, GPS, and permits digitally. No more paper clutter or missed renewals.',
-  },
-  {
-    icon: (
-      <svg className='h-6 w-6 text-purple-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M13 10V3L4 14h7v7l9-11h-7z' />
-      </svg>
-    ),
-    title: 'AI-Powered Upload',
-    description: 'Upload documents and let AI extract details automatically. Fast, accurate, and hassle-free.',
-  },
-  {
-    icon: (
-      <svg className='h-6 w-6 text-amber-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-        <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z' />
-      </svg>
-    ),
-    title: 'Expiry Alerts',
-    description: 'Get smart notifications before your documents expire. Never miss a renewal deadline again.',
-  },
-    {
-      icon: (
-        <svg className='h-6 w-6 text-green-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' />
-        </svg>
-      ),
-      title: 'WhatsApp Alerts',
-      description: 'Automated renewal reminders and notifications sent directly to your clients via WhatsApp. Never miss a follow-up.',
-    },
-    {
-      icon: (
-        <svg className='h-6 w-6 text-indigo-600' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-          <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z' />
-        </svg>
-      ),
-      title: 'Auto AI Entry',
-      description: 'Upload any document and let AI auto-extract all details in seconds. No manual data entry needed.',
-    },
-]
+import CtaBanner from '../components/CtaBanner'
+import Icon from '../components/Icon'
+import { highlightFeatures } from '../data/features'
 
 const stats = [
-  { label: 'Documents Tracked', value: '10K+' },
-  { label: 'Active Users', value: '500+' },
-  { label: 'Vehicles Managed', value: '3K+' },
-  { label: 'Happy Customers', value: '98%' },
+  { value: '6+', label: 'Years serving agents' },
+  { value: '500+', label: 'Active agents' },
+  { value: '10K+', label: 'Documents managed' },
+  { value: '98%', label: 'Happy customers' },
+]
+
+const steps = [
+  { title: 'Add your data', description: 'Upload documents or import your existing Excel sheets in minutes.' },
+  { title: 'Let AI fill details', description: 'BimaOne reads documents and fills policy numbers, dates and vehicle details.' },
+  { title: 'Never miss a renewal', description: 'Get reminded before expiry and send WhatsApp reminders to clients.' },
 ]
 
 const Home = () => {
@@ -80,72 +31,116 @@ const Home = () => {
   }, [location.search, navigate])
 
   return (
-    <div className='min-h-screen bg-white'>
-      <Navbar />
-
+    <PublicLayout>
       <Hero />
 
-      {/* Stats Strip */}
-      <section className='border-y border-slate-100 bg-slate-50/50'>
-        <div className='max-w-5xl mx-auto px-4 md:px-8 py-8'>
-          <div className='grid grid-cols-2 md:grid-cols-4 gap-8'>
-            {stats.map((stat) => (
-              <div key={stat.label} className='text-center'>
-                <p className='text-2xl md:text-3xl font-black text-slate-900'>{stat.value}</p>
-                <p className='text-xs font-semibold text-slate-400 uppercase tracking-wider mt-1'>{stat.label}</p>
+      {/* Stats */}
+      <section className='border-b border-slate-100'>
+        <div className='mx-auto grid max-w-6xl grid-cols-2 md:grid-cols-4 px-4 md:px-8'>
+          {stats.map((s, i) => (
+            <div
+              key={s.label}
+              className={`py-10 text-center ${i % 2 === 1 ? 'border-l border-slate-100' : ''} ${i > 0 ? 'md:border-l md:border-slate-100' : ''} ${i > 1 ? 'border-t border-slate-100 md:border-t-0' : ''}`}
+            >
+              <p className='text-3xl font-semibold text-ink'>{s.value}</p>
+              <p className='mt-1 text-sm text-slate-500'>{s.label}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Features */}
+      <section className='px-4 md:px-8 py-20 md:py-24'>
+        <div className='mx-auto max-w-6xl'>
+          <div className='flex flex-col md:flex-row md:items-end md:justify-between gap-4 mb-12'>
+            <div className='max-w-xl'>
+              <p className='text-sm font-semibold text-leaf'>Features</p>
+              <h2 className='mt-2 text-3xl md:text-4xl font-semibold tracking-tight text-ink'>
+                Built around the daily work of an agent
+              </h2>
+            </div>
+            <Link to='/features' className='inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-dark'>
+              View all features
+              <Icon name='arrow' className='h-4 w-4' />
+            </Link>
+          </div>
+
+          <div className='grid gap-px overflow-hidden rounded-2xl border border-slate-200 bg-slate-200 sm:grid-cols-2 lg:grid-cols-3'>
+            {highlightFeatures.map((f) => (
+              <div key={f.title} className='bg-white p-7 transition-colors hover:bg-canvas'>
+                <span className='flex h-11 w-11 items-center justify-center rounded-xl bg-brand-soft text-brand'>
+                  <Icon name={f.icon} className='h-5 w-5' />
+                </span>
+                <h3 className='mt-5 text-base font-semibold text-ink'>{f.title}</h3>
+                <p className='mt-2 text-sm leading-relaxed text-slate-500'>{f.description}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* Features Grid */}
-      <section className='py-20 md:py-28 px-4 md:px-8'>
-        <div className='max-w-5xl mx-auto'>
-          <div className='text-center mb-14'>
-            <h2 className='text-3xl md:text-4xl font-black text-slate-900'>Everything You Need</h2>
-            <p className='text-slate-500 mt-3 max-w-xl mx-auto'>
-              From insurance to permits, BimaOne simplifies every aspect of vehicle document management.
+      {/* How it works */}
+      <section className='bg-canvas px-4 md:px-8 py-20 md:py-24'>
+        <div className='mx-auto max-w-6xl'>
+          <div className='max-w-xl mb-12'>
+            <p className='text-sm font-semibold text-leaf'>How it works</p>
+            <h2 className='mt-2 text-3xl md:text-4xl font-semibold tracking-tight text-ink'>Get started in three steps</h2>
+          </div>
+          <ol className='grid gap-6 md:grid-cols-3'>
+            {steps.map((s, i) => (
+              <li key={s.title} className='rounded-2xl border border-slate-200 bg-white p-7'>
+                <span className='text-sm font-semibold text-brand'>Step {i + 1}</span>
+                <h3 className='mt-3 text-lg font-semibold text-ink'>{s.title}</h3>
+                <p className='mt-2 text-sm leading-relaxed text-slate-500'>{s.description}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      {/* About teaser */}
+      <section className='px-4 md:px-8 py-20 md:py-24'>
+        <div className='mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-2'>
+          <div>
+            <p className='text-sm font-semibold text-leaf'>About BimaOne</p>
+            <h2 className='mt-2 text-3xl md:text-4xl font-semibold tracking-tight text-ink'>
+              Made for insurance agents, by people who understand them
+            </h2>
+            <p className='mt-5 leading-relaxed text-slate-500'>
+              Since 2020, BimaOne has helped insurance agents across India replace diaries, files and scattered
+              spreadsheets with one simple app. For six years our only goal has been to make an agent's work easier.
             </p>
+            <Link to='/about' className='mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-brand hover:text-brand-dark'>
+              Read our story
+              <Icon name='arrow' className='h-4 w-4' />
+            </Link>
           </div>
-          <div className='grid md:grid-cols-2 lg:grid-cols-3 gap-5'>
-            {features.map((feature) => (
-              <div
-                key={feature.title}
-                className='group rounded-2xl border border-slate-200 bg-white p-6 hover:border-blue-200 hover:shadow-lg hover:shadow-blue-500/5 transition-all duration-200'
-              >
-                <div className='h-12 w-12 rounded-xl bg-slate-100 flex items-center justify-center group-hover:bg-blue-50 transition-colors mb-4'>
-                  {feature.icon}
-                </div>
-                <h3 className='text-base font-bold text-slate-900 mb-2'>{feature.title}</h3>
-                <p className='text-sm text-slate-500 leading-relaxed'>{feature.description}</p>
+          <div className='grid grid-cols-2 gap-4'>
+            <div className='rounded-2xl bg-brand p-7 text-white'>
+              <p className='text-4xl font-semibold'>2020</p>
+              <p className='mt-2 text-sm text-blue-100'>Year BimaOne was founded</p>
+            </div>
+            <div className='rounded-2xl bg-leaf p-7 text-white'>
+              <p className='text-4xl font-semibold'>6 yrs</p>
+              <p className='mt-2 text-sm text-green-50'>Serving insurance agents</p>
+            </div>
+            <div className='col-span-2 rounded-2xl border border-slate-200 p-7'>
+              <div className='flex items-start gap-4'>
+                <span className='flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-leaf-soft text-leaf'>
+                  <Icon name='heart' className='h-5 w-5' />
+                </span>
+                <p className='text-sm leading-relaxed text-slate-600'>
+                  Every feature in BimaOne starts with a real problem an agent faces — a missed renewal, a lost
+                  document, or hours spent on manual entry.
+                </p>
               </div>
-            ))}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* CTA Section */}
-      <section className='py-20 px-4 md:px-8 bg-gradient-to-b from-slate-50 to-white'>
-        <div className='max-w-3xl mx-auto text-center'>
-          <h2 className='text-3xl md:text-4xl font-black text-slate-900'>Ready to Simplify Your Vehicle Management?</h2>
-          <p className='text-slate-500 mt-4 max-w-lg mx-auto'>
-            Join hundreds of users who trust BimaOne to keep their vehicle documents organized and never miss a renewal.
-          </p>
-          <Link
-            to={`/login${location.search}`}
-            className='inline-flex items-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-3.5 rounded-2xl font-bold text-base mt-8 hover:shadow-xl hover:shadow-blue-500/30 transition-all active:scale-95'
-          >
-            Get Started Free
-            <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M13 7l5 5m0 0l-5 5m5-5H6' />
-            </svg>
-          </Link>
-        </div>
-      </section>
-
-      <Footer />
-    </div>
+      <CtaBanner />
+    </PublicLayout>
   )
 }
 

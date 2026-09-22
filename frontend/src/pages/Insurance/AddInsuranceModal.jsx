@@ -995,7 +995,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
     <>
       <AiLimitModal isOpen={limitModalOpen} onClose={closeLimitModal} used={aiUsed} limit={aiLimit} />
       <div
-      className='fixed inset-0 bg-black/60 z-[60] flex items-center justify-center p-2 md:p-4'
+      className='fixed inset-0 bg-black/60 z-[80] flex items-center justify-center p-2 md:p-4'
       onDragOver={handleDragOver}
       onDragEnter={handleDragEnter}
       onDragLeave={handleDragLeave}

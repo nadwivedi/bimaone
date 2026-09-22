@@ -1,40 +1,108 @@
 import { Link } from 'react-router-dom'
+import Icon from './Icon'
+
+const renewals = [
+  { initials: 'RS', name: 'Rahul Sharma', doc: 'Motor Policy · CG04 AB 1234', due: 'Due in 3 days', tone: 'amber' },
+  { initials: 'PV', name: 'Priya Verma', doc: 'PUC · CG07 KL 5521', due: 'Due in 6 days', tone: 'amber' },
+  { initials: 'AS', name: 'Ajay Singh', doc: 'Health Policy', due: 'Renewed', tone: 'green' },
+]
+
+const toneCls = {
+  amber: 'bg-amber-50 text-amber-700',
+  green: 'bg-leaf-soft text-leaf-dark',
+}
 
 const Hero = () => {
   return (
-    <section className='relative pt-16 pb-10 md:pt-20 md:pb-14 px-4 md:px-8 overflow-hidden'>
-      <div className='absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,_#e0f2fe,_#ffffff_60%)] pointer-events-none' />
-      <div className='relative max-w-4xl mx-auto text-center'>
-        <div className='inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-[10px] font-bold uppercase tracking-wider mb-4'>
-          <span className='h-1.5 w-1.5 rounded-full bg-blue-500 animate-pulse' />
-          India's #1 Insurance Agent Software
+    <section className='bg-canvas border-b border-slate-100'>
+      <div className='mx-auto grid max-w-6xl items-center gap-14 px-4 py-16 md:px-8 md:py-24 lg:grid-cols-2'>
+        <div className='text-center lg:text-left'>
+          <span className='inline-flex items-center gap-2 rounded-full bg-leaf-soft px-3 py-1 text-xs font-semibold text-leaf-dark'>
+            <span className='h-1.5 w-1.5 rounded-full bg-leaf' />
+            Trusted by insurance agents since 2020
+          </span>
+          <h1 className='mt-5 text-4xl md:text-5xl font-semibold leading-[1.15] tracking-tight text-ink'>
+            The simple way to run your <span className='text-brand'>insurance</span> <span className='text-leaf'>business</span>
+          </h1>
+          <p className='mt-5 text-base md:text-lg leading-relaxed text-slate-500 max-w-xl mx-auto lg:mx-0'>
+            BimaOne keeps your policies, client documents and renewals in one place — so you never miss a
+            renewal and spend less time on paperwork.
+          </p>
+          <div className='mt-8 flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3'>
+            <Link
+              to='/login'
+              className='w-full sm:w-auto inline-flex items-center justify-center gap-2 rounded-lg bg-brand px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-dark'
+            >
+              Get Started Free
+              <Icon name='arrow' className='h-4 w-4' />
+            </Link>
+            <Link
+              to='/features'
+              className='w-full sm:w-auto inline-flex items-center justify-center rounded-lg border border-slate-300 bg-white px-6 py-3 text-sm font-semibold text-ink transition-colors hover:border-slate-400'
+            >
+              See All Features
+            </Link>
+          </div>
+          <ul className='mt-8 flex flex-wrap justify-center lg:justify-start gap-x-6 gap-y-2 text-sm text-slate-500'>
+            {['Free plan available', 'No credit card', 'Works on mobile'].map((t) => (
+              <li key={t} className='flex items-center gap-1.5'>
+                <Icon name='check' className='h-4 w-4 text-leaf' strokeWidth={2.5} />
+                {t}
+              </li>
+            ))}
+          </ul>
         </div>
-        <h1 className='text-3xl md:text-5xl lg:text-6xl font-black text-slate-900 leading-[1.1] tracking-tight'>
-          What is{' '}
-          <span className='bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent'>BimaOne</span>
-          ?
-        </h1>
-        <p className='text-base md:text-lg text-slate-500 mt-4 max-w-3xl mx-auto leading-relaxed'>
-          A powerful software built for insurance agents to digitalize their workflow — track policies, 
-          manage encrypted client documents, monitor renewals, analyze profits, and grow your business. 
-          No more paper clutter, missed follow-ups, or lost files.
-        </p>
-        <div className='flex flex-col sm:flex-row items-center justify-center gap-3 mt-8'>
-          <Link
-            to='/login'
-            className='w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-6 py-2.5 rounded-xl font-bold text-sm hover:shadow-lg hover:shadow-blue-500/30 transition-all active:scale-95'
-          >
-            Get Started Free
-            <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-              <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M13 7l5 5m0 0l-5 5m5-5H6' />
-            </svg>
-          </Link>
-          <Link
-            to='/contact-us'
-            className='w-full sm:w-auto inline-flex items-center justify-center gap-2 border-2 border-slate-200 text-slate-700 px-6 py-2.5 rounded-xl font-bold text-sm hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-95'
-          >
-            Talk to Us
-          </Link>
+
+        <div className='relative mx-auto w-full max-w-md lg:max-w-none'>
+          <div className='rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_20px_50px_-20px_rgba(11,27,63,0.25)]'>
+            <div className='flex items-center justify-between'>
+              <div>
+                <p className='text-xs text-slate-400'>This week</p>
+                <p className='text-base font-semibold text-ink'>Upcoming Renewals</p>
+              </div>
+              <span className='rounded-md bg-brand-soft px-2.5 py-1 text-xs font-semibold text-brand'>12 due</span>
+            </div>
+
+            <div className='mt-5 grid grid-cols-3 gap-3'>
+              {[
+                { label: 'Policies', value: '1,248' },
+                { label: 'Renewed', value: '86%' },
+                { label: 'Clients', value: '932' },
+              ].map((s) => (
+                <div key={s.label} className='rounded-xl bg-canvas px-3 py-3'>
+                  <p className='text-lg font-semibold text-ink'>{s.value}</p>
+                  <p className='text-xs text-slate-400'>{s.label}</p>
+                </div>
+              ))}
+            </div>
+
+            <ul className='mt-5 divide-y divide-slate-100'>
+              {renewals.map((r) => (
+                <li key={r.name} className='flex items-center justify-between py-3'>
+                  <div className='flex items-center gap-3 min-w-0'>
+                    <span className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-soft text-xs font-semibold text-brand'>
+                      {r.initials}
+                    </span>
+                    <div className='min-w-0'>
+                      <p className='truncate text-sm font-medium text-ink'>{r.name}</p>
+                      <p className='truncate text-xs text-slate-400'>{r.doc}</p>
+                    </div>
+                  </div>
+                  <span className={`shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold ${toneCls[r.tone]}`}>{r.due}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className='absolute -bottom-5 -left-5 hidden sm:flex items-center gap-3 rounded-xl border border-slate-200 bg-white px-4 py-3 shadow-lg'>
+            <span className='flex h-9 w-9 items-center justify-center rounded-full bg-leaf-soft text-leaf'>
+              <Icon name='chat' className='h-5 w-5' />
+            </span>
+            <div>
+              <p className='text-xs font-semibold text-ink'>Reminder sent</p>
+              <p className='text-[11px] text-slate-400'>via WhatsApp</p>
+            </div>
+          </div>
         </div>
       </div>
     </section>
