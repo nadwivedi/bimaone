@@ -1,7 +1,9 @@
+import { SUPPORT_WHATSAPP_URL } from '../data/contact'
+
 const WhatsAppButton = () => {
   return (
     <a
-      href='https://wa.me/919202469725'
+      href={SUPPORT_WHATSAPP_URL}
       target='_blank'
       rel='noopener noreferrer'
       aria-label='Chat with us on WhatsApp'

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import Icon from './Icon'
+import { SUPPORT_WHATSAPP_URL } from '../data/contact'
 
 const CtaBanner = ({ to = '/login' }) => (
   <section className='px-4 pb-16 md:px-8 md:pb-24'>
@@ -20,7 +21,7 @@ const CtaBanner = ({ to = '/login' }) => (
             <Icon name='arrow' className='h-4 w-4' />
           </Link>
           <a
-            href='https://wa.me/919202469725'
+            href={SUPPORT_WHATSAPP_URL}
             target='_blank'
             rel='noopener noreferrer'
             className='inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-300 bg-white px-6 py-3 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-50'

@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { landingPages } from '../data/landingPages'
+import { SUPPORT_WHATSAPP_URL } from '../data/contact'
 
 const columns = [
   {
@@ -56,7 +57,7 @@ const Footer = () => {
             <ul className='space-y-3 text-sm text-slate-500 [overflow-wrap:anywhere]'>
               <li><a href='mailto:bimaoneofficial@gmail.com' className='hover:text-brand transition-colors'>bimaoneofficial@gmail.com</a></li>
               <li><a href='tel:+919202469725' className='hover:text-brand transition-colors'>+91 9202469725</a></li>
-              <li><a href='https://wa.me/919202469725' target='_blank' rel='noopener noreferrer' className='hover:text-leaf transition-colors'>WhatsApp: +91 9202469725</a></li>
+              <li><a href={SUPPORT_WHATSAPP_URL} target='_blank' rel='noopener noreferrer' className='hover:text-leaf transition-colors'>WhatsApp: +91 9202469725</a></li>
               <li>Bhopal, Madhya Pradesh</li>
             </ul>
           </div>

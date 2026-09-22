@@ -8,6 +8,7 @@ import PublicLayout from '../../components/PublicLayout'
 import Icon from '../../components/Icon'
 import usePageMeta from '../../hooks/usePageMeta'
 import { PAGE_META } from '../../data/pageMeta'
+import { SUPPORT_WHATSAPP_URL } from '../../data/contact'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
@@ -200,7 +201,7 @@ const PricingPage = () => {
             <p className='text-sm text-slate-500'>Tell us how you work and we'll suggest the best plan.</p>
           </div>
           <a
-            href='https://wa.me/919202469725'
+            href={SUPPORT_WHATSAPP_URL}
             target='_blank'
             rel='noopener noreferrer'
             className='mt-4 inline-flex items-center justify-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-5 py-2.5 text-sm font-semibold text-emerald-700 transition hover:bg-emerald-100 md:mt-0'

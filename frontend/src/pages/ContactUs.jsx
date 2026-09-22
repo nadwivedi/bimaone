@@ -4,6 +4,7 @@ import PublicLayout from '../components/PublicLayout'
 import Icon from '../components/Icon'
 import usePageMeta from '../hooks/usePageMeta'
 import { PAGE_META } from '../data/pageMeta'
+import { SUPPORT_WHATSAPP_URL } from '../data/contact'
 
 const WHATSAPP_NUMBER = '919202469725'
 
@@ -116,7 +117,7 @@ const ContactUs = () => {
         <div className='mx-auto grid max-w-6xl gap-8 lg:grid-cols-5'>
           <div className='space-y-4 lg:col-span-2'>
             <a
-              href={`https://wa.me/${WHATSAPP_NUMBER}`}
+              href={SUPPORT_WHATSAPP_URL}
               target='_blank'
               rel='noopener noreferrer'
               className='group flex items-center gap-4 rounded-2xl bg-leaf p-6 text-white transition-colors hover:bg-leaf-dark'
