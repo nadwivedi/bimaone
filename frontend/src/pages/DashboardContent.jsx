@@ -267,7 +267,36 @@ const DashboardContent = () => {
   return (
     <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
       <main className='w-full space-y-5 px-3 pt-4 pb-32 md:space-y-6 lg:px-8 lg:pt-6 lg:pb-10'>
-        {/* 1. Upload */}
+        {/* 1. Stats */}
+        <section className='grid grid-cols-3 gap-2.5 md:gap-4'>
+          {statCards.map((s) => {
+            const t = STAT_TONES[s.tone]
+            const clickable = s.key !== 'active'
+            const selected = listKind === s.key
+            return (
+              <button
+                key={s.key}
+                type='button'
+                disabled={!clickable}
+                onClick={() => clickable && setListKind(s.key)}
+                className={`rounded-xl border-2 bg-gradient-to-r p-3 text-left transition md:p-5 ${t.card} ${clickable ? 'cursor-pointer hover:shadow-md' : 'cursor-default'} ${selected ? 'ring-2 ring-slate-400 ring-offset-2' : ''}`}
+              >
+                <div className='flex flex-col gap-2 md:flex-row md:items-center md:gap-4'>
+                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white md:h-12 md:w-12 ${t.icon}`}>
+                    <Svg d={s.icon} className='h-5 w-5 md:h-6 md:w-6' />
+                  </span>
+                  <div className='min-w-0'>
+                    <p className={`text-2xl font-bold leading-none md:text-3xl ${t.value}`}>{loadingStats ? '…' : s.value}</p>
+                    <p className='mt-1 text-xs font-semibold text-slate-700 md:text-sm'>{s.label}</p>
+                    <p className='hidden text-xs text-slate-500 md:block'>{s.hint}</p>
+                  </div>
+                </div>
+              </button>
+            )
+          })}
+        </section>
+
+        {/* 2. Upload */}
         <section>
           <div>
             <div
@@ -325,35 +354,6 @@ const DashboardContent = () => {
               }}
             />
           </div>
-        </section>
-
-        {/* 2. Stats */}
-        <section className='grid grid-cols-3 gap-2.5 md:gap-4'>
-          {statCards.map((s) => {
-            const t = STAT_TONES[s.tone]
-            const clickable = s.key !== 'active'
-            const selected = listKind === s.key
-            return (
-              <button
-                key={s.key}
-                type='button'
-                disabled={!clickable}
-                onClick={() => clickable && setListKind(s.key)}
-                className={`rounded-xl border-2 bg-gradient-to-r p-3 text-left transition md:p-5 ${t.card} ${clickable ? 'cursor-pointer hover:shadow-md' : 'cursor-default'} ${selected ? 'ring-2 ring-slate-400 ring-offset-2' : ''}`}
-              >
-                <div className='flex flex-col gap-2 md:flex-row md:items-center md:gap-4'>
-                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white md:h-12 md:w-12 ${t.icon}`}>
-                    <Svg d={s.icon} className='h-5 w-5 md:h-6 md:w-6' />
-                  </span>
-                  <div className='min-w-0'>
-                    <p className={`text-2xl font-bold leading-none md:text-3xl ${t.value}`}>{loadingStats ? '…' : s.value}</p>
-                    <p className='mt-1 text-xs font-semibold text-slate-700 md:text-sm'>{s.label}</p>
-                    <p className='hidden text-xs text-slate-500 md:block'>{s.hint}</p>
-                  </div>
-                </div>
-              </button>
-            )
-          })}
         </section>
 
         {/* 3. Expiring / expired list */}
