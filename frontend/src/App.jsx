@@ -94,16 +94,6 @@ function AppContent() {
 
       <div className={showNav ? 'lg:ml-[260px]' : ''}>
         <div className={showNav ? 'pt-16 lg:pt-0' : ''}>
-          {showNav && location.pathname !== '/' && location.pathname !== '/dashboard' && (
-            <div className='sticky top-0 z-20 hidden h-14 items-center border-b border-slate-200 bg-white/90 px-6 backdrop-blur-md lg:flex'>
-              <button onClick={() => navigate(-1)} className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm font-semibold text-slate-600 transition-colors hover:bg-slate-100 hover:text-slate-900' title='Go back'>
-                <svg className='h-4 w-4' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-                  <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M15 19l-7-7 7-7' />
-                </svg>
-                Back
-              </button>
-            </div>
-          )}
           <Routes>
             <Route path='/login' element={<Login />} />
             <Route path='/' element={<Home />} />
