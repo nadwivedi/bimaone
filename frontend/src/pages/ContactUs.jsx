@@ -3,6 +3,7 @@ import { useAuth } from '../context/AuthContext'
 import PublicLayout from '../components/PublicLayout'
 import Icon from '../components/Icon'
 import usePageMeta from '../hooks/usePageMeta'
+import { PAGE_META } from '../data/pageMeta'
 
 const WHATSAPP_NUMBER = '919202469725'
 
@@ -79,8 +80,7 @@ const ContactUs = () => {
   const [copied, setCopied] = useState(null)
 
   usePageMeta({
-    title: 'Contact BimaOne – Insurance Agent Software Support',
-    description: 'Talk to the BimaOne team about our insurance agent software and insurance management software. Reach us on WhatsApp, phone or email — Raipur, Chhattisgarh.',
+    ...PAGE_META['/contact-us'],
     path: '/contact-us',
   })
   const [form, setForm] = useState({ name: '', phone: '', message: '' })

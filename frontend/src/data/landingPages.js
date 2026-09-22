@@ -5,8 +5,8 @@ export const landingPages = [
   {
     slug: 'insurance-agent-software',
     nav: 'Insurance Agent Software',
-    title: 'Insurance Agent Software in India – Policies, Renewals & WhatsApp | BimaOne',
-    description: 'BimaOne is insurance agent software made for Indian agents since 2020. Track policies from every insurer, get renewal alerts, send WhatsApp reminders and manage clients from one app.',
+    title: 'Insurance Agent Software in India | BimaOne',
+    description: 'Insurance agent software for Indian agents since 2020. Policies from every insurer, renewal alerts, WhatsApp reminders and AI upload. From ₹899/year.',
     badge: 'Made for Indian insurance agents',
     h1: 'Insurance agent software that keeps every policy and renewal in one place',
     intro: 'BimaOne is insurance agent software built only for insurance agents. Store policies from any insurer, see every renewal that is coming up, remind clients on WhatsApp automatically and keep your client documents safe — on your phone or computer.',
@@ -41,8 +41,8 @@ export const landingPages = [
   {
     slug: 'insurance-management-software',
     nav: 'Insurance Management Software',
-    title: 'Insurance Management Software for All Types of Insurance | BimaOne',
-    description: 'One insurance management software for every type of insurance — motor, health, life, travel, fire, marine, GMC, GPA and more. Manage policies, clients and renewals with AI upload and WhatsApp reminders.',
+    title: 'Insurance Management Software for All Insurance | BimaOne',
+    description: 'One insurance management software for motor, health, life, fire, marine, GMC and more. Policies, clients and renewals with AI upload and WhatsApp reminders.',
     badge: 'Every type of insurance',
     h1: 'Insurance management software for every type of insurance',
     intro: 'Whether you sell motor, health, life or commercial insurance — or all of them — BimaOne manages it in one place. One insurance management software for every policy, every insurer and every client, with renewals and reminders handled for you.',
@@ -77,8 +77,8 @@ export const landingPages = [
   {
     slug: 'insurance-agency-software',
     nav: 'Insurance Agency Software',
-    title: 'Insurance Agency Software in India – Policies, Agents & Renewals | BimaOne',
-    description: 'Insurance agency software for small agencies and brokers in India. Manage policies from every insurer, tag business by agent, track commission and send automatic WhatsApp renewal reminders.',
+    title: 'Insurance Agency Software in India | BimaOne',
+    description: 'Insurance agency software for Indian agencies: separate agent logins, one policy book, commission by agent and automatic WhatsApp renewal reminders.',
     badge: 'For insurance agencies',
     h1: 'Insurance agency software to run your whole agency from one place',
     intro: 'When an agency grows, its policies spread across agents, insurers and Excel sheets. BimaOne is insurance agency software that brings every policy, client and renewal together — with business and commission tagged by agent, so you always know where your agency stands.',
@@ -113,8 +113,8 @@ export const landingPages = [
   {
     slug: 'insurance-broker-software',
     nav: 'Insurance Broker Software',
-    title: 'Insurance Broker Software India – Policies, Renewals & Commission | BimaOne',
-    description: 'Simple insurance broker software for small brokers, sub-brokers and POSP networks in India. Manage policies from every insurer, track renewals and commission, and send WhatsApp reminders.',
+    title: 'Insurance Broker Software India | BimaOne',
+    description: 'Simple insurance broker software for small brokers and POSP networks in India. Policies from every insurer, renewals, brokerage and WhatsApp reminders.',
     badge: 'For brokers in India',
     h1: 'Insurance broker software for small brokers across India',
     intro: 'Brokers place business with many insurers for many clients, and every renewal is a chance to keep or lose that client. BimaOne gives small insurance brokers in India one place for all policies, clients, renewals and commission — without the cost and setup of enterprise broking systems.',
@@ -149,8 +149,8 @@ export const landingPages = [
   {
     slug: 'insurance-crm',
     nav: 'Insurance CRM',
-    title: 'Insurance CRM for Agents in India – Clients, Policies & Leads | BimaOne',
-    description: 'Simple insurance CRM for Indian agents. Manage clients, policies, leads, KYC documents and renewals in one place, with automated WhatsApp reminders. Plans from ₹899/year.',
+    title: 'Insurance CRM for Agents in India | BimaOne',
+    description: 'Simple insurance CRM for Indian agents. Clients, policies, leads, KYC and renewals in one place, with automated WhatsApp reminders. From ₹899/year.',
     badge: 'Insurance CRM',
     h1: 'A simple insurance CRM built for agents, not for big companies',
     intro: 'Most CRMs are made for sales teams and need weeks of setup. BimaOne is an insurance CRM made for the way Indian agents work — clients, policies, renewals and leads, ready from day one.',
@@ -185,8 +185,8 @@ export const landingPages = [
   {
     slug: 'insurance-policy-management-software',
     nav: 'Policy Management Software',
-    title: 'Insurance Policy Management Software for Agents | BimaOne',
-    description: 'Insurance policy management software for agents: store every motor, health and life policy with PDF, track expiry dates, search in seconds and get renewal alerts. From ₹899/year.',
+    title: 'Insurance Policy Management Software | BimaOne',
+    description: 'Store every motor, health and life policy with its PDF, track expiry dates, search in seconds and get renewal alerts. Policy management from ₹899/year.',
     badge: 'Policy management',
     h1: 'Insurance policy management software for every policy you sell',
     intro: 'Keep every policy you have ever sold — with its insurer, premium, dates and PDF — in one searchable place. BimaOne tracks expiry dates for you, so renewals come to you instead of you searching for them.',
@@ -221,8 +221,8 @@ export const landingPages = [
   {
     slug: 'insurance-renewal-reminder-software',
     nav: 'Renewal Reminder Software',
-    title: 'Insurance Renewal Reminder Software with Automatic WhatsApp | BimaOne',
-    description: 'Send automatic WhatsApp renewal reminders to your clients from your own number. BimaOne insurance renewal reminder software tracks every expiry and reminds on the days you choose.',
+    title: 'Insurance Renewal Reminder Software (WhatsApp) | BimaOne',
+    description: 'Send automatic WhatsApp renewal reminders from your own number. BimaOne tracks every policy expiry and reminds clients on the days you choose.',
     badge: 'WhatsApp renewal reminders',
     h1: 'Insurance renewal reminder software that sends WhatsApp for you',
     intro: 'Renewals are the easiest business an agent can earn — if the client is reminded on time. BimaOne tracks every policy and document expiry and sends WhatsApp reminders to your clients automatically, from your own WhatsApp number.',
@@ -257,8 +257,8 @@ export const landingPages = [
   {
     slug: 'posp-agent-software',
     nav: 'POSP Agent Software',
-    title: 'POSP Agent Software – Manage Policies from All Insurers | BimaOne',
-    description: 'Software for POSP agents in India. Keep policies sold through any PB partner or broker portal in one list, track renewals and commission, and send WhatsApp reminders. From ₹899/year.',
+    title: 'POSP Agent Software – All Insurers in One App | BimaOne',
+    description: 'Software for POSP agents in India. Policies from every portal in one list, renewals and commission tracking, and WhatsApp reminders. From ₹899/year.',
     badge: 'For POSP agents',
     h1: 'POSP agent software to manage policies from every portal',
     intro: 'As a POSP you sell through broker portals and many insurers, so your policies end up scattered everywhere. BimaOne brings them into one list with renewal dates, commission and client details — so you own your client book, not the portal.',
@@ -293,8 +293,8 @@ export const landingPages = [
   {
     slug: 'motor-insurance-software',
     nav: 'Motor Insurance Software',
-    title: 'Motor Insurance Software for Agents – RC Lookup & Premium Calculator | BimaOne',
-    description: 'Motor insurance software for agents: RC details lookup, premium calculator, policy tracking and renewal reminders for car, bike and commercial vehicle insurance.',
+    title: 'Motor Insurance Software for Agents | BimaOne',
+    description: 'Motor insurance software for agents: RC lookup, premium calculator, policy tracking and renewal reminders for car, bike and commercial vehicles.',
     badge: 'Motor insurance',
     h1: 'Motor insurance software for car, bike and commercial vehicle agents',
     intro: 'Motor insurance is renewal business. BimaOne keeps every vehicle, its policy and its documents together — with RC lookup, a premium calculator and reminders before the policy, PUC or fitness expires.',
@@ -329,8 +329,8 @@ export const landingPages = [
   {
     slug: 'rto-agent-software',
     nav: 'RTO Agent Software',
-    title: 'RTO Agent Software – PUC, Tax, Fitness & Permit Expiry Tracking | BimaOne',
-    description: 'RTO agent software to track PUC, road tax, fitness, GPS and permit expiry for every vehicle, record fees paid and balance, and send WhatsApp reminders to vehicle owners.',
+    title: 'RTO Agent Software – PUC, Tax, Fitness, Permit | BimaOne',
+    description: 'Track PUC, road tax, fitness, GPS and permit expiry for every vehicle, record fees and balance, and send WhatsApp reminders to vehicle owners.',
     badge: 'For RTO agents',
     h1: 'RTO agent software for PUC, tax, fitness and permit work',
     intro: 'Many insurance agents also do RTO work for their clients. BimaOne tracks every vehicle document with its validity and fees, and reminds vehicle owners on WhatsApp before anything expires.',
@@ -365,8 +365,8 @@ export const landingPages = [
   {
     slug: 'insurance-commission-tracking-software',
     nav: 'Commission Tracking',
-    title: 'Insurance Commission Tracking Software for Agents | BimaOne',
-    description: 'Track insurance commission on every policy by insurer and agent. See received and pending commission and your monthly earnings with BimaOne insurance commission tracking.',
+    title: 'Insurance Commission Tracking Software | BimaOne',
+    description: 'Track insurance commission on every policy by insurer and agent. See received and pending commission at a glance with BimaOne insurance software.',
     badge: 'Commission tracking',
     h1: 'Insurance commission tracking for agents who sell with many insurers',
     intro: 'Every insurer and every product pays a different commission, and payouts come late. BimaOne records the commission on each policy so you always know what you have earned, what has been paid and what is still pending.',
@@ -401,8 +401,8 @@ export const landingPages = [
   {
     slug: 'health-insurance-crm-software',
     nav: 'Health Insurance CRM',
-    title: 'Health Insurance CRM Software India – Clients, Renewals & Leads | BimaOne',
-    description: 'Health insurance CRM software for agents in India. Manage health and family floater clients, leads, KYC and renewal dates, and send automatic WhatsApp renewal reminders. From ₹899/year.',
+    title: 'Health Insurance CRM Software India | BimaOne',
+    description: 'Health insurance CRM software for Indian agents. Clients, leads, KYC and renewal dates in one place, with automatic WhatsApp reminders. From ₹899/year.',
     badge: 'Health insurance CRM · India',
     h1: 'Health insurance CRM software for agents in India',
     intro: 'A health policy that lapses loses its waiting-period benefits — so a timely renewal matters more to your client than almost anything else you do. BimaOne is health insurance CRM software and health insurance agent software in one: every client, lead and policy with its renewal date, and automatic reminders before it is too late.',
@@ -439,7 +439,7 @@ export const landingPages = [
     slug: 'life-insurance-software',
     nav: 'Life Insurance Software',
     title: 'Best Life Insurance Software in India – BimaOne',
-    description: 'BimaOne is the best life insurance software in India for agents. Manage life policies from every insurer with AI upload, automated birthday and renewal reminders on WhatsApp, and every client in one place.',
+    description: 'Best life insurance software in India. Life policies from every insurer, AI upload, and automated birthday and renewal reminders on WhatsApp.',
     badge: 'Best life insurance software in India',
     h1: 'Best life insurance software in India — BimaOne',
     intro: 'Life insurance is a lifelong relationship with your client. BimaOne is life insurance software built for Indian agents: upload a policy and AI fills in the details, clients get birthday wishes and renewal reminders on WhatsApp automatically, and every family’s policies stay organised in one place — on mobile, tablet or desktop.',
@@ -475,8 +475,8 @@ export const landingPages = [
   {
     slug: 'lic-agent-software',
     nav: 'LIC Agent Software',
-    title: 'LIC Agent Software – AI Upload, Birthday & Renewal Reminders | BimaOne',
-    description: 'LIC agent software that makes your work easy: AI policy upload, automated birthday and renewal reminders on WhatsApp, and every client in one place. Works on mobile, tablet and desktop.',
+    title: 'LIC Agent Software – AI Upload & Reminders | BimaOne',
+    description: 'LIC agent software that makes work easy: AI policy upload and automated birthday and renewal reminders on WhatsApp. Works on mobile, tablet and desktop.',
     badge: 'Mobile · Tablet · Desktop',
     h1: 'LIC agent software that makes your daily work easy',
     intro: 'An LIC agent’s business runs on relationships — remembering every client, every renewal and every birthday. BimaOne does that remembering for you. Upload a policy and AI fills in the details, and automated WhatsApp reminders greet clients on their birthday and remind them before renewal. Use it on your mobile, tablet or desktop.',
@@ -512,8 +512,8 @@ export const landingPages = [
   {
     slug: 'insurance-diary-app',
     nav: 'Insurance Diary App',
-    title: 'Insurance Diary App – Replace Your Register & Excel | BimaOne',
-    description: 'Insurance diary app for agents: move from paper register and Excel to BimaOne. Every policy, client and renewal date on your phone, with automatic WhatsApp reminders.',
+    title: 'Insurance Diary App – Replace Register & Excel | BimaOne',
+    description: 'Move from paper register and Excel to BimaOne. Every policy, client and renewal date on your phone, with automatic WhatsApp renewal reminders.',
     badge: 'Insurance diary mobile mein',
     h1: 'Your insurance diary, now on your phone',
     intro: 'Most agents still keep a register or an Excel sheet of their policies. BimaOne is an insurance diary app that does the same job — but it searches in seconds, never gets lost, and reminds your clients for you.',
@@ -548,3 +548,21 @@ export const landingPages = [
 ]
 
 export const landingBySlug = Object.fromEntries(landingPages.map((p) => [p.slug, p]))
+
+// FAQ + breadcrumb structured data for a landing page; shared by the page and the build-time pre-render.
+export const landingJsonLd = (page, siteUrl) => ({
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'FAQPage',
+      mainEntity: page.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+    {
+      '@type': 'BreadcrumbList',
+      itemListElement: [
+        { '@type': 'ListItem', position: 1, name: 'Home', item: `${siteUrl}/` },
+        { '@type': 'ListItem', position: 2, name: page.nav, item: `${siteUrl}/${page.slug}` },
+      ],
+    },
+  ],
+})

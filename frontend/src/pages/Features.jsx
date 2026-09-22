@@ -3,6 +3,7 @@ import CtaBanner from '../components/CtaBanner'
 import Icon from '../components/Icon'
 import { featureGroups, TONES, GROUP_TONES } from '../data/features'
 import usePageMeta from '../hooks/usePageMeta'
+import { PAGE_META } from '../data/pageMeta'
 
 const slug = (s) => s.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
@@ -43,8 +44,7 @@ const Features = () => {
   const total = featureGroups.reduce((n, g) => n + g.features.length, 0)
 
   usePageMeta({
-    title: 'Features – Insurance Management Software for Agents | BimaOne',
-    description: 'All features of BimaOne insurance management software: policy tracking, renewal alerts, leads, client KYC, RTO documents, AI upload, premium calculator and WhatsApp reminders for insurance agents.',
+    ...PAGE_META['/features'],
     path: '/features',
     jsonLd: FEATURES_JSON_LD,
   })

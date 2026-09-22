@@ -3,6 +3,7 @@ import CtaBanner from '../components/CtaBanner'
 import Icon from '../components/Icon'
 import { TONES } from '../data/features'
 import usePageMeta from '../hooks/usePageMeta'
+import { PAGE_META } from '../data/pageMeta'
 
 const numbers = [
   { value: '2020', label: 'Founded', icon: 'star', tone: 'blue' },
@@ -26,8 +27,7 @@ const values = [
 
 const About = () => {
   usePageMeta({
-    title: 'About BimaOne – Insurance Agent Software Since 2020',
-    description: 'BimaOne is insurance agent software and insurance management software built in 2020 for Indian insurance agents. Six years of making insurance agents’ work easy.',
+    ...PAGE_META['/about'],
     path: '/about',
   })
 

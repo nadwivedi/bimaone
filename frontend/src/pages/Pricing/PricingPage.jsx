@@ -7,6 +7,7 @@ import { PLANS_CONFIG } from '../../config/plansConfig'
 import PublicLayout from '../../components/PublicLayout'
 import Icon from '../../components/Icon'
 import usePageMeta from '../../hooks/usePageMeta'
+import { PAGE_META } from '../../data/pageMeta'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
@@ -67,8 +68,7 @@ const PricingPage = () => {
   const [myPlan, setMyPlan] = useState(null)
 
   usePageMeta({
-    title: 'Pricing – Insurance Agent Software Plans from ₹899/year | BimaOne',
-    description: 'Simple yearly pricing for BimaOne insurance agent software. Basic ₹899, Standard ₹1,999 and Premium ₹4,999 per year, GST included, with automated WhatsApp reminders in every plan.',
+    ...PAGE_META['/pricing'],
     path: '/pricing',
   })
 

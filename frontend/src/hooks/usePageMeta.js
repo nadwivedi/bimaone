@@ -36,6 +36,8 @@ const usePageMeta = ({ title, description, path = '/', jsonLd }) => {
     setMeta('name', 'twitter:description', description)
     setCanonical(url)
 
+    // Drop page JSON-LD left by the pre-rendered HTML or a previous page, so it never doubles up.
+    document.head.querySelectorAll('script[data-page-meta]').forEach((el) => el.remove())
     let script
     if (jsonLd) {
       script = document.createElement('script')

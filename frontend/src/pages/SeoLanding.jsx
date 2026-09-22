@@ -4,7 +4,7 @@ import PublicLayout from '../components/PublicLayout'
 import CtaBanner from '../components/CtaBanner'
 import Icon from '../components/Icon'
 import { TONES, TONE_ORDER } from '../data/features'
-import { landingBySlug } from '../data/landingPages'
+import { landingBySlug, landingJsonLd } from '../data/landingPages'
 import usePageMeta, { SITE_URL } from '../hooks/usePageMeta'
 
 const STEP_TONES = ['blue', 'emerald', 'amber']
@@ -13,22 +13,7 @@ const STEP_TONES = ['blue', 'emerald', 'amber']
 const SeoLanding = ({ slug }) => {
   const page = landingBySlug[slug]
 
-  const jsonLd = useMemo(() => ({
-    '@context': 'https://schema.org',
-    '@graph': [
-      {
-        '@type': 'FAQPage',
-        mainEntity: page.faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
-      },
-      {
-        '@type': 'BreadcrumbList',
-        itemListElement: [
-          { '@type': 'ListItem', position: 1, name: 'Home', item: `${SITE_URL}/` },
-          { '@type': 'ListItem', position: 2, name: page.nav, item: `${SITE_URL}/${page.slug}` },
-        ],
-      },
-    ],
-  }), [page])
+  const jsonLd = useMemo(() => landingJsonLd(page, SITE_URL), [page])
 
   usePageMeta({ title: page.title, description: page.description, path: `/${page.slug}`, jsonLd })
 

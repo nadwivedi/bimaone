@@ -6,6 +6,7 @@ import CtaBanner from '../components/CtaBanner'
 import Icon from '../components/Icon'
 import { highlightFeatures, TONES, TONE_ORDER } from '../data/features'
 import usePageMeta from '../hooks/usePageMeta'
+import { PAGE_META } from '../data/pageMeta'
 
 const stats = [
   { value: '6+', label: 'Years serving agents', icon: 'star', tone: 'blue' },
@@ -69,8 +70,7 @@ const Home = () => {
   const navigate = useNavigate()
 
   usePageMeta({
-    title: 'BimaOne – Insurance Agent Software & Insurance Management Software in India',
-    description: 'BimaOne is insurance agent software and insurance management software for Indian agents. Track policies, renewals, leads, RTO documents and send automated WhatsApp reminders.',
+    ...PAGE_META['/'],
     path: '/',
     jsonLd: HOME_JSON_LD,
   })
