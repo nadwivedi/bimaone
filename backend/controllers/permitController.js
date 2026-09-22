@@ -12,7 +12,10 @@ module.exports = createRecordController({
   searchFields: ['vehicleNumber', 'name'],
   stringFields: ['vehicleNumber', 'name', 'validFrom', 'validTo', 'permitDocument'],
   uppercaseFields: ['vehicleNumber'],
-  numberFields: [],
+  numberFields: ['totalFee', 'paid', 'balance'],
   documentField: 'permitDocument',
-  documentDataField: 'permitDocumentData'
+  documentDataField: 'permitDocumentData',
+  totalField: 'totalFee',
+  paidField: 'paid',
+  balanceField: 'balance',
 })

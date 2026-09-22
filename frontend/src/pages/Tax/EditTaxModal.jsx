@@ -27,7 +27,10 @@ const EditTaxModal = ({ isOpen, onClose, onSubmit, tax }) => {
     ownerName: '',
     taxAmount: '',
     taxFrom: '',
-    taxTo: ''
+    taxTo: '',
+    totalAmount: '',
+    paidAmount: '',
+    balanceAmount: ''
   })
   const [taxPeriod, setTaxPeriod] = useState('Q1')
 
@@ -52,7 +55,10 @@ const EditTaxModal = ({ isOpen, onClose, onSubmit, tax }) => {
         ownerName: '',
         taxAmount: '',
         taxFrom: '',
-        taxTo: ''
+        taxTo: '',
+        totalAmount: '',
+        paidAmount: '',
+        balanceAmount: ''
       })
       setTaxPeriod('Q1')
       setDateError({ taxFrom: '', taxTo: '' })
@@ -79,7 +85,10 @@ const EditTaxModal = ({ isOpen, onClose, onSubmit, tax }) => {
         ownerName: tax.ownerName || '',
         taxAmount: tax.taxAmount ? tax.taxAmount.toString() : '',
         taxFrom: tax.taxFrom || '',
-        taxTo: tax.taxTo || ''
+        taxTo: tax.taxTo || '',
+        totalAmount: tax.totalAmount?.toString() || '0',
+        paidAmount: tax.paidAmount?.toString() || '0',
+        balanceAmount: tax.balanceAmount?.toString() || '0'
       })
       if (vehicleNum) {
         const validation = validateVehicleNumberRealtime(vehicleNum)
@@ -249,6 +258,20 @@ const EditTaxModal = ({ isOpen, onClose, onSubmit, tax }) => {
       setFormData(prev => ({ ...prev, [name]: value }))
       return
     }
+    if (name === 'totalAmount' || name === 'paidAmount') {
+      setFormData(prev => {
+        const totalAmount = name === 'totalAmount' ? parseFloat(value) || 0 : parseFloat(prev.totalAmount) || 0
+        let paidAmount = name === 'paidAmount' ? parseFloat(value) || 0 : parseFloat(prev.paidAmount) || 0
+        if (name === 'paidAmount' && paidAmount > totalAmount && totalAmount > 0) paidAmount = totalAmount
+        return {
+          ...prev,
+          totalAmount: name === 'totalAmount' ? value : prev.totalAmount,
+          paidAmount: paidAmount.toString(),
+          balanceAmount: (totalAmount - paidAmount).toString()
+        }
+      })
+      return
+    }
     if (name === 'taxFrom' || name === 'taxTo') {
       const formatted = handleSmartDateInput(value, formData[name] || '')
       if (formatted !== null) {
@@ -404,12 +427,17 @@ const EditTaxModal = ({ isOpen, onClose, onSubmit, tax }) => {
       return
     }
 
+    const totalAmount = parseFloat(formData.totalAmount) || 0
+    const paidAmount = parseFloat(formData.paidAmount) || 0
     const dataToSubmit = {
       vehicleNumber: formData.vehicleNumber,
       ownerName: formData.ownerName,
       taxFrom: formData.taxFrom,
       taxTo: formData.taxTo,
-      taxAmount: formData.taxAmount ? parseFloat(formData.taxAmount) : undefined
+      taxAmount: formData.taxAmount ? parseFloat(formData.taxAmount) : undefined,
+      totalAmount,
+      paidAmount,
+      balanceAmount: Math.max(totalAmount - paidAmount, 0).toFixed(2)
     }
 
     setIsSubmitting(true)
@@ -681,10 +709,41 @@ const EditTaxModal = ({ isOpen, onClose, onSubmit, tax }) => {
               </div>
             </div>
 
+            <div className='bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+              <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
+                <span className='bg-purple-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>3</span>
+                Payment Information
+              </h3>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
+                <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Total Fee (₹)</label>
+                  <input type='number' name='totalAmount' value={formData.totalAmount} onChange={handleChange} placeholder='0' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-semibold bg-white' />
+                </div>
+                <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Paid (₹)</label>
+                  <input type='number' name='paidAmount' value={formData.paidAmount} onChange={handleChange} placeholder='0' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-semibold bg-white' />
+                </div>
+                <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Balance (₹) <span className='text-xs text-gray-500'>(Auto)</span></label>
+                  <input type='number' name='balanceAmount' value={formData.balanceAmount} readOnly className='w-full px-3 py-2 border border-gray-300 rounded-lg bg-purple-50 font-semibold text-gray-700' />
+                </div>
+              </div>
+              {parseFloat(formData.balanceAmount) > 0 && parseFloat(formData.paidAmount) > 0 && (
+                <div className='mt-3 bg-amber-50 border-l-4 border-amber-500 p-2 md:p-3 rounded'>
+                  <p className='text-xs md:text-sm font-semibold text-amber-700'>Partial Payment - Balance: ₹{formData.balanceAmount}</p>
+                </div>
+              )}
+              {parseFloat(formData.balanceAmount) === 0 && parseFloat(formData.totalAmount) > 0 && (
+                <div className='mt-3 bg-green-50 border-l-4 border-green-500 p-2 md:p-3 rounded'>
+                  <p className='text-xs md:text-sm font-semibold text-green-700'>Fully Paid</p>
+                </div>
+              )}
+            </div>
+
             {uploadedTaxDocument && (
               <div className='bg-gradient-to-r from-slate-50 to-indigo-50 border-2 border-slate-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
                 <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
-                  <span className='bg-slate-700 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>3</span>
+                  <span className='bg-slate-700 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>4</span>
                   Uploaded Road Tax Document
                 </h3>
                 <div className='mb-3 flex items-center justify-between gap-3 rounded-lg bg-white/80 px-3 py-2 border border-slate-200'>

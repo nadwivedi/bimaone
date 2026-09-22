@@ -30,7 +30,19 @@ const permitSchema = new mongoose.Schema({
     type: String,
     required: true
   },
-  
+  totalFee: {
+    type: Number,
+    default: 0
+  },
+  paid: {
+    type: Number,
+    default: 0
+  },
+  balance: {
+    type: Number,
+    default: 0
+  },
+
   // Renewal status
   isRenewed: {
     type: Boolean,

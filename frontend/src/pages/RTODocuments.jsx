@@ -150,6 +150,7 @@ const RTODocuments = () => {
     if (!filteredDocuments.length) return
     const exportData = filteredDocuments.map((doc) => {
       const record = doc.rawRecord || {}
+      const fee = getFeeInfo(doc)
       return {
         'Type': doc.type === 'Tax' ? 'Road Tax' : doc.type,
         'Vehicle Number': doc.vehicleNumber || '',
@@ -158,6 +159,9 @@ const RTODocuments = () => {
         'Valid From': doc.validFrom !== 'N/A' ? doc.validFrom : '',
         'Valid To': doc.validTo !== 'N/A' ? doc.validTo : '',
         'Status': doc.status,
+        'Total Fee': fee ? fee.total : '',
+        'Paid': fee ? fee.paid : '',
+        'Pending': fee ? fee.pending : '',
         'Remarks': record.remarks || '',
       }
     })
@@ -185,6 +189,22 @@ const RTODocuments = () => {
   const typeLabel = (type) => TYPE_CONFIG[type]?.label || type
   const holderName = (doc) => doc.rawRecord?.ownerName || doc.rawRecord?.policyHolderName || doc.rawRecord?.name || ''
 
+  // Tax stores fee fields as totalAmount/paidAmount/balanceAmount; PUC, Fitness, GPS & Permit use totalFee/paid/balance; RC has no fee tracking.
+  const getFeeInfo = (doc) => {
+    const record = doc.rawRecord || {}
+    const total = doc.type === 'Tax' ? record.totalAmount : record.totalFee
+    if (total === undefined || total === null) return null
+    const paid = doc.type === 'Tax' ? (record.paidAmount || 0) : (record.paid || 0)
+    const pending = doc.type === 'Tax' ? record.balanceAmount : record.balance
+    return {
+      total: Number(total) || 0,
+      paid: Number(paid) || 0,
+      pending: pending !== undefined && pending !== null ? Number(pending) : Math.max((Number(total) || 0) - (Number(paid) || 0), 0),
+    }
+  }
+
+  const formatCurrency = (n) => `₹${Number(n || 0).toLocaleString('en-IN')}`
+
   const getExpiryInfo = (doc) => {
     if (!/^\d{1,2}-\d{1,2}-\d{4}$/.test(doc.validTo || '')) return null
     const days = getDaysRemaining(doc.validTo)
@@ -194,6 +214,15 @@ const RTODocuments = () => {
   }
 
   const typeCounts = documents.reduce((acc, d) => ({ ...acc, [d.type]: (acc[d.type] || 0) + 1 }), {})
+
+  const feeTotals = filteredDocuments.reduce((acc, doc) => {
+    const fee = getFeeInfo(doc)
+    if (!fee) return acc
+    acc.total += fee.total
+    acc.paid += fee.paid
+    acc.pending += fee.pending
+    return acc
+  }, { total: 0, paid: 0, pending: 0 })
 
   const TypeIcon = ({ type, size = 'h-10 w-10' }) => (
     <div className={`flex ${size} shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${TYPE_CONFIG[type]?.tint || 'bg-slate-50 text-slate-500 ring-slate-100'}`}>
@@ -365,6 +394,24 @@ const RTODocuments = () => {
               </div>
             )}
 
+            {/* Fee summary for the currently filtered documents */}
+            {feeTotals.total > 0 && (
+              <div className='grid grid-cols-3 gap-px border-b border-slate-200 bg-slate-100 text-center'>
+                <div className='bg-white px-3 py-2.5'>
+                  <p className='text-[11px] font-medium text-slate-500'>Total Fee</p>
+                  <p className='text-sm font-bold text-slate-900'>{formatCurrency(feeTotals.total)}</p>
+                </div>
+                <div className='bg-white px-3 py-2.5'>
+                  <p className='text-[11px] font-medium text-slate-500'>Paid</p>
+                  <p className='text-sm font-bold text-emerald-600'>{formatCurrency(feeTotals.paid)}</p>
+                </div>
+                <div className='bg-white px-3 py-2.5'>
+                  <p className='text-[11px] font-medium text-slate-500'>Pending</p>
+                  <p className={`text-sm font-bold ${feeTotals.pending > 0 ? 'text-rose-600' : 'text-slate-900'}`}>{formatCurrency(feeTotals.pending)}</p>
+                </div>
+              </div>
+            )}
+
             {loading ? (
               <div className='py-16 text-center'>
                 <div className='mx-auto h-8 w-8 animate-spin rounded-full border-4 border-blue-600 border-t-transparent'></div>
@@ -388,6 +435,7 @@ const RTODocuments = () => {
                 <div className='divide-y divide-slate-100 lg:hidden'>
                   {filteredDocuments.map((doc) => {
                     const expiry = getExpiryInfo(doc)
+                    const fee = getFeeInfo(doc)
                     return (
                       <div
                         key={doc.id}
@@ -407,7 +455,8 @@ const RTODocuments = () => {
                             <div className='text-xs text-slate-500'>
                               {doc.validTo !== 'N/A' ? (
                                 <>
-                                  <span>{doc.validFrom} → <span className='font-semibold text-slate-800'>{doc.validTo}</span></span>
+                                  <p>From <span className='font-medium text-slate-700'>{doc.validFrom}</span></p>
+                                  <p>To <span className='font-semibold text-slate-800'>{doc.validTo}</span></p>
                                   {expiry && <p className={`mt-0.5 font-medium ${expiry.cls}`}>{expiry.text}</p>}
                                 </>
                               ) : (
@@ -416,6 +465,15 @@ const RTODocuments = () => {
                             </div>
                             <ActionButtons doc={doc} />
                           </div>
+                          {fee && (
+                            <div className='mt-2.5 flex items-center gap-3 border-t border-slate-100 pt-2 text-xs'>
+                              <span className='text-slate-500'>Fee <span className='font-semibold text-slate-800'>{formatCurrency(fee.total)}</span></span>
+                              <span className='text-slate-500'>Paid <span className='font-semibold text-emerald-600'>{formatCurrency(fee.paid)}</span></span>
+                              {fee.pending > 0 && (
+                                <span className='text-slate-500'>Due <span className='font-semibold text-rose-600'>{formatCurrency(fee.pending)}</span></span>
+                              )}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )
@@ -431,6 +489,7 @@ const RTODocuments = () => {
                         <th className='px-5 py-3'>Vehicle</th>
                         <th className='px-5 py-3'>Validity</th>
                         <th className='px-5 py-3'>Expiry</th>
+                        <th className='px-5 py-3'>Fee</th>
                         <th className='px-5 py-3'>Status</th>
                         <th className='px-5 py-3 text-right'>Actions</th>
                       </tr>
@@ -439,6 +498,7 @@ const RTODocuments = () => {
                       {filteredDocuments.map((doc) => {
                         const expiry = getExpiryInfo(doc)
                         const holder = holderName(doc)
+                        const fee = getFeeInfo(doc)
                         return (
                           <tr
                             key={doc.id}
@@ -459,13 +519,30 @@ const RTODocuments = () => {
                             </td>
                             <td className='px-5 py-3.5 text-sm'>
                               {doc.validTo !== 'N/A' ? (
-                                <span className='text-slate-500'>{doc.validFrom} <span className='text-slate-300'>→</span> <span className='font-semibold text-slate-800'>{doc.validTo}</span></span>
+                                <div className='leading-tight'>
+                                  <p className='text-slate-500'>From <span className='font-medium text-slate-700'>{doc.validFrom}</span></p>
+                                  <p className='text-slate-500'>To <span className='font-semibold text-slate-800'>{doc.validTo}</span></p>
+                                </div>
                               ) : (
                                 <span className='text-slate-400'>—</span>
                               )}
                             </td>
                             <td className='px-5 py-3.5 text-sm'>
                               {expiry ? <span className={`font-medium ${expiry.cls}`}>{expiry.text}</span> : <span className='text-slate-400'>No expiry</span>}
+                            </td>
+                            <td className='px-5 py-3.5 text-sm'>
+                              {fee ? (
+                                <div className='leading-tight'>
+                                  <p className='text-slate-700'>{formatCurrency(fee.total)}</p>
+                                  {fee.pending > 0 ? (
+                                    <p className='text-xs font-semibold text-rose-600'>{formatCurrency(fee.pending)} due</p>
+                                  ) : (
+                                    <p className='text-xs font-medium text-emerald-600'>Paid</p>
+                                  )}
+                                </div>
+                              ) : (
+                                <span className='text-slate-400'>—</span>
+                              )}
                             </td>
                             <td className='px-5 py-3.5'>
                               <StatusBadge status={doc.status} />

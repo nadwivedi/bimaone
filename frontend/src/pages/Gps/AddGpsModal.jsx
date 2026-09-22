@@ -3,6 +3,7 @@ import axios from 'axios'
 import { toast } from 'react-toastify'
 import { validateVehicleNumberRealtime } from '../../utils/vehicleNoCheck'
 import { handleSmartDateInput, normalizeAIExtractedDate } from '../../utils/dateFormatter'
+import { handlePaymentCalculation } from '../../utils/paymentValidation'
 import DocumentScannerPreview from '../../components/DocumentScannerPreview'
 import { useAiLimit, invalidateAiLimitCache } from '../../utils/useAiLimit'
 import AiLimitModal from '../../components/AiLimitModal'
@@ -18,7 +19,10 @@ const AddGpsModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '', p
     vehicleNumber: prefilledVehicleNumber,
     ownerName: prefilledOwnerName,
     validFrom: '',
-    validTo: ''
+    validTo: '',
+    totalFee: '',
+    paid: '',
+    balance: ''
   })
   const [vehicleValidation, setVehicleValidation] = useState({ isValid: false, message: '' })
   const [fetchingVehicle, setFetchingVehicle] = useState(false)
@@ -44,7 +48,10 @@ const AddGpsModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '', p
         vehicleNumber: prefilledVehicleNumber,
         ownerName: prefilledOwnerName,
         validFrom: '',
-        validTo: ''
+        validTo: '',
+        totalFee: '',
+        paid: '',
+        balance: ''
       })
       setVehicleValidation({ isValid: false, message: '' })
       setFetchingVehicle(false)
@@ -206,6 +213,18 @@ if (e.key === 'Escape') onClose()
       if (formatted !== null) setFormData(prev => ({ ...prev, [name]: formatted }))
       return
     }
+    if (name === 'totalFee' || name === 'paid') {
+      setFormData(prev => {
+        const paymentResult = handlePaymentCalculation(name, value, prev)
+        return {
+          ...prev,
+          totalFee: name === 'totalFee' ? value : prev.totalFee,
+          paid: paymentResult.paid,
+          balance: paymentResult.balance
+        }
+      })
+      return
+    }
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
@@ -360,11 +379,16 @@ if (e.key === 'Escape') onClose()
           reader.readAsDataURL(uploadedGpsFile)
         })
       }
+      const totalFee = parseFloat(formData.totalFee) || 0
+      const paid = parseFloat(formData.paid) || 0
       const dataToSubmit = {
         vehicleNumber: formData.vehicleNumber,
         ownerName: formData.ownerName,
         validFrom: formData.validFrom,
         validTo: formData.validTo,
+        totalFee,
+        paid,
+        balance: Math.max(totalFee - paid, 0).toFixed(2),
         gpsDocumentData
       }
       const response = await axios.post(`${API_URL}/api/gps`, dataToSubmit, { withCredentials: true })
@@ -465,10 +489,41 @@ if (e.key === 'Escape') onClose()
                 </div>
               </div>
 
+              <div className='bg-gradient-to-r from-purple-50 to-pink-50 border-2 border-purple-200 rounded-xl p-3 md:p-6 mb-4 md:mb-6'>
+                <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
+                  <span className='bg-purple-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>3</span>
+                  Payment Information
+                </h3>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
+                  <div>
+                    <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Total Fee (₹)</label>
+                    <input type='number' name='totalFee' value={formData.totalFee} onChange={handleChange} placeholder='0' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-semibold bg-white' />
+                  </div>
+                  <div>
+                    <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Paid (₹)</label>
+                    <input type='number' name='paid' value={formData.paid} onChange={handleChange} placeholder='0' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent font-semibold bg-white' />
+                  </div>
+                  <div>
+                    <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Balance (₹) <span className='text-xs text-gray-500'>(Auto)</span></label>
+                    <input type='number' name='balance' value={formData.balance} readOnly className='w-full px-3 py-2 border border-gray-300 rounded-lg bg-purple-50 font-semibold text-gray-700' />
+                  </div>
+                </div>
+                {parseFloat(formData.balance) > 0 && parseFloat(formData.paid) > 0 && (
+                  <div className='mt-3 bg-amber-50 border-l-4 border-amber-500 p-2 md:p-3 rounded'>
+                    <p className='text-xs md:text-sm font-semibold text-amber-700'>Partial Payment - Balance: ₹{formData.balance}</p>
+                  </div>
+                )}
+                {parseFloat(formData.balance) === 0 && parseFloat(formData.totalFee) > 0 && (
+                  <div className='mt-3 bg-green-50 border-l-4 border-green-500 p-2 md:p-3 rounded'>
+                    <p className='text-xs md:text-sm font-semibold text-green-700'>Fully Paid</p>
+                  </div>
+                )}
+              </div>
+
               {uploadedGpsDocument && (
                 <div className='bg-gradient-to-r from-slate-50 to-cyan-50 border-2 border-slate-200 rounded-xl p-3 md:p-6'>
                   <h3 className='text-base md:text-lg font-bold text-gray-800 mb-3 md:mb-4 flex items-center gap-2'>
-                    <span className='bg-slate-700 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>3</span>
+                    <span className='bg-slate-700 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>4</span>
                     Uploaded GPS Document
                   </h3>
                   <div className='mb-3 flex items-center justify-between gap-3 rounded-lg bg-white/80 px-3 py-2 border border-slate-200'>
