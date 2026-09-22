@@ -158,44 +158,135 @@ const DOC_ICON = 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01
 const FILE_ICON = 'M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z'
 const CLOSE_ICON = 'M6 18L18 6M6 6l12 12'
 
-const RcImageBlock = ({ url, label, apiUrl }) => {
-  const fullUrl = url && (url.startsWith('http') || url.startsWith('data:') ? url : `${apiUrl}${url}`)
+const EDIT_ICON = 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'
+const TRASH_ICON = 'M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16'
+const WARN_ICON = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'
+const CHECK_CIRCLE_ICON = 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'
+const CLIP_ICON = 'M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.414 6.586a6 6 0 108.484 8.484L20.5 13'
 
-  const handleDownload = async () => {
-    if (!fullUrl) return
-    try {
-      const res = await fetch(fullUrl)
-      const blob = await res.blob()
-      const blobUrl = URL.createObjectURL(blob)
-      const link = document.createElement('a')
-      link.href = blobUrl
-      link.download = `RC_${label.replace(/\s/g, '_')}.${blob.type.split('/')[1] || 'png'}`
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      URL.revokeObjectURL(blobUrl)
-    } catch {
-      window.open(fullUrl, '_blank')
-    }
-  }
+const toDate = (s) => {
+  if (!s || typeof s !== 'string') return null
+  const p = s.split(/[/-]/)
+  if (p.length !== 3 || p.some((x) => Number.isNaN(Number(x)))) return null
+  const [a, b, c] = p.map(Number)
+  const d = p[0].length === 4 ? new Date(a, b - 1, c) : new Date(c, b - 1, a)
+  return Number.isNaN(d.getTime()) ? null : d
+}
 
-  return fullUrl ? (
-    <div className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'>
-      <div className='flex items-center justify-between border-b border-slate-200 bg-slate-50/70 px-4 py-3'>
-        <h3 className='flex items-center gap-2 text-sm font-semibold text-slate-800'>
-          <Icon d={DOC_ICON} className='h-4 w-4 text-slate-400' />
-          RC {label}
-        </h3>
-        <button onClick={handleDownload} className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600'>
-          <Icon d={DOWNLOAD_ICON} className='h-3.5 w-3.5' />
-          Download
-        </button>
-      </div>
-      <div className='flex min-h-[200px] items-center justify-center bg-slate-50 p-3'>
-        <img src={fullUrl} alt={`RC ${label}`} className='w-full rounded-lg object-contain' style={{ maxHeight: '400px' }} />
-      </div>
+const prettyDate = (s) => {
+  const d = toDate(s)
+  return d ? d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' }) : s || '—'
+}
+
+const DAY_MS = 86400000
+
+const getValidity = (from, to) => {
+  const toD = toDate(to)
+  if (!toD) return null
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  const daysLeft = Math.round((toD - today) / DAY_MS)
+  const fromD = toDate(from)
+  const span = fromD ? toD - fromD : 0
+  const elapsed = span > 0 ? Math.min(100, Math.max(0, ((today - fromD) / span) * 100)) : daysLeft < 0 ? 100 : 0
+  const tone = daysLeft < 0 ? 'rose' : daysLeft <= 30 ? 'amber' : 'emerald'
+  const label = daysLeft > 1 ? `${daysLeft} days left` : daysLeft === 1 ? '1 day left' : daysLeft === 0 ? 'Expires today' : `Expired ${-daysLeft} day${daysLeft === -1 ? '' : 's'} ago`
+  return { daysLeft, elapsed, tone, label }
+}
+
+const VALIDITY_TONES = {
+  emerald: { text: 'text-emerald-600', bar: 'bg-emerald-500' },
+  amber: { text: 'text-amber-600', bar: 'bg-amber-500' },
+  rose: { text: 'text-rose-600', bar: 'bg-rose-500' },
+}
+
+const SECTION_TONES = {
+  blue: { wrap: 'from-blue-50 to-sky-50 border-blue-200', badge: 'bg-blue-600' },
+  sky: { wrap: 'from-sky-50 to-cyan-50 border-sky-200', badge: 'bg-sky-600' },
+  emerald: { wrap: 'from-emerald-50 to-teal-50 border-emerald-200', badge: 'bg-emerald-600' },
+  slate: { wrap: 'from-slate-50 to-blue-50 border-slate-300', badge: 'bg-slate-700' },
+  indigo: { wrap: 'from-indigo-50 to-blue-50 border-indigo-200', badge: 'bg-indigo-600' },
+  amber: { wrap: 'from-amber-50 to-orange-50 border-amber-200', badge: 'bg-amber-500' },
+}
+
+const Section = ({ n, title, tone = 'blue', action, children }) => (
+  <section className={`rounded-xl border-2 bg-gradient-to-r p-3 md:p-5 ${SECTION_TONES[tone].wrap}`}>
+    <div className='mb-3 flex flex-wrap items-center justify-between gap-2 md:mb-4'>
+      <h3 className='flex items-center gap-2 text-base font-bold text-gray-800 md:text-lg'>
+        <span className={`flex h-6 w-6 items-center justify-center rounded-full text-xs text-white md:h-8 md:w-8 md:text-sm ${SECTION_TONES[tone].badge}`}>{n}</span>
+        {title}
+      </h3>
+      {action}
     </div>
-  ) : null
+    {children}
+  </section>
+)
+
+const Tile = ({ label, value, valueClass = 'text-slate-800', sub }) => (
+  <div className='rounded-lg border border-white bg-white/90 px-3.5 py-3 shadow-sm'>
+    <p className='text-[11px] font-semibold uppercase tracking-wide text-slate-400'>{label}</p>
+    <p className={`mt-1 break-words text-sm font-bold md:text-base ${valueClass}`}>{value}</p>
+    {sub && <p className='mt-0.5 text-[11px] font-medium text-slate-400'>{sub}</p>}
+  </div>
+)
+
+const btnLight = 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-700'
+
+const DocPreview = ({ url, filename, accent = 'blue', actions }) => {
+  const [loaded, setLoaded] = useState(false)
+  const pdf = isPdf(url)
+  return (
+    <div className='overflow-hidden rounded-lg border border-slate-200 bg-white shadow-sm'>
+      <div className='flex flex-wrap items-center justify-between gap-2 border-b border-slate-100 px-3 py-2.5'>
+        <div className='flex min-w-0 items-center gap-2'>
+          <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${accent === 'amber' ? 'bg-amber-50 text-amber-600' : 'bg-blue-50 text-blue-600'}`}>
+            <Icon d={FILE_ICON} className='h-4 w-4' />
+          </span>
+          <div className='min-w-0'>
+            <p className='truncate text-xs font-semibold text-slate-700'>{filename || (pdf ? 'Document.pdf' : 'Document image')}</p>
+            <p className='text-[10px] font-medium uppercase tracking-wide text-slate-400'>{pdf ? 'PDF' : 'Image'}</p>
+          </div>
+        </div>
+        <div className='flex flex-wrap items-center gap-2'>{actions}</div>
+      </div>
+      {pdf ? (
+        <iframe src={url} title={filename || 'Document PDF'} className='w-full border-none bg-slate-50' style={{ height: '60vh', minHeight: '380px' }} />
+      ) : (
+        <div className='relative flex min-h-[200px] items-center justify-center bg-slate-50 p-3'>
+          {!loaded && (
+            <div className='absolute inset-0 flex items-center justify-center'>
+              <div className='h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-r-transparent' />
+            </div>
+          )}
+          <img
+            src={url}
+            alt={filename || 'Document'}
+            className={`w-full rounded-md object-contain transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+            style={{ maxHeight: '480px' }}
+            onLoad={() => setLoaded(true)}
+            onError={() => setLoaded(true)}
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
+const downloadUrl = async (url, filename) => {
+  try {
+    const res = await fetch(url)
+    const blob = await res.blob()
+    const blobUrl = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = blobUrl
+    link.download = filename || `document.${blob.type.split('/')[1] || 'pdf'}`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(blobUrl)
+  } catch {
+    window.open(url, '_blank')
+  }
 }
 
 // --- Component ---
@@ -207,12 +298,10 @@ const DocumentDetailModal = ({ type, id, onClose, onChanged }) => {
   const [record, setRecord] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [imgLoaded, setImgLoaded] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
   const [showUpgradePopup, setShowUpgradePopup] = useState(false)
-  const [endorsementImgsLoaded, setEndorsementImgsLoaded] = useState({})
 
   const resolvedTypeKey = Object.keys(TYPE_CONFIG).find(k => k.toLowerCase() === (type || '').toLowerCase()) || type
   const config = TYPE_CONFIG[resolvedTypeKey]
@@ -293,16 +382,6 @@ const DocumentDetailModal = ({ type, id, onClose, onChanged }) => {
     )
   }
 
-  const colorMap = {
-    emerald: { bg: 'bg-emerald-50', ring: 'ring-emerald-100', text: 'text-emerald-600' },
-    sky: { bg: 'bg-sky-50', ring: 'ring-sky-100', text: 'text-sky-600' },
-    violet: { bg: 'bg-violet-50', ring: 'ring-violet-100', text: 'text-violet-600' },
-    amber: { bg: 'bg-amber-50', ring: 'ring-amber-100', text: 'text-amber-600' },
-    blue: { bg: 'bg-blue-50', ring: 'ring-blue-100', text: 'text-blue-600' },
-    rose: { bg: 'bg-rose-50', ring: 'ring-rose-100', text: 'text-rose-600' },
-  }
-
-  const col = colorMap[config.color] || colorMap.blue
   const status = record?.status || 'unknown'
   const statusStyle = STATUS_STYLES[status] || STATUS_STYLES.unknown
   const documentUrl = record ? record[config.documentField] : null
@@ -405,24 +484,81 @@ const DocumentDetailModal = ({ type, id, onClose, onChanged }) => {
     }
   }
 
+  const typeLabel = type === 'Tax' ? 'Road Tax' : type
+  const isInsurance = (type || '').toLowerCase() === 'insurance'
+  const validity = record && config.fromField && config.toField ? getValidity(record[config.fromField], record[config.toField]) : null
+  const vTone = validity ? VALIDITY_TONES[validity.tone] : null
+  const clientKey = record ? ['policyHolderName', 'ownerName', 'name'].find((k) => record[k]) : null
+  const clientLabel = { policyHolderName: 'Policy Holder', ownerName: 'Owner Name', name: 'Name' }[clientKey] || 'Client'
+  const clientName = clientKey ? record[clientKey] : null
+  const referenceName = isInsurance ? record?.reference : null
+  const mobile = record?.mobileNumber ? String(record.mobileNumber) : null
+  const mobileDigits = mobile ? mobile.replace(/\D/g, '') : ''
+  const waNumber = mobileDigits.length === 10 ? `91${mobileDigits}` : mobileDigits
+  const shownInMainCard = new Set([clientKey, 'mobileNumber', referenceName ? 'reference' : null])
+  const infoFields = detailFields.filter((f) => !f.prefix && !shownInMainCard.has(f.key))
+  const moneyFields = detailFields.filter((f) => f.prefix)
+  const paidPct = feeInfo && feeInfo.total > 0 ? Math.min(100, Math.round((feeInfo.paid / feeInfo.total) * 100)) : 0
+  const hasFeeBreakup = Array.isArray(record?.feeBreakup) && record.feeBreakup.length > 0
+  const rcImages = type === 'RC' && record
+    ? [
+        { url: record.rcFrontImage, label: 'Front Side' },
+        { url: record.rcBackImage, label: 'Back Side' },
+      ]
+        .filter((i) => i.url)
+        .map((i) => ({ ...i, url: i.url.startsWith('http') || i.url.startsWith('data:') ? i.url : `${API_URL}${i.url}` }))
+    : []
+  const hasDocs = rcImages.length > 0 || (type !== 'RC' && fullDocUrl) || (isInsurance && fullEndorsementUrls.length > 0)
+
+  let sectionNo = 0
+  const nextNo = () => ++sectionNo
+
+  const formatValue = (key, val, prefix) => {
+    if (typeof val === 'boolean') return val ? 'Yes' : 'No'
+    if (prefix === '₹') return formatCurrency(val)
+    if (prefix) return `${prefix}${val}`
+    if (/Date$/.test(key)) return prettyDate(val)
+    return val
+  }
+
   return (
     <>
-      <div className='fixed inset-0 z-[70] flex items-start justify-center overflow-y-auto bg-black/60 p-3 py-6 md:p-6' onClick={onClose}>
+      <div className='fixed inset-0 z-[70] flex items-center justify-center bg-black/60 p-2 md:p-4' onClick={onClose}>
         <div
-          className='w-full max-w-3xl overflow-hidden rounded-2xl bg-white shadow-2xl'
+          className='relative flex max-h-[90vh] w-full max-w-4xl flex-col overflow-hidden rounded-xl bg-white shadow-2xl md:max-h-[95vh] md:rounded-2xl'
           style={{ fontFamily: "'Poppins', sans-serif" }}
           onClick={(e) => e.stopPropagation()}
+          role='dialog'
+          aria-modal='true'
+          aria-label={`${typeLabel} details`}
         >
-          {/* Modal header */}
-          <div className='flex items-center justify-between border-b border-slate-200 bg-white px-4 py-3.5 md:px-5'>
-            <h2 className='text-sm font-semibold text-slate-800'>{type === 'Tax' ? 'Road Tax' : type} Document</h2>
-            <button onClick={onClose} className='cursor-pointer rounded-lg p-1.5 text-slate-400 transition hover:bg-slate-100 hover:text-slate-700'>
-              <Icon d={CLOSE_ICON} className='h-5 w-5' />
-            </button>
+          {/* Header */}
+          <div className='flex-shrink-0 bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] p-3 text-white md:p-4'>
+            <div className='flex items-start justify-between gap-3'>
+              <div className='flex min-w-0 items-center gap-3'>
+                <span className='hidden h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-white/15 ring-1 ring-white/20 sm:flex md:h-12 md:w-12'>
+                  <Icon d={config.icon} className='h-6 w-6' />
+                </span>
+                <div className='min-w-0'>
+                  <h2 className='text-lg font-bold md:text-2xl'>{typeLabel} Details</h2>
+                  <div className='mt-1.5 flex flex-wrap items-center gap-2'>
+                    {record && (
+                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-[11px] font-semibold ring-1 ring-inset ${statusStyle.badge}`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${statusStyle.dot}`} />
+                        {statusStyle.label}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <button onClick={onClose} className='cursor-pointer rounded-lg p-1.5 text-white transition hover:bg-white/20 md:p-2' aria-label='Close'>
+                <Icon d={CLOSE_ICON} className='h-5 w-5 md:h-6 md:w-6' />
+              </button>
+            </div>
           </div>
 
-          <div className='max-h-[calc(100vh-140px)] overflow-y-auto bg-slate-50 p-4 md:p-5'>
-            {/* Loading State */}
+          {/* Body */}
+          <div className='flex-1 overflow-y-auto p-3 md:p-6'>
             {loading && (
               <div className='flex flex-col items-center gap-4 py-16'>
                 <div className='h-9 w-9 animate-spin rounded-full border-4 border-solid border-blue-600 border-r-transparent' />
@@ -430,298 +566,267 @@ const DocumentDetailModal = ({ type, id, onClose, onChanged }) => {
               </div>
             )}
 
-            {/* Error State */}
             {!loading && error && (
               <div className='py-16 text-center'>
                 <div className='mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-2xl bg-rose-50 text-rose-500'>
-                  <Icon d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' className='h-8 w-8' />
+                  <Icon d={WARN_ICON} className='h-8 w-8' />
                 </div>
                 <h3 className='text-base font-semibold text-slate-800'>{error}</h3>
               </div>
             )}
 
-            {/* Record Loaded */}
             {!loading && !error && record && (
-              <div className='space-y-4'>
-
-                {/* Hero Card */}
-                <div className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'>
-                  <div className='flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between md:p-5'>
-                    <div className='flex items-center gap-3.5'>
-                      <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${col.bg} ${col.ring} ${col.text}`}>
-                        <Icon d={config.icon} className='h-6 w-6' />
-                      </div>
-                      <div>
-                        <span className='inline-flex items-center rounded-md border border-slate-300 bg-white px-2 py-0.5 text-xs font-semibold tracking-wider text-slate-800 shadow-sm'>
+              <div className='space-y-4 md:space-y-6'>
+                {/* Vehicle & client */}
+                <Section n={nextNo()} title='Vehicle & Client' tone='blue'>
+                  <div className='grid gap-3 md:grid-cols-2'>
+                    <div className='rounded-lg border border-white bg-white/90 p-4 shadow-sm'>
+                      <p className='text-[11px] font-semibold uppercase tracking-wide text-slate-400'>Vehicle Number</p>
+                      {record.vehicleNumber ? (
+                        <span className='mt-2 inline-block rounded-md border-2 border-slate-800 bg-amber-300 px-3 py-1 font-mono text-xl font-bold tracking-widest text-slate-900 shadow-sm md:text-2xl'>
                           {record.vehicleNumber}
                         </span>
-                      </div>
+                      ) : (
+                        <p className='mt-1 text-base font-bold text-slate-400'>—</p>
+                      )}
                     </div>
-                    <div className='flex items-center gap-2 sm:flex-col sm:items-end'>
-                      <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ring-1 ring-inset ${statusStyle.badge}`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${statusStyle.dot}`} />
-                        {statusStyle.label}
-                      </span>
-                      <div className='flex gap-2'>
-                        <button
-                          onClick={() => setShowEditModal(true)}
-                          className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600'
-                        >
-                          <Icon d='M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z' className='h-3.5 w-3.5' />
-                          Edit
-                        </button>
-                        <button
-                          onClick={() => setShowDeleteConfirm(true)}
-                          className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-rose-200 hover:bg-rose-50 hover:text-rose-600'
-                        >
-                          <Icon d='M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16' className='h-3.5 w-3.5' />
-                          Delete
-                        </button>
-                      </div>
+                    <div className='rounded-lg border border-white bg-white/90 p-4 shadow-sm'>
+                      <p className='text-[11px] font-semibold uppercase tracking-wide text-slate-400'>{clientLabel}</p>
+                      <p className='mt-1 break-words text-lg font-bold text-slate-900 md:text-xl'>{clientName || '—'}</p>
+                      {mobile && (
+                        <div className='mt-2 flex flex-wrap items-center gap-2'>
+                          <span className='text-sm font-semibold text-slate-600'>{mobile}</span>
+                          <a href={`tel:${mobileDigits}`} className='inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-1 text-[11px] font-semibold text-blue-700 transition hover:bg-blue-100'>
+                            <Icon d='M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z' className='h-3 w-3' />
+                            Call
+                          </a>
+                          {waNumber && (
+                            <a href={`https://wa.me/${waNumber}`} target='_blank' rel='noopener noreferrer' className='inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-1 text-[11px] font-semibold text-emerald-700 transition hover:bg-emerald-100'>
+                              <Icon d='M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z' className='h-3 w-3' />
+                              WhatsApp
+                            </a>
+                          )}
+                        </div>
+                      )}
+                      {referenceName && (
+                        <p className='mt-2 text-xs text-slate-500'>
+                          Client Name: <span className='font-semibold text-slate-700'>{referenceName}</span>
+                        </p>
+                      )}
                     </div>
                   </div>
+                </Section>
 
-                  {config.fromField && config.toField && (
-                    <div className='grid grid-cols-2 divide-x divide-slate-100 border-t border-slate-100'>
-                      <div className='px-4 py-3 md:px-5'>
-                        <p className='text-[11px] font-medium uppercase tracking-wide text-slate-400'>Valid From</p>
-                        <p className='mt-0.5 text-sm font-semibold text-slate-700'>{record[config.fromField] || '—'}</p>
-                      </div>
-                      <div className='px-4 py-3 md:px-5'>
-                        <p className='text-[11px] font-medium uppercase tracking-wide text-slate-400'>Valid To</p>
-                        <p className={`mt-0.5 text-sm font-bold ${col.text}`}>{record[config.toField] || '—'}</p>
-                      </div>
+                {/* Validity */}
+                {config.fromField && config.toField && (
+                  <Section n={nextNo()} title='Validity' tone='sky'>
+                    <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
+                      <Tile label='Valid From' value={prettyDate(record[config.fromField])} />
+                      <Tile label='Valid To' value={prettyDate(record[config.toField])} valueClass={vTone ? vTone.text : 'text-slate-800'} />
+                      {validity && (
+                        <div className='col-span-2 md:col-span-1'>
+                          <Tile label='Time Remaining' value={validity.label} valueClass={vTone.text} />
+                        </div>
+                      )}
                     </div>
-                  )}
-                </div>
-
-                {/* Payment Summary */}
-                {feeInfo && (
-                  <div className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'>
-                    <div className='border-b border-slate-100 px-4 py-3 md:px-5'>
-                      <h3 className='text-sm font-semibold text-slate-800'>Payment Summary</h3>
-                    </div>
-                    <div className='grid grid-cols-3 divide-x divide-slate-100 text-center'>
-                      <div className='px-3 py-3.5'>
-                        <p className='text-[11px] font-medium text-slate-400'>Total Fee</p>
-                        <p className='mt-0.5 text-base font-bold text-slate-900'>{formatCurrency(feeInfo.total)}</p>
-                      </div>
-                      <div className='px-3 py-3.5'>
-                        <p className='text-[11px] font-medium text-slate-400'>Paid</p>
-                        <p className='mt-0.5 text-base font-bold text-emerald-600'>{formatCurrency(feeInfo.paid)}</p>
-                      </div>
-                      <div className='px-3 py-3.5'>
-                        <p className='text-[11px] font-medium text-slate-400'>Pending</p>
-                        <p className={`mt-0.5 text-base font-bold ${feeInfo.pending > 0 ? 'text-rose-600' : 'text-slate-900'}`}>{formatCurrency(feeInfo.pending)}</p>
-                      </div>
-                    </div>
-                    {feeInfo.pending > 0 ? (
-                      <div className='flex items-center gap-2 border-t border-amber-100 bg-amber-50 px-4 py-2.5 md:px-5'>
-                        <Icon d='M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z' className='h-4 w-4 shrink-0 text-amber-600' />
-                        <p className='text-xs font-semibold text-amber-700'>Partial payment — {formatCurrency(feeInfo.pending)} still due</p>
-                      </div>
-                    ) : (
-                      <div className='flex items-center gap-2 border-t border-emerald-100 bg-emerald-50 px-4 py-2.5 md:px-5'>
-                        <Icon d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' className='h-4 w-4 shrink-0 text-emerald-600' />
-                        <p className='text-xs font-semibold text-emerald-700'>Fully paid</p>
+                    {validity && (
+                      <div className='mt-3'>
+                        <div className='h-2 w-full overflow-hidden rounded-full bg-white shadow-inner'>
+                          <div className={`h-full rounded-full ${vTone.bar}`} style={{ width: `${validity.elapsed}%` }} />
+                        </div>
+                        <div className='mt-1 flex justify-between text-[10px] font-semibold uppercase tracking-wide text-slate-400'>
+                          <span>Start</span>
+                          <span>{Math.round(validity.elapsed)}% of validity used</span>
+                          <span>Expiry</span>
+                        </div>
                       </div>
                     )}
-                  </div>
+                  </Section>
                 )}
 
-                {/* Extra Fields */}
-                {detailFields.length > 0 && (
-                  <div className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'>
-                    <div className='border-b border-slate-100 px-4 py-3 md:px-5'>
-                      <h3 className='text-sm font-semibold text-slate-800'>Record Details</h3>
+                {/* Premium / amounts */}
+                {moneyFields.length > 0 && (
+                  <Section n={nextNo()} title={isInsurance ? 'Premium' : 'Amount'} tone='emerald'>
+                    <div className='grid grid-cols-2 gap-3 md:grid-cols-4'>
+                      {moneyFields.map(({ label, key, prefix }) => (
+                        <Tile
+                          key={key}
+                          label={label}
+                          value={formatValue(key, record[key], prefix)}
+                          valueClass={key === 'premium' ? 'text-emerald-700' : 'text-slate-800'}
+                        />
+                      ))}
                     </div>
-                    <div className='grid grid-cols-1 gap-x-4 gap-y-3 p-4 sm:grid-cols-2 md:p-5'>
-                      {detailFields.map(({ label, key, prefix }) => {
+                  </Section>
+                )}
+
+                {/* Payment */}
+                {(feeInfo || hasFeeBreakup) && (
+                  <Section
+                    n={nextNo()}
+                    title='Payment Summary'
+                    tone='emerald'
+                    action={
+                      feeInfo && (
+                        <span className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-[11px] font-semibold ${feeInfo.pending > 0 ? 'bg-amber-100 text-amber-700' : 'bg-emerald-100 text-emerald-700'}`}>
+                          <Icon d={feeInfo.pending > 0 ? WARN_ICON : CHECK_CIRCLE_ICON} className='h-3.5 w-3.5' />
+                          {feeInfo.pending > 0 ? `${formatCurrency(feeInfo.pending)} due` : 'Fully paid'}
+                        </span>
+                      )
+                    }
+                  >
+                    {feeInfo && (
+                      <>
+                        <div className='grid grid-cols-3 gap-3'>
+                          <Tile label='Total Fee' value={formatCurrency(feeInfo.total)} />
+                          <Tile label='Paid' value={formatCurrency(feeInfo.paid)} valueClass='text-emerald-600' />
+                          <Tile label='Pending' value={formatCurrency(feeInfo.pending)} valueClass={feeInfo.pending > 0 ? 'text-rose-600' : 'text-slate-800'} />
+                        </div>
+                        <div className='mt-3'>
+                          <div className='h-2 w-full overflow-hidden rounded-full bg-white shadow-inner'>
+                            <div className='h-full rounded-full bg-emerald-500' style={{ width: `${paidPct}%` }} />
+                          </div>
+                          <p className='mt-1 text-right text-[10px] font-semibold uppercase tracking-wide text-slate-400'>{paidPct}% paid</p>
+                        </div>
+                      </>
+                    )}
+                    {hasFeeBreakup && (
+                      <div className={`${feeInfo ? 'mt-3' : ''} overflow-hidden rounded-lg border border-white bg-white/90 shadow-sm`}>
+                        <p className='border-b border-slate-100 px-3.5 py-2 text-[11px] font-semibold uppercase tracking-wide text-slate-400'>Fee Breakup</p>
+                        <div className='divide-y divide-slate-100 px-3.5'>
+                          {record.feeBreakup.map((item, i) => (
+                            <div key={i} className='flex items-center justify-between py-2.5 text-sm'>
+                              <p className='font-medium text-slate-600'>{item.name}</p>
+                              <p className='font-semibold text-slate-800'>{formatCurrency(item.amount)}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </Section>
+                )}
+
+                {/* Details */}
+                {infoFields.length > 0 && (
+                  <Section n={nextNo()} title={type === 'RC' ? 'Vehicle Details' : isInsurance ? 'Policy Details' : 'Other Details'} tone='slate'>
+                    <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 md:grid-cols-3'>
+                      {infoFields.map(({ label, key }) => {
                         const val = record[key]
-                        const display = typeof val === 'boolean' ? (val ? 'Yes' : 'No') : prefix ? `${prefix}${val}` : val
                         return (
-                          <div key={key}>
-                            <p className='text-[11px] font-medium text-slate-400'>{label}</p>
-                            <p className={`mt-0.5 text-sm font-semibold ${key === 'claimRaised' ? (val ? 'text-emerald-600' : 'text-slate-500') : 'text-slate-800'}`}>
-                              {display}
+                          <Tile
+                            key={key}
+                            label={label}
+                            value={formatValue(key, val)}
+                            valueClass={key === 'claimRaised' ? (val ? 'text-emerald-600' : 'text-slate-500') : 'text-slate-800'}
+                          />
+                        )
+                      })}
+                    </div>
+                  </Section>
+                )}
+
+                {/* Documents */}
+                {hasDocs && (
+                  <Section n={nextNo()} title={type === 'RC' ? 'RC Images' : 'Documents'} tone='indigo'>
+                    <div className='space-y-4'>
+                      {rcImages.map((img) => (
+                        <DocPreview
+                          key={img.label}
+                          url={img.url}
+                          filename={`RC ${img.label}`}
+                          actions={
+                            <button onClick={() => downloadUrl(img.url, `RC_${img.label.replace(/\s/g, '_')}`)} className={btnLight}>
+                              <Icon d={DOWNLOAD_ICON} className='h-3.5 w-3.5' />
+                              Download
+                            </button>
+                          }
+                        />
+                      ))}
+
+                      {type !== 'RC' && fullDocUrl && (
+                        <DocPreview
+                          url={fullDocUrl}
+                          filename={displayFilename}
+                          actions={
+                            isInsurance ? (
+                              <>
+                                <button
+                                  onClick={() => (canPersonalized ? handleDownload(true) : setShowUpgradePopup(true))}
+                                  className={canPersonalized
+                                    ? 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-3 py-1.5 text-xs font-semibold text-white shadow-md shadow-blue-700/20 transition hover:from-blue-800 hover:to-blue-700'
+                                    : 'inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 transition hover:bg-slate-100'}
+                                  title={canPersonalized ? 'Download PDF with personalized cover page' : 'Upgrade to download the personalized PDF'}
+                                >
+                                  <Icon d={canPersonalized ? DOWNLOAD_ICON : 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'} className='h-3.5 w-3.5' />
+                                  Personalized PDF
+                                </button>
+                                <button onClick={() => handleDownload(false)} className={btnLight} title='Download original document without cover page'>
+                                  Original PDF
+                                </button>
+                              </>
+                            ) : (
+                              <button onClick={() => handleDownload()} className={btnLight}>
+                                <Icon d={DOWNLOAD_ICON} className='h-3.5 w-3.5' />
+                                Download
+                              </button>
+                            )
+                          }
+                        />
+                      )}
+
+                      {isInsurance && fullEndorsementUrls.map((url, idx) => {
+                        const filename = !url.startsWith('data:') ? url.split('/').pop() : null
+                        return (
+                          <div key={url + idx}>
+                            <p className='mb-2 flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wide text-amber-700'>
+                              <Icon d={CLIP_ICON} className='h-3.5 w-3.5' />
+                              Endorsement{fullEndorsementUrls.length > 1 ? ` #${idx + 1}` : ''}
                             </p>
+                            <DocPreview
+                              url={url}
+                              filename={filename}
+                              accent='amber'
+                              actions={
+                                <button onClick={() => handleEndorsementDownload(url)} className={btnLight}>
+                                  <Icon d={DOWNLOAD_ICON} className='h-3.5 w-3.5' />
+                                  Download
+                                </button>
+                              }
+                            />
                           </div>
                         )
                       })}
                     </div>
-                  </div>
+                  </Section>
                 )}
-
-                {/* Fee Breakup (if present) */}
-                {Array.isArray(record.feeBreakup) && record.feeBreakup.length > 0 && (
-                  <div className='overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'>
-                    <div className='border-b border-slate-100 px-4 py-3 md:px-5'>
-                      <h3 className='text-sm font-semibold text-slate-800'>Fee Breakup</h3>
-                    </div>
-                    <div className='divide-y divide-slate-100 px-4 md:px-5'>
-                      {record.feeBreakup.map((item, i) => (
-                        <div key={i} className='flex items-center justify-between py-2.5 text-sm'>
-                          <p className='font-medium text-slate-600'>{item.name}</p>
-                          <p className='font-semibold text-slate-800'>{formatCurrency(item.amount)}</p>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Document Preview Section */}
-                {type === 'RC' ? (
-                  <div className='space-y-4'>
-                    {record.rcFrontImage && (
-                      <RcImageBlock url={record.rcFrontImage} label='Front Side' apiUrl={API_URL} />
-                    )}
-                    {record.rcBackImage && (
-                      <RcImageBlock url={record.rcBackImage} label='Back Side' apiUrl={API_URL} />
-                    )}
-                  </div>
-                ) : fullDocUrl && (
-                  <div className='flex flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm'>
-                    <div className='flex flex-col gap-2 border-b border-slate-200 bg-slate-50/70 p-4 md:px-5'>
-                      <div className='flex items-center justify-between'>
-                        <h3 className='flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                          <Icon d={DOC_ICON} className='h-4 w-4 text-slate-400' />
-                          Attached Document
-                        </h3>
-                        {(type || '').toLowerCase() === 'insurance' ? (
-                          <div className='flex items-center gap-2'>
-                            {canPersonalized ? (
-                              <button
-                                onClick={() => handleDownload(true)}
-                                className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg bg-blue-700 px-3 py-1.5 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-800'
-                                title='Download PDF with personalized cover page'
-                              >
-                                <Icon d={DOWNLOAD_ICON} className='h-3.5 w-3.5' />
-                                Personalized PDF
-                              </button>
-                            ) : (
-                              <button
-                                onClick={() => setShowUpgradePopup(true)}
-                                className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-500 transition hover:bg-slate-100'
-                                title='Upgrade to download the personalized PDF'
-                              >
-                                <Icon d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z' className='h-3.5 w-3.5' />
-                                Personalized PDF
-                              </button>
-                            )}
-                            <button
-                              onClick={() => handleDownload(false)}
-                              className='inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600'
-                              title='Download original document without cover page'
-                            >
-                              Original PDF
-                            </button>
-                          </div>
-                        ) : (
-                          <button
-                            onClick={() => handleDownload()}
-                            className='inline-flex cursor-pointer items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-600 shadow-sm transition hover:border-blue-200 hover:bg-blue-50 hover:text-blue-600'
-                            title='Download document'
-                          >
-                            <Icon d={DOWNLOAD_ICON} className='h-3.5 w-3.5' />
-                            Download
-                          </button>
-                        )}
-                      </div>
-                      {displayFilename && (
-                        <div className='flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-2.5 py-1.5'>
-                          <Icon d={FILE_ICON} className='h-3.5 w-3.5 text-blue-500' />
-                          <span className='truncate font-mono text-xs font-medium text-slate-600'>{displayFilename}</span>
-                        </div>
-                      )}
-                    </div>
-
-                    {!isPdf(fullDocUrl) ? (
-                      <div className='relative flex min-h-[200px] items-center justify-center bg-slate-50 p-3'>
-                        {!imgLoaded && (
-                          <div className='absolute inset-0 z-10 flex items-center justify-center bg-slate-50'>
-                            <div className='h-6 w-6 animate-spin rounded-full border-2 border-slate-300 border-r-transparent' />
-                          </div>
-                        )}
-                        <img
-                          src={fullDocUrl}
-                          alt='Uploaded document'
-                          className={`w-full rounded-lg object-contain transition-opacity duration-300 ${imgLoaded ? 'block opacity-100' : 'hidden opacity-0'}`}
-                          style={{ maxHeight: '480px' }}
-                          onLoad={() => setImgLoaded(true)}
-                          onError={() => setImgLoaded(true)}
-                        />
-                      </div>
-                    ) : (
-                      <div className='relative bg-slate-50'>
-                        <iframe
-                          src={fullDocUrl}
-                          title='Document PDF'
-                          className='w-full border-none'
-                          style={{ height: '65vh', minHeight: '420px' }}
-                        />
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {type === 'Insurance' && fullEndorsementUrls.length > 0 && fullEndorsementUrls.map((url, idx) => {
-                  const filename = !url.startsWith('data:') ? url.split('/').pop() : null
-                  return (
-                    <div key={idx} className='flex flex-col overflow-hidden rounded-2xl border border-amber-200 bg-white shadow-sm'>
-                      <div className='flex flex-col gap-2 border-b border-amber-200 bg-amber-50 p-4 md:px-5'>
-                        <div className='flex items-center justify-between'>
-                          <h3 className='flex items-center gap-2 text-sm font-semibold text-slate-800'>
-                            <Icon d='M15.172 7l-6.586 6.586a2 2 0 102.828 2.828l6.414-6.586a4 4 0 00-5.656-5.656l-6.414 6.586a6 6 0 108.484 8.484L20.5 13' className='h-4 w-4 text-amber-500' />
-                            Endorsement{fullEndorsementUrls.length > 1 ? ` #${idx + 1}` : ' Document'}
-                          </h3>
-                          <button
-                            onClick={() => handleEndorsementDownload(url)}
-                            className='inline-flex cursor-pointer items-center gap-1 rounded-lg border border-amber-200 bg-white px-2.5 py-1.5 text-xs font-semibold text-amber-700 shadow-sm transition hover:border-amber-400 hover:bg-amber-100 hover:text-amber-800'
-                            title='Download endorsement'
-                          >
-                            <Icon d={DOWNLOAD_ICON} className='h-3.5 w-3.5' />
-                            Download
-                          </button>
-                        </div>
-                        {filename && (
-                          <div className='flex items-center gap-2 rounded-lg border border-amber-200 bg-white px-2.5 py-1.5'>
-                            <Icon d={FILE_ICON} className='h-3.5 w-3.5 text-amber-500' />
-                            <span className='truncate font-mono text-xs font-medium text-slate-600'>{filename}</span>
-                          </div>
-                        )}
-                      </div>
-                      {!isPdf(url) ? (
-                        <div className='relative flex min-h-[200px] items-center justify-center bg-slate-50 p-3'>
-                          {!endorsementImgsLoaded[idx] && (
-                            <div className='absolute inset-0 z-10 flex items-center justify-center bg-slate-50'>
-                              <div className='h-6 w-6 animate-spin rounded-full border-2 border-amber-300 border-r-transparent' />
-                            </div>
-                          )}
-                          <img
-                            src={url}
-                            alt={`Endorsement document ${idx + 1}`}
-                            className={`w-full rounded-lg object-contain transition-opacity duration-300 ${endorsementImgsLoaded[idx] ? 'block opacity-100' : 'hidden opacity-0'}`}
-                            style={{ maxHeight: '480px' }}
-                            onLoad={() => setEndorsementImgsLoaded(prev => ({ ...prev, [idx]: true }))}
-                            onError={() => setEndorsementImgsLoaded(prev => ({ ...prev, [idx]: true }))}
-                          />
-                        </div>
-                      ) : (
-                        <div className='relative bg-slate-50'>
-                          <iframe
-                            src={url}
-                            title={`Endorsement PDF ${idx + 1}`}
-                            className='w-full border-none'
-                            style={{ height: '65vh', minHeight: '420px' }}
-                          />
-                        </div>
-                      )}
-                    </div>
-                  )
-                })}
               </div>
             )}
           </div>
+
+          {/* Footer */}
+          {!loading && !error && record && (
+            <div className='flex flex-shrink-0 flex-col-reverse items-center justify-between gap-3 border-t border-gray-200 bg-gray-50 p-3 md:flex-row md:p-4'>
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className='inline-flex w-full cursor-pointer items-center justify-center gap-1.5 rounded-lg px-4 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-50 md:w-auto'
+              >
+                <Icon d={TRASH_ICON} className='h-4 w-4' />
+                Delete
+              </button>
+              <div className='flex w-full gap-2 md:w-auto md:gap-3'>
+                <button onClick={onClose} className='flex-1 cursor-pointer rounded-lg border border-gray-300 bg-white px-4 py-2 font-semibold text-gray-700 transition hover:bg-gray-100 md:flex-none md:px-6'>
+                  Close
+                </button>
+                <button
+                  onClick={() => setShowEditModal(true)}
+                  className='flex flex-1 cursor-pointer items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-6 py-2 font-semibold text-white shadow-md shadow-blue-700/20 transition hover:from-blue-800 hover:to-blue-700 md:flex-none md:px-8'
+                >
+                  <Icon d={EDIT_ICON} className='h-4 w-4' />
+                  Edit {typeLabel}
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
