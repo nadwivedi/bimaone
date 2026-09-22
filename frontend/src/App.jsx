@@ -69,14 +69,8 @@ function AppContent() {
             </button>
           )}
           <div className='flex-1 flex justify-center'>
-            <Link to='/' className='flex items-center gap-1.5'>
-              <img src='/bimalogo.png' alt='BimaOne' className='h-[50px] w-auto' />
-              <div className='flex flex-col'>
-                <span className='text-[20px] font-bold leading-none' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                  <span className='text-slate-800'>Bima</span><span style={{ color: '#003afd' }}>One</span>
-                </span>
-                <span className='mt-0.5 text-[6px] font-medium tracking-wide' style={{ color: '#0c1f48', fontFamily: "'Inter', sans-serif" }}>All your policies. One smart place.</span>
-              </div>
+            <Link to='/' className='flex items-center'>
+              <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-10 w-auto' />
             </Link>
           </div>
           {location.pathname !== '/' && <div className='w-12' />}
