@@ -97,14 +97,14 @@ const NavLink = ({ item, isActive }) => (
   <Link
     to={item.path}
     className={`group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 ${isActive
-        ? 'bg-violet-600 text-white shadow-lg shadow-violet-900/40'
-        : 'text-stone-400 hover:bg-white/5 hover:text-white'
+        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-950/50'
+        : 'text-slate-300 hover:bg-white/5 hover:text-white'
       }`}
   >
     <span
       className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg transition-colors ${isActive
           ? 'bg-white/15 text-white'
-          : 'bg-white/5 text-stone-400 group-hover:text-white'
+          : 'bg-white/5 text-slate-300 group-hover:text-white'
         }`}
     >
       {item.icon}
@@ -120,9 +120,9 @@ const Sidebar = () => {
   const userInitials = (user?.name || 'U').split(/\s+/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase()
 
   return (
-    <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col bg-[#16131f] lg:flex'>
+    <aside className='fixed inset-y-0 left-0 z-30 hidden w-[260px] flex-col bg-gradient-to-b from-[#0c1f48] via-[#0a1838] to-[#070f26] border-r border-white/5 lg:flex'>
       {/* soft glow */}
-      <div className='pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-violet-600/20 blur-3xl' />
+      <div className='pointer-events-none absolute -left-16 -top-16 h-56 w-56 rounded-full bg-blue-500/25 blur-3xl' />
 
       <div className='relative flex h-full flex-col'>
         <div className='flex-none px-5 pb-4 pt-5'>
@@ -132,9 +132,9 @@ const Sidebar = () => {
             </div>
             <div className='flex flex-col'>
               <span className='text-[22px] font-bold leading-none text-white' style={{ fontFamily: "'Poppins', sans-serif" }}>
-                Bima<span className='text-violet-400'>One</span>
+                Bima<span className='text-blue-400'>One</span>
               </span>
-              <span className='mt-1 text-[9px] font-medium tracking-wide text-stone-500'>All your policies. One smart place.</span>
+              <span className='mt-1 text-[9px] font-medium tracking-wide text-blue-200/50'>All your policies. One smart place.</span>
             </div>
           </Link>
         </div>
@@ -144,7 +144,7 @@ const Sidebar = () => {
         <div className='flex-1 space-y-6 overflow-y-auto px-3 py-5 [&::-webkit-scrollbar]:hidden'>
           {navSections.map((section) => (
             <div key={section.title}>
-              <p className='mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-stone-500'>{section.title}</p>
+              <p className='mb-2 px-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-blue-200/50'>{section.title}</p>
               <nav className='space-y-1'>
                 {section.items.map((item) => (
                   <NavLink key={item.path} item={item} isActive={isActivePath(item.path)} />
@@ -160,12 +160,12 @@ const Sidebar = () => {
             to='/setting'
             className='flex items-center gap-3 rounded-2xl bg-white/5 px-3 py-3 ring-1 ring-inset ring-white/10 transition-colors hover:bg-white/10'
           >
-            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-violet-500 to-fuchsia-500 text-xs font-bold text-white'>
+            <div className='flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-indigo-500 text-xs font-bold text-white'>
               {userInitials}
             </div>
             <div className='min-w-0 flex-1'>
               <p className='truncate text-sm font-semibold text-white'>{user?.name || 'My Account'}</p>
-              <p className='truncate text-[11px] text-stone-400'>{user?.email || user?.mobile || 'BimaOne'}</p>
+              <p className='truncate text-[11px] text-slate-300'>{user?.email || user?.mobile || 'BimaOne'}</p>
             </div>
           </Link>
         </div>

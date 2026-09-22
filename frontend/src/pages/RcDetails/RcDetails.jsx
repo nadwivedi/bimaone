@@ -250,7 +250,7 @@ const RcDetails = () => {
   }
 
   const CopyBtn = ({ text, field }) => (
-    <button onClick={() => handleCopy(text, field)} className='shrink-0 cursor-pointer text-slate-400 hover:text-violet-600' title={`Copy ${field}`}>
+    <button onClick={() => handleCopy(text, field)} className='shrink-0 cursor-pointer text-slate-400 hover:text-blue-600' title={`Copy ${field}`}>
       {copiedField === field ? <Check className='h-3.5 w-3.5 text-emerald-600' /> : <Copy className='h-3.5 w-3.5' />}
     </button>
   )
@@ -264,7 +264,7 @@ const RcDetails = () => {
         <div ref={resultsTopRef} className='flex flex-col justify-between gap-4 sm:flex-row sm:items-center'>
           <div>
             <h1 className='flex items-center gap-2 text-xl font-bold text-slate-900 sm:text-2xl'>
-              <Truck className='h-6 w-6 text-violet-600' />
+              <Truck className='h-6 w-6 text-blue-600' />
               RC Details
             </h1>
             <p className='mt-0.5 text-xs text-slate-500 sm:text-sm'>
@@ -280,7 +280,7 @@ const RcDetails = () => {
               <button onClick={handleShareWhatsApp} className='inline-flex cursor-pointer items-center gap-1.5 rounded-xl border border-emerald-200 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 shadow-sm transition hover:bg-emerald-100'>
                 <Share2 className='h-4 w-4' /> WhatsApp
               </button>
-              <button onClick={handleDownloadPdf} disabled={pdfLoading} className='inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-violet-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-violet-700 disabled:opacity-60'>
+              <button onClick={handleDownloadPdf} disabled={pdfLoading} className='inline-flex cursor-pointer items-center gap-1.5 rounded-xl bg-blue-600 px-3 py-2 text-xs font-semibold text-white shadow-sm transition hover:bg-blue-700 disabled:opacity-60'>
                 <Download className='h-4 w-4' /> {pdfLoading ? 'Generating...' : 'RC PDF'}
               </button>
             </div>
@@ -290,7 +290,7 @@ const RcDetails = () => {
         {/* Search */}
         <div className='rounded-2xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6'>
           <form onSubmit={(e) => { e.preventDefault(); handleLiveSearch() }} className='flex flex-col items-stretch gap-3 md:flex-row md:items-center'>
-            <div className='relative flex flex-1 items-center rounded-xl border-2 border-slate-300 bg-slate-50 shadow-inner transition focus-within:border-violet-500 focus-within:bg-white'>
+            <div className='relative flex flex-1 items-center rounded-xl border-2 border-slate-300 bg-slate-50 shadow-inner transition focus-within:border-blue-500 focus-within:bg-white'>
               <div className='flex select-none flex-col items-center rounded-l-[10px] border-r border-slate-300 bg-slate-200/80 px-3 py-2.5 text-[11px] font-black leading-none text-blue-900'>
                 <span>🇮🇳</span>
                 <span>IND</span>
@@ -312,7 +312,7 @@ const RcDetails = () => {
             <button
               type='submit'
               disabled={loading || !vehicleNo.trim()}
-              className='flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl bg-violet-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-violet-700 disabled:opacity-50 sm:text-base'
+              className='flex shrink-0 cursor-pointer items-center justify-center gap-2 rounded-xl bg-blue-600 px-6 py-3.5 text-sm font-bold text-white shadow-md transition hover:bg-blue-700 disabled:opacity-50 sm:text-base'
             >
               {loading ? <RefreshCw className='h-5 w-5 animate-spin' /> : <Search className='h-5 w-5' />}
               <span>{loading ? 'Searching...' : 'Get RC Details'}</span>
@@ -340,7 +340,7 @@ const RcDetails = () => {
 
         {loading && (
           <div className='rounded-2xl border border-slate-200 bg-white p-12 text-center shadow-sm'>
-            <div className='mb-4 inline-flex animate-bounce rounded-2xl bg-violet-50 p-4 text-violet-600'>
+            <div className='mb-4 inline-flex animate-bounce rounded-2xl bg-blue-50 p-4 text-blue-600'>
               <Truck className='h-10 w-10' />
             </div>
             <h3 className='mb-1 text-lg font-bold text-slate-800'>Fetching RC details</h3>
@@ -351,8 +351,8 @@ const RcDetails = () => {
         {/* Results */}
         {v && !loading && (
           <div className='space-y-6'>
-            <div className='relative overflow-hidden rounded-2xl bg-[#16131f] p-5 text-white shadow-xl sm:p-7'>
-              <div className='pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full bg-violet-600/25 blur-3xl' />
+            <div className='relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#0c1f48] to-[#070f26] p-5 text-white shadow-xl sm:p-7'>
+              <div className='pointer-events-none absolute -right-10 -top-10 h-72 w-72 rounded-full bg-blue-600/25 blur-3xl' />
               <div className='relative flex flex-col justify-between gap-6 md:flex-row md:items-center'>
                 <div className='space-y-3'>
                   <div className='inline-flex items-center overflow-hidden rounded-lg border-2 border-slate-950 bg-white text-slate-900 shadow-md'>
@@ -377,7 +377,7 @@ const RcDetails = () => {
                     <span className={`flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider ${!v.STATUS || v.STATUS === 'ACTIVE' ? 'border-emerald-500/30 bg-emerald-500/20 text-emerald-300' : 'border-red-500/30 bg-red-500/20 text-red-300'}`}>
                       <CheckCircle2 className='h-3.5 w-3.5' /> {v.STATUS || 'ACTIVE'}
                     </span>
-                    <span className='rounded-full border border-violet-400/30 bg-violet-500/20 px-3 py-1 text-xs font-semibold text-violet-200'>
+                    <span className='rounded-full border border-blue-400/30 bg-blue-500/20 px-3 py-1 text-xs font-semibold text-blue-200'>
                       {v.VEHICLE_CLASS || v.BODY_TYPE_DESC || 'Vehicle'}
                     </span>
                   </div>
@@ -393,7 +393,7 @@ const RcDetails = () => {
             </div>
 
             <div className='grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3'>
-              <Card icon={User} iconClass='text-violet-600' title='Owner & Contact' badge='Identity' badgeClass='bg-violet-50 text-violet-700'>
+              <Card icon={User} iconClass='text-blue-600' title='Owner & Contact' badge='Identity' badgeClass='bg-blue-50 text-blue-700'>
                 <div>
                   <span className='block text-[11px] font-medium text-slate-400'>Owner Name</span>
                   <div className='mt-0.5 flex items-center justify-between font-bold text-slate-900'>
@@ -505,7 +505,7 @@ const RcDetails = () => {
 
         {!v && !loading && (
           <div className='rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-sm sm:p-10'>
-            <div className='mb-4 inline-flex rounded-2xl bg-violet-50 p-4 text-violet-600'>
+            <div className='mb-4 inline-flex rounded-2xl bg-blue-50 p-4 text-blue-600'>
               <Car className='h-10 w-10' />
             </div>
             <h3 className='mb-1 text-lg font-bold text-slate-800'>Search a vehicle or open one from history</h3>
@@ -520,7 +520,7 @@ const RcDetails = () => {
         <div className='rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6'>
           <div className='mb-5 flex flex-col justify-between gap-3 border-b border-slate-100 pb-4 sm:flex-row sm:items-center'>
             <div className='flex items-center gap-2.5'>
-              <div className='rounded-xl bg-violet-50 p-2.5 text-violet-600'>
+              <div className='rounded-xl bg-blue-50 p-2.5 text-blue-600'>
                 <History className='h-5 w-5' />
               </div>
               <div>
@@ -545,7 +545,7 @@ const RcDetails = () => {
               value={historySearch}
               onChange={(e) => { setHistorySearch(e.target.value); setHistoryPage(1) }}
               placeholder='Filter by vehicle number, owner, mobile, model, RTO...'
-              className='w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-9 text-xs outline-none transition focus:border-violet-500 focus:bg-white sm:text-sm'
+              className='w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-9 text-xs outline-none transition focus:border-blue-500 focus:bg-white sm:text-sm'
             />
             {historySearch && (
               <button type='button' onClick={() => { setHistorySearch(''); setHistoryPage(1) }} className='absolute right-3 top-1/2 -translate-y-1/2 cursor-pointer text-slate-400 hover:text-slate-600'>
@@ -556,7 +556,7 @@ const RcDetails = () => {
 
           {historyLoading && historyList.length === 0 ? (
             <div className='p-8 text-center text-sm text-slate-500'>
-              <RefreshCw className='mx-auto mb-2 h-6 w-6 animate-spin text-violet-600' />
+              <RefreshCw className='mx-auto mb-2 h-6 w-6 animate-spin text-blue-600' />
               Loading history...
             </div>
           ) : historyList.length === 0 ? (
@@ -581,7 +581,7 @@ const RcDetails = () => {
                   </thead>
                   <tbody className='divide-y divide-slate-100'>
                     {historyList.map((item) => (
-                      <tr key={item._id} className='transition hover:bg-violet-50/40'>
+                      <tr key={item._id} className='transition hover:bg-blue-50/40'>
                         <td className='px-4 py-3'>
                           <div className='flex flex-col items-start gap-1'>
                             <span className='inline-flex items-center gap-1 rounded bg-slate-900 px-2 py-0.5 font-mono text-xs font-bold text-white'>
@@ -589,7 +589,7 @@ const RcDetails = () => {
                               {item.vehicleNumber}
                             </span>
                             <span className='flex items-center gap-1 text-xs font-semibold text-slate-900'>
-                              <User className='h-3 w-3 shrink-0 text-violet-500' />
+                              <User className='h-3 w-3 shrink-0 text-blue-500' />
                               <span className='line-clamp-1'>{item.ownerName || 'NA'}</span>
                             </span>
                             {item.mobileNo && item.mobileNo !== 'NA' && (
@@ -609,7 +609,7 @@ const RcDetails = () => {
                         <td className='px-4 py-3 text-xs'>
                           <div className='flex flex-col items-start gap-0.5 whitespace-nowrap'>
                             <span className='flex items-center gap-1 font-semibold text-slate-800'>
-                              <Calendar className='h-3.5 w-3.5 shrink-0 text-violet-500' />{formatDate(item.lastSearchedAt || item.updatedAt)}
+                              <Calendar className='h-3.5 w-3.5 shrink-0 text-blue-500' />{formatDate(item.lastSearchedAt || item.updatedAt)}
                             </span>
                             <span className='flex items-center gap-1 text-[11px] font-medium text-slate-500'>
                               <Clock className='h-3 w-3 shrink-0 text-slate-400' />{formatTime(item.lastSearchedAt || item.updatedAt)}
@@ -618,7 +618,7 @@ const RcDetails = () => {
                         </td>
                         <td className='px-4 py-3 text-right'>
                           <div className='flex items-center justify-end gap-1.5'>
-                            <button onClick={() => handleViewSaved(item)} className='inline-flex cursor-pointer items-center gap-1 rounded-lg bg-violet-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-violet-700' title='View saved details'>
+                            <button onClick={() => handleViewSaved(item)} className='inline-flex cursor-pointer items-center gap-1 rounded-lg bg-blue-600 px-3 py-1.5 text-xs font-bold text-white shadow-sm transition hover:bg-blue-700' title='View saved details'>
                               <Eye className='h-3.5 w-3.5' /> View
                             </button>
                             <button onClick={() => handleDownloadHistoryPdf(item)} disabled={historyPdfId === item._id} className='inline-flex cursor-pointer items-center gap-1 rounded-lg border border-rose-200 bg-rose-50 px-2.5 py-1.5 text-xs font-bold text-rose-700 transition hover:bg-rose-100 disabled:opacity-50' title='Download RC PDF'>
