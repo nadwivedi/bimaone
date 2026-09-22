@@ -14,6 +14,7 @@ const PLANS = PLANS_CONFIG.filter((p) => p.billing === 'yearly')
 const FEATURE_ROWS = [
   { label: 'Automated WhatsApp reminders', value: (f) => f.whatsappRenewal },
   { label: 'Unlimited clients & policies', value: (f) => f.clientLimit === 0 },
+  { label: 'Your client app', value: (f) => f.clientApp },
   { label: 'Renewal tracking & alerts', value: (f) => f.appNotificationRenewal },
   { label: 'Premium calculator & quotations', value: (f) => f.personalisedQuotation },
   { label: 'Excel import & export', value: (f) => f.excelDownload },

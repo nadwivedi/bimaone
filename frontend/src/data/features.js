@@ -31,6 +31,7 @@ export const featureGroups = [
       { icon: 'refresh', title: 'Renewals Tracker', description: 'See which policies are due this week or this month and follow up before they lapse.' },
       { icon: 'users', title: 'Leads Management', description: 'Capture new enquiries, track their status and convert more leads into customers.' },
       { icon: 'id', title: 'Client KYC Vault', description: 'Keep Aadhaar, PAN and other KYC documents of your clients safe and easy to find.' },
+      { icon: 'phone', title: 'Your Client App', description: 'Give your clients their own app to view their policies, documents and renewal dates anytime.' },
       { icon: 'clipboard', title: 'Client & Agent Names', description: 'Maintain your own lists of client references and agents (IMD) to tag every policy.' },
     ],
   },
