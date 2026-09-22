@@ -26,7 +26,7 @@ const Footer = () => {
       <div className='mx-auto max-w-6xl px-4 md:px-8 py-14'>
         <div className='grid grid-cols-2 md:grid-cols-12 gap-10'>
           <div className='col-span-2 md:col-span-5 space-y-4'>
-            <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-10 w-auto' />
+            <img src='/bimaone%20logo.png' alt='BimaOne - Insurance Agent Software' className='h-12 md:h-14 w-auto' />
             <p className='text-sm text-slate-500 leading-relaxed max-w-sm'>
               Insurance agent software made for insurance agents. Serving agents across India since 2020.
             </p>
