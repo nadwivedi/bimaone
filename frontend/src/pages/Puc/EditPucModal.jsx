@@ -11,6 +11,7 @@ const EditPucModal = ({ isOpen, onClose, onSubmit, puc }) => {
     vehicleNumber: '',
     ownerName: '',
     mobileNumber: '',
+    workDate: '',
     validFrom: '',
     validTo: '',
     totalFee: '',
@@ -33,6 +34,7 @@ const EditPucModal = ({ isOpen, onClose, onSubmit, puc }) => {
         vehicleNumber: puc.vehicleNumber || '',
         ownerName: puc.ownerName || '',
         mobileNumber: puc.mobileNumber || '',
+        workDate: puc.workDate || '',
         validFrom: puc.validFrom || '',
         validTo: puc.validTo || '',
         totalFee: puc.totalFee?.toString() || '0',
@@ -53,6 +55,7 @@ const EditPucModal = ({ isOpen, onClose, onSubmit, puc }) => {
       setFormData({
         vehicleNumber: '',
         mobileNumber: '',
+        workDate: '',
         validFrom: '',
         validTo: '',
         totalFee: '',
@@ -255,7 +258,7 @@ const EditPucModal = ({ isOpen, onClose, onSubmit, puc }) => {
       return
     }
 
-    if (name === 'validFrom' || name === 'validTo') {
+    if (name === 'workDate' || name === 'validFrom' || name === 'validTo') {
       const formatted = handleSmartDateInput(value, formData[name] || '')
       if (formatted !== null) {
         setFormData(prev => ({
@@ -352,6 +355,7 @@ const EditPucModal = ({ isOpen, onClose, onSubmit, puc }) => {
     setFormData({
       vehicleNumber: '',
       mobileNumber: '',
+      workDate: '',
       validFrom: '',
       validTo: '',
       totalFee: '',
@@ -401,6 +405,21 @@ const EditPucModal = ({ isOpen, onClose, onSubmit, puc }) => {
               </h3>
 
               <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
+                {/* Date of Work */}
+                <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>
+                    Date of Work
+                  </label>
+                  <input
+                    type='text'
+                    name='workDate'
+                    value={formData.workDate}
+                    onChange={handleChange}
+                    onBlur={handleDateBlur}
+                    placeholder='DD-MM-YYYY (e.g., 24-01-2025)'
+                    className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent'
+                  />
+                </div>
                 {/* Vehicle Number */}
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>

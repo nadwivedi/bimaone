@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { validateVehicleNumberRealtime } from '../../utils/vehicleNoCheck';
-import { handleSmartDateInput, normalizeAIExtractedDate } from '../../utils/dateFormatter';
+import { handleSmartDateInput, normalizeAIExtractedDate, getTodayDate } from '../../utils/dateFormatter';
 import { handlePaymentCalculation } from '../../utils/paymentValidation';
 import DocumentScannerPreview from '../../components/DocumentScannerPreview';
 import { useAiLimit, invalidateAiLimitCache } from '../../utils/useAiLimit';
@@ -16,6 +16,7 @@ const AddFitnessModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '
     vehicleNumber: prefilledVehicleNumber,
     ownerName: prefilledOwnerName,
     partyId: '',
+    workDate: getTodayDate(),
     validFrom: '',
     validTo: '',
     totalFee: '',
@@ -50,6 +51,7 @@ const AddFitnessModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '
         vehicleNumber: prefilledVehicleNumber,
         ownerName: prefilledOwnerName,
         partyId: '',
+        workDate: getTodayDate(),
         validFrom: '',
         validTo: '',
         totalFee: '',
@@ -302,7 +304,7 @@ const AddFitnessModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '
     }
 
     // Handle date fields with smart validation and formatting
-    if (name === 'validFrom' || name === 'validTo') {
+    if (name === 'workDate' || name === 'validFrom' || name === 'validTo') {
       const formatted = handleSmartDateInput(value, formData[name] || '');
       if (formatted !== null) {
         setFormData(prev => ({
@@ -564,6 +566,7 @@ const AddFitnessModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '
       vehicleNumber: formData.vehicleNumber,
       ownerName: formData.ownerName,
       partyId: formData.partyId || null,
+      workDate: formData.workDate,
       validFrom: formData.validFrom,
       validTo: formData.validTo,
       totalFee,
@@ -599,6 +602,7 @@ const AddFitnessModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '
           vehicleNumber: '',
           ownerName: '',
           partyId: '',
+          workDate: getTodayDate(),
           validFrom: '',
           validTo: '',
           totalFee: '',
@@ -672,6 +676,22 @@ const AddFitnessModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '
               </h3>
 
               <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
+                {/* Date of Work */}
+                <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>
+                    Date of Work
+                  </label>
+                  <input
+                    type='text'
+                    name='workDate'
+                    value={formData.workDate}
+                    onChange={handleChange}
+                    onBlur={handleDateBlur}
+                    onKeyDown={handleInputKeyDown}
+                    placeholder='DD-MM-YYYY'
+                    className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-transparent bg-white'
+                  />
+                </div>
                 {/* Vehicle Number */}
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>

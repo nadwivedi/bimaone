@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import { validateVehicleNumberRealtime } from '../../utils/vehicleNoCheck'
-import { handleSmartDateInput, normalizeAIExtractedDate } from '../../utils/dateFormatter'
+import { handleSmartDateInput, normalizeAIExtractedDate, getTodayDate } from '../../utils/dateFormatter'
 import { handlePaymentCalculation } from '../../utils/paymentValidation'
 import DocumentScannerPreview from '../../components/DocumentScannerPreview'
 
@@ -15,6 +15,7 @@ const AddPucModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '', p
   const [formData, setFormData] = useState({
     vehicleNumber: prefilledVehicleNumber,
     ownerName: prefilledOwnerName,
+    workDate: getTodayDate(),
     validFrom: '',
     validTo: '',
     totalFee: '',
@@ -44,6 +45,7 @@ const AddPucModal = ({ isOpen, onClose, onSubmit, prefilledVehicleNumber = '', p
       setFormData({
         vehicleNumber: prefilledVehicleNumber,
         ownerName: prefilledOwnerName,
+        workDate: getTodayDate(),
         validFrom: '',
         validTo: '',
         totalFee: '',
@@ -228,7 +230,7 @@ if (e.key === 'Escape') onClose()
       return
     }
 
-    if (name === 'validFrom' || name === 'validTo') {
+    if (name === 'workDate' || name === 'validFrom' || name === 'validTo') {
       const formatted = handleSmartDateInput(value, formData[name] || '')
       if (formatted !== null) setFormData(prev => ({ ...prev, [name]: formatted }))
       return
@@ -395,6 +397,7 @@ if (e.key === 'Escape') onClose()
       const dataToSubmit = {
         vehicleNumber: formData.vehicleNumber,
         ownerName: formData.ownerName,
+        workDate: formData.workDate,
         validFrom: formData.validFrom,
         validTo: formData.validTo,
         totalFee,
@@ -456,7 +459,11 @@ if (e.key === 'Escape') onClose()
                   <span className='bg-emerald-600 text-white w-6 h-6 md:w-8 md:h-8 rounded-full flex items-center justify-center text-xs md:text-sm'>1</span>
                   Vehicle Details
                 </h3>
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4'>
+                <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
+                  <div>
+                    <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Date of Work</label>
+                    <input type='text' name='workDate' value={formData.workDate} onChange={handleChange} onBlur={handleDateBlur} placeholder='DD-MM-YYYY' className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent bg-white' />
+                  </div>
                   <div>
                     <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Vehicle Number <span className='text-red-500'>*</span></label>
                     <div className='relative'>

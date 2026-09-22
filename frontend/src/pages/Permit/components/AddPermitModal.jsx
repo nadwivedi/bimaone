@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import axios from 'axios'
-import { handleDateBlur as utilHandleDateBlur, handleSmartDateInput } from '../../../utils/dateFormatter'
+import { handleDateBlur as utilHandleDateBlur, handleSmartDateInput, getTodayDate } from '../../../utils/dateFormatter'
 import { validateVehicleNumberRealtime } from '../../../utils/vehicleNoCheck'
 import { handlePaymentCalculation } from '../../../utils/paymentValidation'
 import DocumentScannerPreview from '../../../components/DocumentScannerPreview'
@@ -20,6 +20,7 @@ const AddPermitModal = ({ isOpen, onClose, onSubmit, initialExtractionFile }) =>
   const [formData, setFormData] = useState({
     vehicleNumber: '',
     name: '',
+    workDate: getTodayDate(),
     validFrom: '',
     validTo: '',
     totalFee: '',
@@ -61,6 +62,7 @@ const AddPermitModal = ({ isOpen, onClose, onSubmit, initialExtractionFile }) =>
       setFormData({
         vehicleNumber: '',
         name: '',
+        workDate: getTodayDate(),
         validFrom: '',
         validTo: '',
         totalFee: '',
@@ -174,7 +176,7 @@ const AddPermitModal = ({ isOpen, onClose, onSubmit, initialExtractionFile }) =>
       return
     }
 
-    if (name === 'validFrom' || name === 'validTo') {
+    if (name === 'workDate' || name === 'validFrom' || name === 'validTo') {
       const formatted = handleSmartDateInput(value, formData[name] || '')
       if (formatted !== null) {
         setFormData(prev => ({ ...prev, [name]: formatted }))
@@ -325,7 +327,19 @@ const AddPermitModal = ({ isOpen, onClose, onSubmit, initialExtractionFile }) =>
                 Permit Details
               </h3>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
+                <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Date of Work</label>
+                  <input
+                    type='text'
+                    name='workDate'
+                    value={formData.workDate}
+                    onChange={handleChange}
+                    onBlur={handleDateBlur}
+                    placeholder='DD-MM-YYYY'
+                    className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                  />
+                </div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Vehicle Number <span className='text-red-500'>*</span></label>
                   <div className='relative'>

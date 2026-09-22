@@ -10,7 +10,7 @@ module.exports = createRecordController({
   fyDateField: 'validFrom',
   expiringDays: 30,
   searchFields: ['vehicleNumber', 'name'],
-  stringFields: ['vehicleNumber', 'name', 'validFrom', 'validTo', 'permitDocument'],
+  stringFields: ['vehicleNumber', 'name', 'workDate', 'validFrom', 'validTo', 'permitDocument'],
   uppercaseFields: ['vehicleNumber'],
   numberFields: ['totalFee', 'paid', 'balance'],
   documentField: 'permitDocument',

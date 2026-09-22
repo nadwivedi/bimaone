@@ -20,6 +20,7 @@ const EditPermitModal = ({ isOpen, onClose, onSubmit, permit }) => {
   const [formData, setFormData] = useState({
     vehicleNumber: '',
     name: '',
+    workDate: '',
     validFrom: '',
     validTo: '',
     totalFee: '',
@@ -47,6 +48,7 @@ const EditPermitModal = ({ isOpen, onClose, onSubmit, permit }) => {
       setFormData({
         vehicleNumber: permit.vehicleNumber || '',
         name: permit.name || '',
+        workDate: permit.workDate || '',
         validFrom: permit.validFrom || '',
         validTo: permit.validTo || '',
         totalFee: permit.totalFee?.toString() || '0',
@@ -65,6 +67,7 @@ const EditPermitModal = ({ isOpen, onClose, onSubmit, permit }) => {
       setFormData({
         vehicleNumber: '',
         name: '',
+        workDate: '',
         validFrom: '',
         validTo: '',
         totalFee: '',
@@ -176,7 +179,7 @@ const EditPermitModal = ({ isOpen, onClose, onSubmit, permit }) => {
       return
     }
 
-    if (name === 'validFrom' || name === 'validTo') {
+    if (name === 'workDate' || name === 'validFrom' || name === 'validTo') {
       const formatted = handleSmartDateInput(value, formData[name] || '')
       if (formatted !== null) {
         setFormData(prev => ({ ...prev, [name]: formatted }))
@@ -326,7 +329,19 @@ const EditPermitModal = ({ isOpen, onClose, onSubmit, permit }) => {
                 Permit Details
               </h3>
 
-              <div className='grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4'>
+              <div className='grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-4'>
+                <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Date of Work</label>
+                  <input
+                    type='text'
+                    name='workDate'
+                    value={formData.workDate}
+                    onChange={handleChange}
+                    onBlur={handleDateBlur}
+                    placeholder='DD-MM-YYYY'
+                    className='w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:border-transparent'
+                  />
+                </div>
                 <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Vehicle Number <span className='text-red-500'>*</span></label>
                   <div className='relative'>

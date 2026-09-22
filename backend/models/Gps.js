@@ -26,6 +26,10 @@ const gpsSchema = new mongoose.Schema({
     type: String,
     trim: true
   },
+  workDate: {
+    type: String,
+    trim: true
+  },
   validFrom: {
     type: String,
     required: true

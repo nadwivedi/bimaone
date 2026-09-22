@@ -208,9 +208,9 @@ const RTODocuments = () => {
   const getExpiryInfo = (doc) => {
     if (!/^\d{1,2}-\d{1,2}-\d{4}$/.test(doc.validTo || '')) return null
     const days = getDaysRemaining(doc.validTo)
-    if (days < 0) return { text: `Expired ${-days} day${days === -1 ? '' : 's'} ago`, cls: 'text-rose-600' }
-    if (days === 0) return { text: 'Expires today', cls: 'text-amber-600' }
-    return { text: `${days} day${days === 1 ? '' : 's'} left`, cls: days <= 30 ? 'text-amber-600' : 'text-slate-400' }
+    if (days < 0) return { text: `Expired (${-days}d ago)`, cls: 'text-rose-600' }
+    if (days === 0) return { text: 'Expires (today)', cls: 'text-amber-600' }
+    return { text: `Expiring (in ${days}d)`, cls: days <= 30 ? 'text-amber-600' : 'text-emerald-600' }
   }
 
   const typeCounts = documents.reduce((acc, d) => ({ ...acc, [d.type]: (acc[d.type] || 0) + 1 }), {})
@@ -458,8 +458,8 @@ const RTODocuments = () => {
                             <div className='min-w-0'>
                               <p className='text-sm font-semibold text-slate-900'>{typeLabel(doc.type)}</p>
                               <div className='mt-1'><Plate number={doc.vehicleNumber} /></div>
+                              {holderName(doc) && <p className='mt-1 truncate text-sm font-medium text-slate-700'>{holderName(doc)}</p>}
                             </div>
-                            <StatusBadge status={doc.status} />
                           </div>
                           <div className='mt-2.5 flex items-end justify-between gap-2'>
                             <div className='text-xs text-slate-500'>
@@ -467,7 +467,7 @@ const RTODocuments = () => {
                                 <>
                                   <p>From <span className='font-medium text-slate-700'>{doc.validFrom}</span></p>
                                   <p>To <span className='font-semibold text-slate-800'>{doc.validTo}</span></p>
-                                  {expiry && <p className={`mt-0.5 font-medium ${expiry.cls}`}>{expiry.text}</p>}
+                                  {expiry && <p className={`font-semibold ${expiry.cls}`}>{expiry.text}</p>}
                                 </>
                               ) : (
                                 <span>No expiry</span>
@@ -498,9 +498,7 @@ const RTODocuments = () => {
                         <th className='px-5 py-3'>Document</th>
                         <th className='px-5 py-3'>Vehicle</th>
                         <th className='px-5 py-3'>Validity</th>
-                        <th className='px-5 py-3'>Expiry</th>
                         <th className='px-5 py-3'>Fee</th>
-                        <th className='px-5 py-3'>Status</th>
                         <th className='px-5 py-3 text-right'>Actions</th>
                       </tr>
                     </thead>
@@ -520,25 +518,23 @@ const RTODocuments = () => {
                                 <TypeIcon type={doc.type} />
                                 <div className='min-w-0'>
                                   <p className='text-sm font-semibold text-slate-900'>{typeLabel(doc.type)}</p>
-                                  {holder && <p className='max-w-[180px] truncate text-xs text-slate-500'>{holder}</p>}
                                 </div>
                               </div>
                             </td>
                             <td className='px-5 py-3.5'>
                               <Plate number={doc.vehicleNumber} />
+                              {holder && <p className='mt-1 max-w-[200px] truncate text-sm font-medium text-slate-700' title={holder}>{holder}</p>}
                             </td>
                             <td className='px-5 py-3.5 text-sm'>
                               {doc.validTo !== 'N/A' ? (
                                 <div className='leading-tight'>
                                   <p className='text-slate-500'>From <span className='font-medium text-slate-700'>{doc.validFrom}</span></p>
                                   <p className='text-slate-500'>To <span className='font-semibold text-slate-800'>{doc.validTo}</span></p>
+                                  {expiry && <p className={`text-xs font-semibold ${expiry.cls}`}>{expiry.text}</p>}
                                 </div>
                               ) : (
-                                <span className='text-slate-400'>—</span>
+                                <span className='text-slate-400'>No expiry</span>
                               )}
-                            </td>
-                            <td className='px-5 py-3.5 text-sm'>
-                              {expiry ? <span className={`font-medium ${expiry.cls}`}>{expiry.text}</span> : <span className='text-slate-400'>No expiry</span>}
                             </td>
                             <td className='px-5 py-3.5 text-sm'>
                               {fee ? (
@@ -553,9 +549,6 @@ const RTODocuments = () => {
                               ) : (
                                 <span className='text-slate-400'>—</span>
                               )}
-                            </td>
-                            <td className='px-5 py-3.5'>
-                              <StatusBadge status={doc.status} />
                             </td>
                             <td className='px-5 py-3.5'>
                               <ActionButtons doc={doc} />

@@ -620,7 +620,8 @@ const DocumentDetailModal = ({ type, id, onClose, onChanged }) => {
                 {/* Validity */}
                 {config.fromField && config.toField && (
                   <Section n={nextNo()} title='Validity' tone='sky'>
-                    <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
+                    <div className={`grid grid-cols-2 gap-3 ${record.workDate ? 'md:grid-cols-4' : 'md:grid-cols-3'}`}>
+                      {record.workDate && <Tile label='Date of Work' value={prettyDate(record.workDate)} />}
                       <Tile label='Valid From' value={prettyDate(record[config.fromField])} />
                       <Tile label='Valid To' value={prettyDate(record[config.toField])} valueClass={vTone ? vTone.text : 'text-slate-800'} />
                       {validity && (
