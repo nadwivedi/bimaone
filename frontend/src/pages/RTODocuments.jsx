@@ -538,13 +538,13 @@ const RTODocuments = () => {
                             </td>
                             <td className='px-5 py-3.5 text-sm'>
                               {fee ? (
-                                <div className='leading-tight'>
-                                  <p className='text-slate-700'>{formatCurrency(fee.total)}</p>
-                                  {fee.pending > 0 ? (
-                                    <p className='text-xs font-semibold text-rose-600'>{formatCurrency(fee.pending)} due</p>
-                                  ) : (
-                                    <p className='text-xs font-medium text-emerald-600'>Paid</p>
-                                  )}
+                                <div className='grid grid-cols-[auto_auto] gap-x-3 leading-snug'>
+                                  <span className='text-slate-500'>Total</span>
+                                  <span className='text-right font-semibold text-slate-800'>{formatCurrency(fee.total)}</span>
+                                  <span className='text-slate-500'>Paid</span>
+                                  <span className='text-right font-semibold text-emerald-600'>{formatCurrency(fee.paid)}</span>
+                                  <span className='text-slate-500'>Balance</span>
+                                  <span className={`text-right font-semibold ${fee.pending > 0 ? 'text-rose-600' : 'text-slate-400'}`}>{formatCurrency(fee.pending)}</span>
                                 </div>
                               ) : (
                                 <span className='text-slate-400'>—</span>
