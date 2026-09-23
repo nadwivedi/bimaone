@@ -19,6 +19,10 @@ export const PAGE_META = {
     title: 'About BimaOne – Insurance Agent Software Since 2020',
     description: 'BimaOne is insurance agent software built in 2020 for Indian insurance agents. Six years of making insurance agents’ work easy.',
   },
+  '/login': {
+    title: 'Login or Sign Up – BimaOne Insurance Agent Software',
+    description: 'Log in to BimaOne or create a free insurance agent account to manage policies, renewals, leads, KYC and WhatsApp reminders from one dashboard.',
+  },
   '/contact-us': {
     title: 'Contact BimaOne – Insurance Agent Software Support',
     description: 'Talk to the BimaOne team about our insurance agent software. Reach us on WhatsApp, phone or email — Bhopal, Madhya Pradesh.',

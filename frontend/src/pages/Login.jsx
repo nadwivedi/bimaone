@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import usePageMeta from '../hooks/usePageMeta'
+import { PAGE_META } from '../data/pageMeta'
 import axios from 'axios'
 
 const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
@@ -21,6 +23,11 @@ const Login = () => {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+
+  usePageMeta({
+    ...PAGE_META['/login'],
+    path: '/login',
+  })
 
   const [forgotStep, setForgotStep] = useState(0)
   const [forgotEmail, setForgotEmail] = useState('')
@@ -481,8 +488,8 @@ const Login = () => {
   )
 
   const titles = {
-    login: ['Welcome back 👋', 'Sign in to your BimaOne account.'],
-    signup: ['Create Account', 'Start managing your insurance business with BimaOne.'],
+    login: ['Login to BimaOne', 'Welcome back 👋 Sign in to manage your policies and renewals.'],
+    signup: ['Create your free account', 'Start managing your insurance business with BimaOne.'],
     1: ['Forgot Password', 'Enter your registered email to receive an OTP.'],
     2: ['Enter OTP', `We've sent a 6-digit OTP to ${forgotEmail}`],
     3: ['Reset Password', 'Choose a new password for your account.'],
@@ -499,9 +506,10 @@ const Login = () => {
           <div className='pointer-events-none absolute bottom-16 right-12 h-24 w-24 rounded-full bg-sky-400/15' />
 
           <div className='relative'>
-            <h1 className='text-[2.5rem] font-bold leading-[1.15]'>
+            {/* Not an <h1>: this panel is hidden on mobile, and the form heading carries the page's h1. */}
+            <p className='text-[2.5rem] font-bold leading-[1.15]'>
               Your Policies,<br />Simplified.
-            </h1>
+            </p>
             <p className='mt-5 max-w-sm text-lg leading-relaxed text-slate-300'>
               Manage clients and renewals from one simple dashboard.
             </p>
@@ -522,7 +530,7 @@ const Login = () => {
           </div>
 
           <div className='mb-6'>
-            <h2 className='text-[1.75rem] font-bold text-slate-900 sm:text-[2rem]'>{title}</h2>
+            <h1 className='text-[1.75rem] font-bold text-slate-900 sm:text-[2rem]'>{title}</h1>
             <p className='mt-1 text-sm text-slate-500'>{subtitle}</p>
           </div>
 
