@@ -5,11 +5,13 @@ export const landingPages = [
   {
     slug: 'insurance-agent-software',
     nav: 'Insurance Agent Software',
-    title: 'Insurance Agent Software in India | BimaOne',
-    description: 'Insurance agent software for Indian agents since 2020. Policies from every insurer, renewal alerts, WhatsApp reminders and AI upload. From ₹899/year.',
-    badge: 'Made for Indian insurance agents',
-    h1: 'Insurance agent software that keeps every policy and renewal in one place',
-    intro: 'BimaOne is insurance agent software built only for insurance agents. Store policies from any insurer, see every renewal that is coming up, remind clients on WhatsApp automatically and keep your client documents safe — on your phone or computer.',
+    // Targets the move off diary/Excel, not the bare head term — the homepage owns
+    // "insurance agent software in India", and this page should not compete with it.
+    title: 'Insurance Agent Software to Replace Excel | BimaOne',
+    description: 'Move your policies out of a diary and Excel into proper insurance agent software. Renewal alerts, WhatsApp reminders, AI upload — and we help you shift your data.',
+    badge: 'For agents still on diary and Excel',
+    h1: 'Insurance agent software to replace your diary and Excel sheets',
+    intro: 'Most agents start with a diary and an Excel sheet, and outgrow both. BimaOne stores policies from any insurer, shows every renewal that is coming up, reminds clients on WhatsApp automatically and keeps your client documents safe — on your phone or computer.',
     problemsTitle: 'Why agents move from diaries and Excel to BimaOne',
     problems: [
       { title: 'Missed renewals', text: 'A policy renewal forgotten in a diary is a client lost to another agent.' },

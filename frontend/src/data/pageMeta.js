@@ -4,7 +4,7 @@
 
 export const PAGE_META = {
   '/': {
-    title: 'BimaOne – Insurance Agent & Management Software India',
+    title: 'Best Insurance Agent Software in India – BimaOne',
     description: 'Insurance agent software and insurance management software for Indian agents. Policies, renewals, leads, RTO documents and automated WhatsApp reminders.',
   },
   '/features': {
