@@ -330,15 +330,16 @@ const WhatsApp = () => {
                   key={s.key}
                   type='button'
                   onClick={() => { setLogFilter(s.key === 'sent' ? 'sent' : s.key); setLogPage(1) }}
-                  className={`rounded-xl border-2 bg-gradient-to-r p-3 text-left transition hover:shadow-md md:px-4 md:py-4 ${s.tone.card} ${logFilter === s.key ? 'ring-2 ring-slate-400 ring-offset-2' : ''}`}
+                  className={`rounded-xl border-2 bg-gradient-to-r p-2.5 text-left transition hover:shadow-md md:px-4 md:py-4 ${s.tone.card} ${logFilter === s.key ? 'ring-2 ring-slate-400 ring-offset-2' : ''}`}
                 >
-                  <div className='flex flex-col gap-1.5 md:flex-row md:items-center md:gap-3'>
-                    <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white md:h-11 md:w-11 ${s.tone.icon}`}>
-                      <Svg d={s.icon} />
+                  {/* Mobile: small icon beside the count, label underneath. Desktop: icon left, count + label right. */}
+                  <div className='grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-1.5 md:flex md:gap-3'>
+                    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white md:h-11 md:w-11 ${s.tone.icon}`}>
+                      <Svg d={s.icon} className='h-4 w-4 md:h-5 md:w-5' />
                     </span>
-                    <div className='min-w-0'>
-                      <p className={`text-xl font-bold leading-none md:text-2xl ${s.tone.value}`}>{status ? s.value : '…'}</p>
-                      <p className='mt-1 truncate text-xs font-semibold text-slate-700 md:text-sm'>{s.label}</p>
+                    <div className='contents md:block md:min-w-0'>
+                      <p className={`text-lg font-bold leading-none md:text-2xl ${s.tone.value}`}>{status ? s.value : '…'}</p>
+                      <p className='col-span-2 truncate text-[11px] font-semibold text-slate-700 md:mt-1 md:text-sm'>{s.label}</p>
                     </div>
                   </div>
                 </button>
