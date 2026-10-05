@@ -306,8 +306,6 @@ const Leads = () => {
             { label: 'View details', run: () => L.setDetailLead(lead) },
             !isClosedStatus(lead.status) && { label: 'Log follow-up', run: () => L.openFollowUp(lead) },
             { label: 'Edit lead', run: () => L.openEdit(lead) },
-            lead.mobile && { label: 'Call', run: () => { window.location.href = `tel:+91${lead.mobile}` } },
-            lead.mobile && { label: 'WhatsApp', run: () => window.open(`https://wa.me/91${lead.mobile}`, '_blank', 'noopener') },
             !isClosedStatus(lead.status) && { label: 'Mark converted', run: () => L.updateStatus(lead, 'converted') },
             { label: 'Delete', run: () => L.handleDelete(lead), danger: true },
           ].filter(Boolean).map((item) => (

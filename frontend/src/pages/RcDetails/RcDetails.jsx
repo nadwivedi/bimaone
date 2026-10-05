@@ -319,7 +319,7 @@ const RcDetails = () => {
               onSubmit={(e) => { e.preventDefault(); handleLiveSearch() }}
               className='flex flex-col gap-3 rounded-xl border-2 border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 p-3 md:flex-row md:items-center'
             >
-              <div className='relative flex flex-1 items-center overflow-hidden rounded-lg border-2 border-slate-800 bg-amber-300 shadow-sm focus-within:ring-4 focus-within:ring-blue-600/20'>
+              <div className='relative flex flex-1 items-center overflow-hidden rounded-lg border-2 border-slate-300 bg-white shadow-sm focus-within:border-blue-600 focus-within:ring-4 focus-within:ring-blue-600/10'>
                 <span className='flex select-none flex-col items-center self-stretch justify-center bg-blue-800 px-2.5 text-[10px] font-black leading-tight text-white'>
                   <span>🇮🇳</span>
                   <span>IND</span>
@@ -328,9 +328,9 @@ const RcDetails = () => {
                   type='text'
                   value={vehicleNo}
                   onChange={(e) => setVehicleNo(e.target.value.toUpperCase())}
-                  placeholder='CG12BU5574'
+                  placeholder='Enter vehicle no. e.g. MH12AB1234'
                   aria-label='Vehicle number'
-                  className='w-full bg-transparent px-3.5 py-3 font-mono text-lg font-bold uppercase tracking-widest text-slate-900 outline-none placeholder:text-slate-700/40 sm:text-xl'
+                  className='w-full bg-transparent px-3.5 py-3 font-mono text-lg font-bold uppercase tracking-widest text-slate-900 outline-none placeholder:font-sans placeholder:text-xs placeholder:font-semibold placeholder:normal-case placeholder:tracking-normal placeholder:text-slate-400 sm:text-xl sm:placeholder:text-base'
                   autoFocus
                 />
                 {vehicleNo && (
