@@ -319,7 +319,7 @@ const RTODocuments = () => {
 
           {/* Stat cards (click to filter by status) */}
           {!loading && documents.length > 0 && (
-            <div className='grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-4'>
+            <div className='grid grid-cols-2 gap-2.5 md:grid-cols-4 md:gap-4'>
               {statCards.map((stat) => {
                 const isActive = statusFilter === stat.key
                 return (
@@ -327,16 +327,16 @@ const RTODocuments = () => {
                     key={stat.key}
                     type='button'
                     onClick={() => setStatusFilter(isActive && stat.key !== 'All' ? 'All' : stat.key)}
-                    className={`flex cursor-pointer items-center gap-3 rounded-2xl border bg-white p-4 text-left shadow-sm transition hover:shadow-md ${isActive ? stat.activeCls : 'border-slate-200 hover:border-slate-300'}`}
+                    className={`flex cursor-pointer items-center gap-2.5 rounded-xl border bg-white p-2.5 text-left shadow-sm transition hover:shadow-md md:gap-3 md:rounded-2xl md:p-4 ${isActive ? stat.activeCls : 'border-slate-200 hover:border-slate-300'}`}
                   >
-                    <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl ${stat.iconCls}`}>
-                      <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg md:h-11 md:w-11 md:rounded-xl ${stat.iconCls}`}>
+                      <svg className='h-4 w-4 md:h-5 md:w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
                         <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d={stat.icon} />
                       </svg>
                     </div>
                     <div className='min-w-0'>
-                      <p className='text-2xl font-bold leading-none text-slate-900'>{stat.value}</p>
-                      <p className='mt-1 truncate text-xs font-medium text-slate-500'>{stat.label}</p>
+                      <p className='text-lg font-bold leading-none text-slate-900 md:text-2xl'>{stat.value}</p>
+                      <p className='mt-0.5 truncate text-[11px] font-medium text-slate-500 md:mt-1 md:text-xs'>{stat.label}</p>
                     </div>
                   </button>
                 )

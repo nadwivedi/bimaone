@@ -65,8 +65,12 @@ const Svg = ({ d, className = 'h-5 w-5', strokeWidth = 2 }) => (
   </svg>
 )
 
+// `small` is the plain white plate used on the mobile cards
 const Plate = ({ value, small = false }) => (
-  <span className={`inline-block rounded-md border-2 border-slate-800 bg-amber-300 font-mono font-bold text-slate-900 ${small ? 'px-1.5 text-[11px] tracking-wider' : 'px-2 py-0.5 text-xs tracking-widest'}`}>
+  <span className={small
+    ? 'inline-flex items-center rounded-md border border-slate-300 bg-white px-2 py-0.5 text-xs font-semibold tracking-wider text-slate-800 shadow-sm'
+    : 'inline-block rounded-md border-2 border-slate-800 bg-amber-300 px-2 py-0.5 font-mono text-xs font-bold tracking-widest text-slate-900'}
+  >
     {value || '—'}
   </span>
 )
@@ -527,7 +531,7 @@ const Search = () => {
   ]
 
   return (
-    <div className='min-h-screen bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
+    <div className='min-h-screen bg-slate-100 md:bg-slate-50' style={{ fontFamily: "'Poppins', sans-serif" }}>
       <main className='w-full space-y-4 px-3 pt-4 pb-10 md:space-y-5 lg:px-8 lg:pt-6 lg:pb-10'>
         {/* Search card */}
         <section className='overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-slate-200'>
@@ -628,15 +632,16 @@ const Search = () => {
                 key={s.label}
                 type='button'
                 onClick={() => setFilterValidity(s.key)}
-                className={`rounded-xl border-2 bg-gradient-to-r p-3 text-left transition hover:shadow-md md:p-4 ${s.tone.card} ${selected && s.key ? 'ring-2 ring-slate-400 ring-offset-2' : ''}`}
+                className={`rounded-xl border-2 bg-gradient-to-r p-2.5 text-left transition hover:shadow-md md:p-4 ${s.tone.card} ${selected && s.key ? 'ring-2 ring-slate-400 ring-offset-2' : ''}`}
               >
-                <div className='flex flex-col gap-2 md:flex-row md:items-center md:gap-3'>
-                  <span className={`flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-white md:h-11 md:w-11 ${s.tone.icon}`}>
-                    <Svg d={s.icon} className='h-5 w-5' />
+                {/* Mobile: small icon beside the count, short label underneath. Desktop: icon left, count + label right. */}
+                <div className='grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-1.5 md:flex md:gap-3'>
+                  <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-white md:h-11 md:w-11 ${s.tone.icon}`}>
+                    <Svg d={s.icon} className='h-4 w-4 md:h-5 md:w-5' />
                   </span>
-                  <div className='min-w-0'>
-                    <p className={`text-xl font-bold leading-none md:text-2xl ${s.tone.value}`}>{s.value ?? '…'}</p>
-                    <p className='mt-1 truncate text-xs font-semibold text-slate-700 md:text-sm'>{s.label} {typeLabel}</p>
+                  <div className='contents md:block md:min-w-0'>
+                    <p className={`text-lg font-bold leading-none md:text-2xl ${s.tone.value}`}>{s.value ?? '…'}</p>
+                    <p className='col-span-2 truncate text-[11px] font-semibold text-slate-700 md:mt-1 md:text-sm'>{s.label}<span className='hidden md:inline'> {typeLabel}</span></p>
                   </div>
                 </div>
               </button>
@@ -734,34 +739,41 @@ const Search = () => {
                   const due = dueText(getDaysLeft(record.validTo || record.taxTo))
                   const company = isInsurance ? recordCompanyName(record) : ''
                   const product = isInsurance ? [record.product, record.insuranceClass].filter(Boolean).join(' · ') : ''
+                  const validity = (
+                    <>
+                      <span className='text-slate-400'>Valid to <span className='font-semibold text-slate-900'>{record.validTo || record.taxTo || '—'}</span></span>
+                      {due.text && <span className={`font-semibold ${due.cls}`}>{due.text}</span>}
+                    </>
+                  )
                   return (
-                    <li key={record._id} className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm shadow-slate-200/70'>
-                      <button type='button' onClick={() => openRecord(record)} className='block w-full p-3.5 text-left active:bg-slate-50'>
-                        <span className='flex items-start justify-between gap-3'>
-                          <span className='min-w-0'>
-                            <span className='block truncate text-[15px] font-semibold text-slate-900'>{name || '—'}</span>
-                            <span className='mt-1 flex items-center gap-2'>
-                              <Plate value={record.vehicleNumber} small />
-                              {record.mobileNumber && <span className='text-xs text-slate-400'>{record.mobileNumber}</span>}
-                            </span>
-                          </span>
-                          {isInsurance && record.premium != null && (
-                            <span className='shrink-0 rounded-lg bg-emerald-50 px-2 py-1 text-xs font-semibold text-emerald-700'>{formatPremium(record.premium)}</span>
-                          )}
-                        </span>
-                        {company && (
-                          <span className='mt-2 block break-words text-xs font-medium text-slate-700'>{company}</span>
-                        )}
-                        {product && (
-                          <span className={`${company ? 'mt-0.5' : 'mt-2'} block break-words text-xs text-slate-500`}>{product}</span>
-                        )}
-                      </button>
-                      <div className='flex items-center justify-between gap-2 border-t border-slate-100 bg-slate-50/60 py-1.5 pl-3.5 pr-1.5'>
-                        <span className='min-w-0 truncate text-xs text-slate-600'>
-                          <span className='text-slate-400'>Valid to </span>
-                          <span className='font-semibold text-slate-800'>{record.validTo || record.taxTo || '—'}</span>
-                          {due.text && <span className={`ml-1.5 font-semibold ${due.cls}`}>{due.text}</span>}
-                        </span>
+                    <li key={record._id} onClick={() => openRecord(record)} className='cursor-pointer rounded-xl border border-slate-200 bg-white shadow-sm transition active:bg-slate-50'>
+                      {/* Holder + policy details, vehicle number on the right */}
+                      <div className='flex items-start gap-3 p-3'>
+                        <div className='min-w-0 flex-1'>
+                          <p className='line-clamp-2 text-sm font-semibold leading-snug text-slate-900'>{name || '—'}</p>
+                          {company && <p className='mt-0.5 truncate text-xs font-medium text-slate-500'>{company}</p>}
+                          {product && <p className='truncate text-xs text-slate-400'>{product}</p>}
+                        </div>
+                        <div className='flex shrink-0 flex-col items-end gap-1'>
+                          {record.vehicleNumber && <Plate value={record.vehicleNumber} small />}
+                          {record.mobileNumber && <span className='text-[11px] text-slate-400'>{record.mobileNumber}</span>}
+                        </div>
+                      </div>
+
+                      {/* Validity gets its own row only when the last row carries the premium */}
+                      {isInsurance && (
+                        <div className='flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 border-t border-slate-100 px-3 py-2 text-xs'>
+                          {validity}
+                        </div>
+                      )}
+
+                      {/* Premium (or validity) + actions */}
+                      <div className='flex items-center justify-between gap-2 border-t border-slate-100 py-1 pl-3 pr-1.5 text-xs'>
+                        <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5'>
+                          {isInsurance
+                            ? <span className='text-slate-500'>Premium <span className='font-semibold text-emerald-700'>{formatPremium(record.premium)}</span></span>
+                            : validity}
+                        </div>
                         <span className='flex shrink-0'>
                           <IconAction icon={ICON.eye} label='View' onClick={(e) => { e.stopPropagation(); openRecord(record) }} />
                           <IconAction icon={ICON.edit} label='Edit' onClick={(e) => startEdit(e, record)} />
