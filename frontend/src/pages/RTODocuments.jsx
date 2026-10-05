@@ -415,48 +415,52 @@ const RTODocuments = () => {
             ) : (
               <>
                 {/* Mobile cards */}
-                <div className='divide-y divide-slate-100 lg:hidden'>
+                <div className='space-y-3 bg-slate-100 p-2.5 lg:hidden'>
                   {filteredDocuments.map((doc) => {
                     const expiry = getExpiryInfo(doc)
                     const fee = getFeeInfo(doc)
+                    const holder = holderName(doc)
                     return (
                       <div
                         key={doc.id}
                         onClick={() => setViewingDoc(doc)}
-                        className='flex cursor-pointer items-start gap-3 p-4 transition hover:bg-slate-50'
+                        className='cursor-pointer rounded-xl border border-slate-200 bg-white shadow-sm transition active:bg-slate-50'
                       >
-                        <TypeIcon type={doc.type} />
-                        <div className='min-w-0 flex-1'>
-                          <div className='flex items-start justify-between gap-2'>
-                            <div className='min-w-0'>
-                              <p className='text-sm font-semibold text-slate-900'>{typeLabel(doc.type)}</p>
-                              <div className='mt-1'><Plate number={doc.vehicleNumber} /></div>
-                              {holderName(doc) && <p className='mt-1 truncate text-sm font-medium text-slate-700'>{holderName(doc)}</p>}
-                            </div>
+                        {/* Document type + holder, vehicle number on the right */}
+                        <div className='flex items-center gap-3 p-3'>
+                          <TypeIcon type={doc.type} />
+                          <div className='min-w-0 flex-1'>
+                            <p className='text-sm font-semibold text-slate-900'>{typeLabel(doc.type)}</p>
+                            {holder && <p className='truncate text-xs font-medium text-slate-500'>{holder}</p>}
                           </div>
-                          <div className='mt-2.5 flex items-end justify-between gap-2'>
-                            <div className='text-xs text-slate-500'>
-                              {doc.validTo !== 'N/A' ? (
-                                <>
-                                  <p>From <span className='font-medium text-slate-700'>{doc.validFrom}</span></p>
-                                  <p>To <span className='font-semibold text-slate-800'>{doc.validTo}</span></p>
-                                  {expiry && <p className={`font-semibold ${expiry.cls}`}>{expiry.text}</p>}
-                                </>
-                              ) : (
-                                <span>No expiry</span>
-                              )}
-                            </div>
-                            <ActionButtons doc={doc} />
+                          <Plate number={doc.vehicleNumber} />
+                        </div>
+
+                        {/* Validity (RC has none, so it gets no row of its own) */}
+                        {doc.validTo !== 'N/A' && (
+                          <div className='flex flex-wrap items-center justify-between gap-x-2 gap-y-0.5 border-t border-slate-100 px-3 py-2 text-xs'>
+                            <p className='text-slate-400'>
+                              <span className='font-medium text-slate-700'>{doc.validFrom}</span> to <span className='font-semibold text-slate-900'>{doc.validTo}</span>
+                            </p>
+                            {expiry && <span className={`font-semibold ${expiry.cls}`}>{expiry.text}</span>}
                           </div>
-                          {fee && (
-                            <div className='mt-2.5 flex items-center gap-3 border-t border-slate-100 pt-2 text-xs'>
-                              <span className='text-slate-500'>Fee <span className='font-semibold text-slate-800'>{formatCurrency(fee.total)}</span></span>
-                              <span className='text-slate-500'>Paid <span className='font-semibold text-emerald-600'>{formatCurrency(fee.paid)}</span></span>
-                              {fee.pending > 0 && (
-                                <span className='text-slate-500'>Due <span className='font-semibold text-rose-600'>{formatCurrency(fee.pending)}</span></span>
-                              )}
-                            </div>
-                          )}
+                        )}
+
+                        {/* Fee + actions */}
+                        <div className='flex items-center justify-between gap-2 border-t border-slate-100 py-1 pl-3 pr-1.5 text-xs'>
+                          <div className='flex min-w-0 flex-wrap items-center gap-x-3 gap-y-0.5'>
+                            {doc.validTo === 'N/A' && <span className='text-slate-500'>No expiry</span>}
+                            {fee && (
+                              <>
+                                <span className='text-slate-500'>Fee <span className='font-semibold text-slate-800'>{formatCurrency(fee.total)}</span></span>
+                                <span className='text-slate-500'>Paid <span className='font-semibold text-emerald-600'>{formatCurrency(fee.paid)}</span></span>
+                                {fee.pending > 0 && (
+                                  <span className='text-slate-500'>Due <span className='font-semibold text-rose-600'>{formatCurrency(fee.pending)}</span></span>
+                                )}
+                              </>
+                            )}
+                          </div>
+                          <ActionButtons doc={doc} />
                         </div>
                       </div>
                     )
