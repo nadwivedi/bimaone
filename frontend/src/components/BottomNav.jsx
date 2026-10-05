@@ -6,7 +6,6 @@ const items = [
   { name: 'Search', path: '/search', icon: navIcons.search },
   { name: 'Renewals', path: '/renewals', icon: navIcons.renewal },
   { name: 'Leads', path: '/leads', icon: navIcons.leads },
-  { name: 'RC Details', path: '/rc-details', icon: navIcons.rc },
   { name: 'Calculator', path: '/premium-calculator', icon: navIcons.premium },
 ]
 
@@ -17,7 +16,7 @@ const BottomNav = () => {
 
   return (
     <nav
-      className='fixed inset-x-0 bottom-0 z-20 grid grid-cols-6 border-t border-slate-200 bg-white shadow-[0_-2px_10px_rgba(15,23,42,0.06)] lg:hidden'
+      className='fixed inset-x-0 bottom-0 z-20 grid grid-cols-5 border-t border-slate-200 bg-white shadow-[0_-2px_10px_rgba(15,23,42,0.06)] lg:hidden'
       style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       aria-label='Quick navigation'
     >

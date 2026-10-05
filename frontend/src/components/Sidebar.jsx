@@ -76,14 +76,15 @@ export const navIcons = {
   ),
 }
 
+// `inBottomNav` items are already one tap away in the mobile bottom bar, so the mobile drawer leaves them out
 const navSections = [
   {
     title: 'Main',
     items: [
-      { name: 'Dashboard', path: '/dashboard', icon: navIcons.home },
-      { name: 'Search', path: '/search', icon: navIcons.search },
-      { name: 'Renewals', path: '/renewals', icon: navIcons.renewal },
-      { name: 'Leads', path: '/leads', icon: navIcons.leads },
+      { name: 'Dashboard', path: '/dashboard', icon: navIcons.home, inBottomNav: true },
+      { name: 'Search', path: '/search', icon: navIcons.search, inBottomNav: true },
+      { name: 'Renewals', path: '/renewals', icon: navIcons.renewal, inBottomNav: true },
+      { name: 'Leads', path: '/leads', icon: navIcons.leads, inBottomNav: true },
       { name: 'WhatsApp', path: '/whatsapp', icon: navIcons.whatsapp },
     ],
   },
@@ -91,7 +92,7 @@ const navSections = [
     title: 'Tools',
     items: [
       { name: 'RC Details', path: '/rc-details', icon: navIcons.rc },
-      { name: 'Premium Calculator', path: '/premium-calculator', icon: navIcons.premium },
+      { name: 'Premium Calculator', path: '/premium-calculator', icon: navIcons.premium, inBottomNav: true },
     ],
   },
   {
@@ -114,7 +115,7 @@ const navSections = [
 const NavLink = ({ item, isActive }) => (
   <Link
     to={item.path}
-    className={`group flex items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 ${isActive
+    className={`group items-center gap-3 rounded-xl px-3 py-2 text-[13px] font-medium transition-all duration-200 ${item.inBottomNav ? 'hidden lg:flex' : 'flex'} ${isActive
         ? 'bg-blue-600 text-white shadow-md shadow-blue-600/25'
         : 'text-slate-600 hover:bg-slate-100 hover:text-slate-900'
       }`}
