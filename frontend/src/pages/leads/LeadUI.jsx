@@ -3,6 +3,7 @@ import {
   addDays, focusNextOnEnter, formatDate, formatTime, inputCls, isClosedStatus, labelCls,
   normalizeStatus, priorityInfo, statusInfo, toISODate, todayISO, typeInfo,
 } from './leadUtils'
+import { insurerGroupsFor } from '../../data/insuranceCompanies'
 
 export const Icon = ({ d, className = 'h-4 w-4', strokeWidth = 2 }) => (
   <svg className={className} fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -326,7 +327,21 @@ export const LeadModals = ({ leads: L }) => {
                 <div className='mt-3 grid grid-cols-2 gap-3'>
                   <div>
                     <label className={labelCls}>Current Insurer</label>
-                    <input className={inputCls} value={form.currentInsurer} onChange={setField('currentInsurer')} placeholder='e.g. ICICI Lombard' enterKeyHint='next' />
+                    <select className={inputCls} value={form.currentInsurer} onChange={setField('currentInsurer')}>
+                      <option value=''>Select insurer</option>
+                      {(() => {
+                        const groups = insurerGroupsFor(form.insuranceType)
+                        const known = form.currentInsurer === 'Other' || groups.some((g) => g.items.includes(form.currentInsurer))
+                        // Keep a saved value that isn't in the current list (older free-text entry or a different lead type)
+                        return !form.currentInsurer || known ? null : <option value={form.currentInsurer}>{form.currentInsurer}</option>
+                      })()}
+                      {insurerGroupsFor(form.insuranceType).map((g) => (
+                        <optgroup key={g.label} label={g.label}>
+                          {g.items.map((name) => <option key={name} value={name}>{name}</option>)}
+                        </optgroup>
+                      ))}
+                      <option value='Other'>Other</option>
+                    </select>
                   </div>
                   <div>
                     <label className={labelCls}>Policy Expiry</label>
