@@ -215,15 +215,6 @@ const RTODocuments = () => {
 
   const typeCounts = documents.reduce((acc, d) => ({ ...acc, [d.type]: (acc[d.type] || 0) + 1 }), {})
 
-  const feeTotals = filteredDocuments.reduce((acc, doc) => {
-    const fee = getFeeInfo(doc)
-    if (!fee) return acc
-    acc.total += fee.total
-    acc.paid += fee.paid
-    acc.pending += fee.pending
-    return acc
-  }, { total: 0, paid: 0, pending: 0 })
-
   const TypeIcon = ({ type, size = 'h-10 w-10' }) => (
     <div className={`flex ${size} shrink-0 items-center justify-center rounded-xl ring-1 ring-inset ${TYPE_CONFIG[type]?.tint || 'bg-slate-50 text-slate-500 ring-slate-100'}`}>
       <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
@@ -401,24 +392,6 @@ const RTODocuments = () => {
                 Showing
                 <StatusBadge status={statusFilter} />
                 <button type='button' onClick={() => setStatusFilter('All')} className='cursor-pointer font-semibold text-blue-700 hover:underline'>Clear</button>
-              </div>
-            )}
-
-            {/* Fee summary for the currently filtered documents */}
-            {feeTotals.total > 0 && (
-              <div className='grid grid-cols-3 gap-px border-b border-slate-200 bg-slate-100 text-center'>
-                <div className='bg-white px-3 py-2.5'>
-                  <p className='text-[11px] font-medium text-slate-500'>Total Fee</p>
-                  <p className='text-sm font-bold text-slate-900'>{formatCurrency(feeTotals.total)}</p>
-                </div>
-                <div className='bg-white px-3 py-2.5'>
-                  <p className='text-[11px] font-medium text-slate-500'>Paid</p>
-                  <p className='text-sm font-bold text-emerald-600'>{formatCurrency(feeTotals.paid)}</p>
-                </div>
-                <div className='bg-white px-3 py-2.5'>
-                  <p className='text-[11px] font-medium text-slate-500'>Pending</p>
-                  <p className={`text-sm font-bold ${feeTotals.pending > 0 ? 'text-rose-600' : 'text-slate-900'}`}>{formatCurrency(feeTotals.pending)}</p>
-                </div>
               </div>
             )}
 
