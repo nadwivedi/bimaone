@@ -5,7 +5,7 @@ import { getTodayDate as utilGetTodayDate, handleSmartDateInput, normalizeAIExtr
 import { pdfToImages } from '../../utils/pdfToImages'
 import { enforceMobileNumberFormat } from '../../utils/contactValidation'
 import DocumentScannerPreview from '../../components/DocumentScannerPreview'
-import { getInsuranceCompanies, initInsuranceCompanyCache, subscribeInsuranceCompanies } from '../../utils/insuranceCompanyCache'
+import { insurerGroupsFor } from '../../data/insuranceCompanies'
 import { getProductTypes, initProductTypeCache, subscribeProductTypes } from '../../utils/productTypeCache'
 import { useAiLimit, invalidateAiLimitCache } from '../../utils/useAiLimit'
 import AiLimitModal from '../../components/AiLimitModal'
@@ -13,8 +13,11 @@ import AiLimitModal from '../../components/AiLimitModal'
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
 // Bootstrap the midnight cache-refresh scheduler once when this module loads
-initInsuranceCompanyCache(API_URL)
 initProductTypeCache(API_URL)
+
+// Hardcoded insurer list — grouped for the dropdown, flattened for OCR name matching
+const INSURER_GROUPS = insurerGroupsFor('Other')
+const INSURER_NAMES = INSURER_GROUPS.flatMap(g => g.items)
 
 const resolveStoredDocumentPreview = (documentPath) => {
   if (!documentPath) return null
@@ -23,9 +26,10 @@ const resolveStoredDocumentPreview = (documentPath) => {
   return `${API_URL}${documentPath}`
 }
 
-const normalizeInsuranceCompany = (companyName, companies) => {
+// Maps an OCR-extracted insurer name to a name from the hardcoded list ('' when nothing matches)
+const normalizeInsuranceCompany = (companyName, companies = INSURER_NAMES) => {
   if (!companyName || !companies?.length) return ''
-  
+
   const cleanStr = (str) => {
     return (str || '')
       .trim()
@@ -38,42 +42,37 @@ const normalizeInsuranceCompany = (companyName, companies) => {
   const cleaned = cleanStr(companyName)
 
   // 1. Exact substring match
-  const exactMatch = companies.find(c => {
-    const cCleaned = cleanStr(c.name)
+  const exactMatch = companies.find(name => {
+    const cCleaned = cleanStr(name)
     return cleaned.includes(cCleaned) || cCleaned.includes(cleaned)
   })
   if (exactMatch) return exactMatch
 
   // 2. Word-overlap scoring
   const ocrWords = new Set(cleaned.split(/\s+/).filter(w => w.length > 2))
-  const stopwords = new Set(['general', 'insurance', 'company', 'limited', 'ltd', 'services', 'co'])
+  const stopwords = new Set(['general', 'insurance', 'company', 'limited', 'ltd', 'services', 'co', 'life', 'india'])
   const filteredOcrWords = new Set([...ocrWords].filter(w => !stopwords.has(w)))
 
-  let bestMatch = null
+  let bestMatch = ''
   let bestScore = 0
-  
-  for (const c of companies) {
-    const cCleaned = cleanStr(c.name)
+
+  for (const name of companies) {
+    const cCleaned = cleanStr(name)
     const cWords = cCleaned.split(/\s+/).filter(w => w.length > 2)
+    // Same brand often has a life and a general arm (e.g. Kotak, Bajaj) — never cross them
+    if (cWords.includes('life') !== ocrWords.has('life')) continue
     const filteredCWords = cWords.filter(w => !stopwords.has(w))
-    
+
     if (filteredCWords.length === 0) continue
 
     const overlap = filteredCWords.filter(w => filteredOcrWords.has(w)).length
     const score = overlap / filteredCWords.length
     if (overlap >= 1 && score > bestScore) {
       bestScore = score
-      bestMatch = c
+      bestMatch = name
     }
   }
-  return bestMatch || null
-}
-
-// Exact (case-insensitive) name match — used to link legacy records that only have a stored name
-const findCompanyByExactName = (name, companies) => {
-  if (!name || !companies?.length) return null
-  const target = name.trim().toLowerCase()
-  return companies.find(c => c.name.trim().toLowerCase() === target) || null
+  return bestMatch
 }
 
 const PRODUCT_TYPE_KEYWORD_MAP = [
@@ -184,11 +183,6 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
   const [newImdReference, setNewImdReference] = useState('')
   const [newImdAddress, setNewImdAddress] = useState('')
   const [newImdOtherInfo, setNewImdOtherInfo] = useState('')
-  const [insuranceCompanies, setInsuranceCompanies] = useState([])
-  // Mirror of insuranceCompanies in a ref so applyOcrResult closure always reads the latest list
-  const insuranceCompaniesRef = useRef([])
-  const [loadingCompanies, setLoadingCompanies] = useState(false)
-  const pendingOcrCompanyName = useRef(null) // stores raw OCR company name if companies weren't loaded yet
 
   const [productTypes, setProductTypes] = useState([])
   const productTypesRef = useRef([])
@@ -504,36 +498,6 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
 
   useEffect(() => {
     if (!isOpen) return
-    setLoadingCompanies(true)
-
-    const updateCompanies = (loaded) => {
-      setInsuranceCompanies(loaded)
-      insuranceCompaniesRef.current = loaded
-      if (pendingOcrCompanyName.current) {
-        const matched = normalizeInsuranceCompany(pendingOcrCompanyName.current, loaded)
-        if (matched) {
-          setFormData(prev => ({ ...prev, insuranceCompany: matched.name, insuranceCompanyId: matched._id }))
-        }
-        pendingOcrCompanyName.current = null
-      }
-      setFormData(prev => {
-        if (prev.insuranceCompanyId || !prev.insuranceCompany) return prev
-        const legacyMatch = findCompanyByExactName(prev.insuranceCompany, loaded)
-        return legacyMatch ? { ...prev, insuranceCompanyId: legacyMatch._id } : prev
-      })
-    }
-
-    getInsuranceCompanies(API_URL, true)
-      .then(updateCompanies)
-      .catch(() => {})
-      .finally(() => setLoadingCompanies(false))
-
-    const unsubscribe = subscribeInsuranceCompanies(updateCompanies)
-    return () => unsubscribe()
-  }, [isOpen])
-
-  useEffect(() => {
-    if (!isOpen) return
     const updateProductTypes = (loaded) => {
       setProductTypes(loaded)
       productTypesRef.current = loaded
@@ -605,19 +569,9 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
           return
         }
         if (key === 'insuranceCompany') {
-          // Use the ref so we always read the latest list, even if the closure
-          // was created before the companies state had loaded
-          const currentCompanies = insuranceCompaniesRef.current
-          const matched = normalizeInsuranceCompany(value, currentCompanies)
-          if (matched) {
-            updated[key] = matched.name
-            updated.insuranceCompanyId = matched._id
-          } else {
-            // Companies list may not be loaded yet — store raw value and retry after load
-            pendingOcrCompanyName.current = value
-            updated[key] = '' // don't put garbage in the dropdown
-            updated.insuranceCompanyId = ''
-          }
+          // No match → leave blank, don't put garbage in the dropdown
+          updated[key] = normalizeInsuranceCompany(value)
+          updated.insuranceCompanyId = ''
           return
         }
         if (key === 'product') {
@@ -1070,23 +1024,25 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                   <div>
                     <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>Insurance Company</label>
                     <select
-                      name='insuranceCompanyId'
-                      value={formData.insuranceCompanyId}
+                      name='insuranceCompany'
+                      value={formData.insuranceCompany}
                       onChange={(e) => {
-                        const id = e.target.value
-                        const company = insuranceCompanies.find(c => c._id === id)
-                        setFormData(prev => ({ ...prev, insuranceCompanyId: id, insuranceCompany: company ? company.name : '' }))
+                        const name = e.target.value
+                        // Older records carry a DB company id — keep it only while the name is unchanged
+                        const keepId = name && name === initialData?.insuranceCompany
+                        setFormData(prev => ({ ...prev, insuranceCompany: name, insuranceCompanyId: keepId ? (initialData.insuranceCompanyId || '') : '' }))
                       }}
                       className='w-full px-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     >
                       <option value="">Select Company</option>
-                      {loadingCompanies ? (
-                        <option value="" disabled>Loading...</option>
-                      ) : (
-                        insuranceCompanies.map(c => (
-                          <option key={c._id} value={c._id}>{c.name}</option>
-                        ))
+                      {formData.insuranceCompany && !INSURER_NAMES.includes(formData.insuranceCompany) && (
+                        <option value={formData.insuranceCompany}>{formData.insuranceCompany}</option>
                       )}
+                      {INSURER_GROUPS.map(g => (
+                        <optgroup key={g.label} label={g.label}>
+                          {g.items.map(name => <option key={name} value={name}>{name}</option>)}
+                        </optgroup>
+                      ))}
                     </select>
                   </div>
 
