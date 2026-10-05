@@ -6,6 +6,27 @@ const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
 const AuthContext = createContext(null)
 
+// Remembers that this browser has a logged-in session, so '/' can wait for the auth check
+// instead of flashing the homepage. Only a hint — the cookie is still verified by the backend.
+const SESSION_HINT_KEY = 'bimaone_logged_in'
+
+export const hasSessionHint = () => {
+  try {
+    return localStorage.getItem(SESSION_HINT_KEY) === '1'
+  } catch {
+    return false
+  }
+}
+
+const setSessionHint = (loggedIn) => {
+  try {
+    if (loggedIn) localStorage.setItem(SESSION_HINT_KEY, '1')
+    else localStorage.removeItem(SESSION_HINT_KEY)
+  } catch {
+    // localStorage may be disabled — silently ignore
+  }
+}
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -15,11 +36,13 @@ export const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     isAuthenticatedRef.current = isAuthenticated
+    if (isAuthenticated) setSessionHint(true)
   }, [isAuthenticated])
 
   const clearAuthState = () => {
     setUser(null)
     setIsAuthenticated(false)
+    setSessionHint(false)
   }
 
   useEffect(() => {

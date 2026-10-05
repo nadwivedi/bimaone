@@ -1,12 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, Link, useNavigate } from 'react-router-dom'
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useState } from 'react'
 import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider, getTheme } from './context/ThemeContext'
-import { useAuth } from './context/AuthContext'
+import { useAuth, hasSessionHint } from './context/AuthContext'
 import Sidebar from './components/Sidebar'
-import ProtectedRoute from './components/ProtectedRoute'
+import ProtectedRoute, { AuthLoading } from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
 import Login from './pages/Login'
@@ -40,7 +40,6 @@ function AppContent() {
   const navigate = useNavigate()
   const { isAuthenticated, user, loading } = useAuth()
   const isLoginPage = location.pathname === '/login'
-  const isLandingPage = location.pathname === '/'
   const isMarketingPage = ['/', '/about', '/features'].includes(location.pathname) || Boolean(landingBySlug[location.pathname.slice(1)])
   const publicPages = ['/privacy-policy', '/terms-and-conditions', '/contact-us', '/pricing']
   const isPublicPage = publicPages.includes(location.pathname)
@@ -51,11 +50,11 @@ function AppContent() {
 
   const needsEmailVerification = isAuthenticated && user && !user.emailVerified && !user.googleId
 
-  useEffect(() => {
-    if (isLandingPage && isAuthenticated && !loading) {
-      navigate('/dashboard', { replace: true })
-    }
-  }, [isLandingPage, isAuthenticated, loading, navigate])
+  // Logged-in users never see the homepage: redirect during render (no effect, so Home is never
+  // painted first), and while a returning user's session is still being verified show a loader.
+  const homeElement = isAuthenticated
+    ? <Navigate to='/dashboard' replace />
+    : (loading && hasSessionHint() ? <AuthLoading /> : <Home />)
 
   return (
     <>
@@ -99,7 +98,7 @@ function AppContent() {
         <div className={showNav ? 'pt-16 lg:pt-0' : ''}>
           <Routes>
             <Route path='/login' element={<Login />} />
-            <Route path='/' element={<Home />} />
+            <Route path='/' element={homeElement} />
             <Route path='/dashboard' element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path='/setting' element={<ProtectedRoute><Setting /></ProtectedRoute>} />
             <Route path='/search' element={<ProtectedRoute><Search /></ProtectedRoute>} />
