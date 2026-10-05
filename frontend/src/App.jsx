@@ -6,6 +6,7 @@ import { AuthProvider } from './context/AuthContext'
 import { ThemeProvider, getTheme } from './context/ThemeContext'
 import { useAuth, hasSessionHint } from './context/AuthContext'
 import Sidebar from './components/Sidebar'
+import BottomNav from './components/BottomNav'
 import ProtectedRoute, { AuthLoading } from './components/ProtectedRoute'
 import Home from './pages/Home'
 import Dashboard from './pages/Dashboard'
@@ -61,6 +62,7 @@ function AppContent() {
       <ToastContainer />
       {needsEmailVerification && <ForceEmailVerificationModal />}
       {showNav && <Sidebar mobileOpen={menuOpen} onClose={closeMenu} />}
+      {showNav && <BottomNav />}
 
       {showNav && (
         <nav className={`fixed top-0 left-0 right-0 z-20 flex h-16 items-center border-b border-slate-200 px-2 lg:hidden ${theme.navbar}`}>
@@ -95,7 +97,7 @@ function AppContent() {
       )}
 
       <div className={showNav ? 'lg:ml-[260px]' : ''}>
-        <div className={showNav ? 'pt-16 lg:pt-0' : ''}>
+        <div className={showNav ? 'pb-16 pt-16 lg:pb-0 lg:pt-0' : ''}>
           <Routes>
             <Route path='/login' element={<Login />} />
             <Route path='/' element={homeElement} />

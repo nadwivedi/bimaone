@@ -564,7 +564,7 @@ const Search = () => {
                   key={t.value}
                   type='button'
                   onClick={() => setFilterType(t.value)}
-                  className={`shrink-0 rounded-t-lg px-4 py-2 text-sm font-semibold transition ${filterType === t.value ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
+                  className={`shrink-0 rounded-t-lg px-3 py-1.5 text-xs font-semibold transition md:px-4 md:py-2 md:text-sm ${filterType === t.value ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
                 >
                   {t.label}
                 </button>
@@ -588,7 +588,7 @@ const Search = () => {
                     value={inputValue}
                     onChange={(e) => setInputValue(e.target.value)}
                     placeholder={isInsurance ? 'Search name, vehicle, mobile or policy number' : `Search ${typeLabel} by name, vehicle or mobile`}
-                    className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-3 text-[15px] font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+                    className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-3 text-[15px] font-medium text-slate-800 outline-none transition placeholder:text-xs placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 md:placeholder:text-[15px] focus:ring-4 focus:ring-blue-600/10'
                   />
                 </label>
                 <button

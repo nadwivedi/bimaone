@@ -358,7 +358,7 @@ const Renewals = () => {
                   key={t.value}
                   type='button'
                   onClick={() => setDocType(t.value)}
-                  className={`shrink-0 rounded-t-lg px-4 py-2 text-sm font-semibold transition ${docType === t.value ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
+                  className={`shrink-0 rounded-t-lg px-3 py-1.5 text-xs font-semibold transition md:px-4 md:py-2 md:text-sm ${docType === t.value ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
                 >
                   {t.label}
                 </button>

@@ -356,10 +356,10 @@ const Leads = () => {
                     key={v.key}
                     type='button'
                     onClick={() => L.setBucket(v.key)}
-                    className={`inline-flex shrink-0 items-center gap-1.5 rounded-t-lg px-4 py-2 text-sm font-semibold transition ${active ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
+                    className={`inline-flex shrink-0 items-center gap-1 rounded-t-lg px-3 py-1.5 text-xs font-semibold transition md:gap-1.5 md:px-4 md:py-2 md:text-sm ${active ? 'bg-white text-slate-900' : 'text-slate-300 hover:bg-white/10 hover:text-white'}`}
                   >
                     {v.label}
-                    <span className={`rounded-full px-1.5 text-[11px] ${active ? 'bg-slate-100 text-slate-600' : v.key === 'overdue' && counts.overdue ? 'bg-orange-500 text-white' : 'bg-white/15 text-slate-200'}`}>
+                    <span className={`rounded-full px-1.5 text-[10px] md:text-[11px] ${active ? 'bg-slate-100 text-slate-600' : v.key === 'overdue' && counts.overdue ? 'bg-orange-500 text-white' : 'bg-white/15 text-slate-200'}`}>
                       {counts[v.key] ?? 0}
                     </span>
                   </button>
@@ -380,7 +380,7 @@ const Leads = () => {
                     value={L.search}
                     onChange={(e) => { L.setSearch(e.target.value); setDraft((d) => ({ ...d, search: e.target.value })) }}
                     placeholder='Search by name, phone or vehicle number'
-                    className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-3 text-[15px] font-medium text-slate-800 outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10'
+                    className='w-full rounded-lg border border-slate-300 bg-white py-3 pl-11 pr-3 text-[15px] font-medium text-slate-800 outline-none transition placeholder:text-xs placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 md:placeholder:text-[15px] focus:ring-4 focus:ring-blue-600/10'
                   />
                 </label>
                 <button
