@@ -122,6 +122,11 @@ const InsuranceSchema = new mongoose.Schema({
     type: Number,
     default: 0
   },
+  // Total GST / tax charged on the policy (CGST + SGST, or IGST)
+  gstAmount: {
+    type: Number,
+    default: 0
+  },
   // Gross Premium (net premium + taxes) — kept as `premium` for backward compatibility
   premium: {
     type: Number,

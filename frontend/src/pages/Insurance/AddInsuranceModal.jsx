@@ -136,6 +136,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
     odPremium: '',
     tpPremium: '',
     netPremium: '',
+    gstAmount: '',
     premium: '',
     insuranceDocument: '',
     endorsementDocument: '',
@@ -237,6 +238,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
         odPremium: initialData.odPremium != null ? String(initialData.odPremium) : '',
         tpPremium: initialData.tpPremium != null ? String(initialData.tpPremium) : '',
         netPremium: initialData.netPremium != null ? String(initialData.netPremium) : '',
+        gstAmount: initialData.gstAmount != null ? String(initialData.gstAmount) : '',
         premium: initialData.premium != null ? String(initialData.premium) : '',
         insuranceDocument: initialData.insuranceDocument || '',
         endorsementDocument: initialData.endorsementDocument || '',
@@ -287,6 +289,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
         odPremium: '',
         tpPremium: '',
         netPremium: '',
+        gstAmount: '',
         premium: '',
         insuranceDocument: '',
         endorsementDocument: '',
@@ -580,7 +583,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
           else updated[key] = value
           return
         }
-        if (key === 'premium' || key === 'odPremium' || key === 'tpPremium' || key === 'netPremium') {
+        if (key === 'premium' || key === 'odPremium' || key === 'tpPremium' || key === 'netPremium' || key === 'gstAmount') {
           updated[key] = String(value).replace(/[^0-9.]/g, '')
           return
         }
@@ -638,7 +641,8 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
           if (error.response?.status === 422 && error.response?.data?.isScannedPdf && fileToProcess) {
             const fallbackToast = toast.info('Scanned PDF detected. Converting to images for visual analysis...', { autoClose: false, isLoading: true })
             try {
-              const pageImages = await pdfToImages(fileToProcess, 2, 1.2, 0.7)
+              // Scale 2 keeps the small premium-table digits legible; at 1.2 the model misread them
+              const pageImages = await pdfToImages(fileToProcess, 2, 2, 0.85)
               if (pageImages && pageImages.length > 0) {
                 toast.update(fallbackToast, { render: 'Analyzing scanned document with Vision AI...', isLoading: true })
                 const visionResponse = await axios.post(
@@ -904,6 +908,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
       odPremium: formData.odPremium !== '' ? Number(formData.odPremium) : 0,
       tpPremium: formData.tpPremium !== '' ? Number(formData.tpPremium) : 0,
       netPremium: formData.netPremium !== '' ? Number(formData.netPremium) : 0,
+      gstAmount: formData.gstAmount !== '' ? Number(formData.gstAmount) : 0,
       premium: formData.premium !== '' ? Number(formData.premium) : 0,
       issueDate: formData.issueDate,
       insuranceDocument: uploadedDocumentPath,
@@ -1317,6 +1322,23 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                   </div>
                 </div>
                 <div>
+                  <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>GST Amount (₹)</label>
+                  <div className='relative'>
+                    <span className='absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 font-semibold text-sm'>₹</span>
+                    <input
+                      type='number'
+                      name='gstAmount'
+                      value={formData.gstAmount}
+                      onChange={handleChange}
+                      placeholder='0'
+                      min='0'
+                      step='any'
+                      tabIndex='10'
+                      className='w-full pl-8 pr-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
+                    />
+                  </div>
+                </div>
+                <div>
                   <label className='block text-xs md:text-sm font-semibold text-gray-700 mb-1'>
                     Gross Premium (₹)
                     <span className='ml-1 text-xs text-emerald-600 font-normal'>Total incl. GST</span>
@@ -1331,7 +1353,7 @@ const AddInsuranceModal = ({ isOpen, onClose, onSubmit, initialData = null, isEd
                       placeholder='0'
                       min='0'
                       step='any'
-                      tabIndex='10'
+                      tabIndex='11'
                       className='w-full pl-8 pr-3.5 py-2.5 text-[15px] font-medium text-slate-800 border border-slate-300 rounded-lg outline-none transition placeholder:font-normal placeholder:text-slate-400 focus:border-blue-600 focus:ring-4 focus:ring-blue-600/10 bg-white'
                     />
                   </div>

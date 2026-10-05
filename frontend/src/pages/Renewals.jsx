@@ -223,6 +223,7 @@ const Renewals = () => {
         row['OD Premium'] = r.odPremium ?? ''
         row['TP Premium'] = r.tpPremium ?? ''
         row['Net Premium'] = r.netPremium ?? ''
+        row['GST Amount'] = r.gstAmount ?? ''
         row['Gross Premium'] = r.premium ?? ''
         row['Client Name'] = r.reference || ''
         row['Agent Name (IMD)'] = r.imd || ''

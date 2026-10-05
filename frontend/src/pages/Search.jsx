@@ -387,6 +387,7 @@ const Search = () => {
           row['OD Premium'] = r.odPremium ?? ''
           row['TP Premium'] = r.tpPremium ?? ''
           row['Net Premium'] = r.netPremium ?? ''
+          row['GST Amount'] = r.gstAmount ?? ''
           row['Gross Premium'] = r.premium ?? ''
           row['Client Name'] = recordReferenceName(r)
           row['Agent Name (IMD)'] = recordImdName(r)

@@ -97,6 +97,7 @@ const TYPE_CONFIG = {
       { label: 'OD Premium', key: 'odPremium', prefix: '₹' },
       { label: 'TP Premium', key: 'tpPremium', prefix: '₹' },
       { label: 'Net Premium', key: 'netPremium', prefix: '₹' },
+      { label: 'GST Amount', key: 'gstAmount', prefix: '₹' },
       { label: 'Gross Premium', key: 'premium', prefix: '₹' },
       { label: 'Mobile Number', key: 'mobileNumber' },
       { label: 'Issue Date', key: 'issueDate' },
