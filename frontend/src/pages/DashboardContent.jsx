@@ -315,32 +315,32 @@ const DashboardContent = () => {
               role='button'
               tabIndex={0}
               aria-label='Upload insurance policy'
-              className={`group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-4 py-5 text-center transition-all md:py-6 ${
+              className={`group flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed px-3 py-3.5 text-center transition-all md:px-4 md:py-6 ${
                 isDragOver
                   ? 'scale-[1.01] border-blue-500 bg-blue-50'
                   : 'border-blue-200 bg-gradient-to-r from-blue-50 to-sky-50 hover:border-blue-400'
               }`}
             >
-              <span className={`flex h-10 w-10 items-center justify-center rounded-xl text-white shadow-lg shadow-blue-700/20 transition-transform md:h-12 md:w-12 ${isDragOver ? 'scale-110 bg-blue-600' : 'bg-gradient-to-br from-blue-700 to-blue-500 group-hover:scale-105'}`}>
-                <Svg d={ICON.cloud} className='h-5 w-5 md:h-6 md:w-6' />
+              <span className={`flex h-8 w-8 items-center justify-center rounded-lg text-white shadow-lg shadow-blue-700/20 transition-transform md:h-12 md:w-12 md:rounded-xl ${isDragOver ? 'scale-110 bg-blue-600' : 'bg-gradient-to-br from-blue-700 to-blue-500 group-hover:scale-105'}`}>
+                <Svg d={ICON.cloud} className='h-4 w-4 md:h-6 md:w-6' />
               </span>
-              <p className='mt-2.5 text-base font-bold text-slate-800'>
-                {isDragOver ? 'Release to upload' : 'Drag & drop your insurance policy here'}
+              <p className='mt-2 text-sm font-bold text-slate-800 md:mt-2.5 md:text-base'>
+                {isDragOver ? 'Release to upload' : <><span className='md:hidden'>Upload your insurance policy</span><span className='hidden md:inline'>Drag & drop your insurance policy here</span></>}
               </p>
-              <p className='text-xs text-slate-500 md:text-sm'>PDF or image · up to 15 MB</p>
-              <div className='mt-3 flex flex-col items-center gap-2 sm:flex-row sm:gap-3'>
-                <span className='inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-5 py-2 text-sm font-semibold text-white shadow-md shadow-blue-700/20 transition group-hover:from-blue-800 group-hover:to-blue-700'>
+              <p className='text-[11px] text-slate-500 md:text-sm'>PDF or image · up to 15 MB</p>
+              <div className='mt-2.5 flex flex-col items-center gap-1.5 sm:flex-row sm:gap-3 md:mt-3'>
+                <span className='inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-4 py-1.5 text-[13px] font-semibold text-white shadow-md shadow-blue-700/20 transition group-hover:from-blue-800 group-hover:to-blue-700 md:px-5 md:py-2 md:text-sm'>
                   <Svg d={ICON.bolt} className='h-4 w-4' />
                   Browse file · AI auto-fill
                 </span>
-                <span className='text-xs font-medium text-slate-400'>or</span>
+                <span className='hidden text-xs font-medium text-slate-400 sm:inline'>or</span>
                 <button
                   type='button'
                   onClick={(e) => {
                     e.stopPropagation()
                     openManualEntry()
                   }}
-                  className='inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:bg-slate-100'
+                  className='inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-4 py-1.5 text-[13px] font-semibold text-slate-700 transition hover:bg-slate-100 md:py-2 md:text-sm'
                 >
                   <Svg d={ICON.pencil} className='h-4 w-4' />
                   Enter manually
