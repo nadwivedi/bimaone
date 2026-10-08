@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { createPortal } from 'react-dom'
 import axios from 'axios'
 import { toast } from 'react-toastify'
 import useLeads from './useLeads'
@@ -10,6 +11,8 @@ import {
 
 // Lead Management: stat cards, leads table with checkboxes + pagination, filters panel on the right.
 const PAGE_SIZE = 10
+// Tallest the row menu gets (5 items); used to decide whether it opens up or down
+const ROW_MENU_HEIGHT = 200
 
 const AVATAR_COLORS = [
   'bg-blue-100 text-blue-700', 'bg-purple-100 text-purple-700', 'bg-orange-100 text-orange-700',
@@ -106,12 +109,44 @@ const Leads = () => {
   useEffect(() => { setPage(1); setSelected(new Set()) }, [L.bucket, L.search, L.filters])
   useEffect(() => { if (page > totalPages) setPage(totalPages) }, [page, totalPages])
 
+  // The row menu floats above the page (fixed), so it closes on outside click, scroll or resize.
   useEffect(() => {
     if (!menuFor) return
-    const close = (e) => { if (menuRef.current && !menuRef.current.contains(e.target)) setMenuFor(null) }
+    const close = (e) => {
+      // The 3-dot button toggles the menu itself
+      if (e.target.closest?.('[data-lead-menu-btn]')) return
+      if (menuRef.current && !menuRef.current.contains(e.target)) setMenuFor(null)
+    }
+    const dismiss = () => setMenuFor(null)
     document.addEventListener('mousedown', close)
-    return () => document.removeEventListener('mousedown', close)
+    window.addEventListener('scroll', dismiss, true)
+    window.addEventListener('resize', dismiss)
+    return () => {
+      document.removeEventListener('mousedown', close)
+      window.removeEventListener('scroll', dismiss, true)
+      window.removeEventListener('resize', dismiss)
+    }
   }, [menuFor])
+
+  // Open the menu next to its 3-dot button; it opens upward when there is no room below.
+  const toggleMenu = (e, key, lead) => {
+    if (menuFor?.key === key) {
+      setMenuFor(null)
+      return
+    }
+    const rect = e.currentTarget.getBoundingClientRect()
+    const viewW = document.documentElement.clientWidth
+    const viewH = document.documentElement.clientHeight
+    const openUp = rect.bottom + ROW_MENU_HEIGHT > viewH && rect.top > viewH - rect.bottom
+    setMenuFor({
+      key,
+      lead,
+      style: {
+        right: Math.max(8, viewW - rect.right),
+        ...(openUp ? { bottom: viewH - rect.top + 4 } : { top: rect.bottom + 4 }),
+      },
+    })
+  }
 
   useEffect(() => {
     if (!showFilters) return
@@ -290,38 +325,31 @@ const Leads = () => {
     </div>
   )
 
-  const RowMenu = ({ lead, ctx }) => (
-    <div className='relative' onClick={(e) => e.stopPropagation()}>
+  const RowMenu = ({ lead, ctx }) => {
+    const key = `${ctx}:${lead._id}`
+    return (
       <button
         type='button'
-        onClick={() => setMenuFor(menuFor === `${ctx}:${lead._id}` ? null : `${ctx}:${lead._id}`)}
-        className='flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 transition hover:bg-blue-50 hover:text-blue-700'
+        data-lead-menu-btn
+        onClick={(e) => { e.stopPropagation(); toggleMenu(e, key, lead) }}
+        className={`flex h-8 w-8 items-center justify-center rounded-lg transition hover:bg-blue-50 hover:text-blue-700 ${menuFor?.key === key ? 'bg-blue-50 text-blue-700' : 'text-slate-400'}`}
         aria-label='Actions'
+        aria-haspopup='menu'
+        aria-expanded={menuFor?.key === key}
       >
         <svg className='h-5 w-5' fill='currentColor' viewBox='0 0 24 24'><circle cx='12' cy='5' r='1.8' /><circle cx='12' cy='12' r='1.8' /><circle cx='12' cy='19' r='1.8' /></svg>
       </button>
-      {menuFor === `${ctx}:${lead._id}` && (
-        <div ref={menuRef} className='absolute right-0 top-9 z-20 w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl'>
-          {[
-            { label: 'View details', run: () => L.setDetailLead(lead) },
-            !isClosedStatus(lead.status) && { label: 'Log follow-up', run: () => L.openFollowUp(lead) },
-            { label: 'Edit lead', run: () => L.openEdit(lead) },
-            !isClosedStatus(lead.status) && { label: 'Mark converted', run: () => L.updateStatus(lead, 'converted') },
-            { label: 'Delete', run: () => L.handleDelete(lead), danger: true },
-          ].filter(Boolean).map((item) => (
-            <button
-              key={item.label}
-              type='button'
-              onClick={() => { setMenuFor(null); item.run() }}
-              className={`block w-full px-3.5 py-2 text-left text-sm ${item.danger ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-700 hover:bg-slate-50'}`}
-            >
-              {item.label}
-            </button>
-          ))}
-        </div>
-      )}
-    </div>
-  )
+    )
+  }
+
+  const menuLead = menuFor?.lead
+  const menuItems = menuLead ? [
+    { label: 'View details', run: () => L.setDetailLead(menuLead) },
+    !isClosedStatus(menuLead.status) && { label: 'Log follow-up', run: () => L.openFollowUp(menuLead) },
+    { label: 'Edit lead', run: () => L.openEdit(menuLead) },
+    !isClosedStatus(menuLead.status) && { label: 'Mark converted', run: () => L.updateStatus(menuLead, 'converted') },
+    { label: 'Delete', run: () => L.handleDelete(menuLead), danger: true },
+  ].filter(Boolean) : []
 
   const phoneText = (mobile) => (mobile ? `+91 ${mobile.replace(/(\d{5})(\d{5})/, '$1 $2')}` : '')
 
@@ -610,6 +638,28 @@ const Leads = () => {
         <div className='fixed inset-0 z-[65] flex items-center justify-center bg-black/60 p-2 md:p-4' onClick={() => setShowFilters(false)}>
           {filtersPanel}
         </div>
+      )}
+      {/* Row actions menu: rendered on the body so the table and page edges can't cut it off */}
+      {menuFor && createPortal(
+        <div
+          ref={menuRef}
+          role='menu'
+          style={{ ...menuFor.style, fontFamily: "'Poppins', sans-serif" }}
+          className='fixed z-[60] w-48 overflow-hidden rounded-xl border border-slate-200 bg-white py-1 text-left shadow-xl'
+        >
+          {menuItems.map((item) => (
+            <button
+              key={item.label}
+              type='button'
+              role='menuitem'
+              onClick={() => { setMenuFor(null); item.run() }}
+              className={`block w-full px-3.5 py-2 text-left text-sm ${item.danger ? 'text-rose-600 hover:bg-rose-50' : 'text-slate-700 hover:bg-slate-50'}`}
+            >
+              {item.label}
+            </button>
+          ))}
+        </div>,
+        document.body
       )}
       <LeadModals leads={L} />
     </div>
