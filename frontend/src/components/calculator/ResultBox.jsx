@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { FaFileLines } from 'react-icons/fa6'
 import { fmt, fmtD } from './helpers'
 import PdfPreviewModal from './PdfPreviewModal'
 import UpgradePopup from '../UpgradePopup'
@@ -8,6 +9,27 @@ import useCurrentPlan from '../../hooks/useCurrentPlan'
 import { getInsuranceCompanies, subscribeInsuranceCompanies } from '../../utils/insuranceCompanyCache'
 
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+
+const Group = ({ title, dot, rows, totalLabel, total }) => (
+  <div className='px-4 py-3'>
+    <p className='mb-2 flex items-center gap-2 text-xs font-bold text-slate-900'>
+      <span className={`h-2 w-2 rounded-full ${dot}`} />
+      {title}
+    </p>
+    <div className='space-y-1.5'>
+      {rows.map(([label, value, kind], i) => (
+        <div key={i} className={`flex items-baseline justify-between gap-3 text-xs ${kind === 'strong' ? 'border-t border-dashed border-slate-200 pt-1.5' : ''}`}>
+          <span className={kind === 'strong' ? 'font-semibold text-slate-700' : 'text-slate-500'}>{label}</span>
+          <span className={`shrink-0 tabular-nums ${kind === 'minus' ? 'font-medium text-emerald-600' : kind === 'strong' ? 'font-semibold text-slate-900' : 'font-medium text-slate-800'}`}>{value}</span>
+        </div>
+      ))}
+    </div>
+    <div className='mt-2 flex items-baseline justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm'>
+      <span className='font-semibold text-slate-700'>{totalLabel}</span>
+      <span className='font-bold tabular-nums text-slate-900'>₹{fmtD(total)}</span>
+    </div>
+  </div>
+)
 
 const ResultBox = ({
   result,
@@ -51,6 +73,49 @@ const ResultBox = ({
 
   const effectiveIdv = result.depreciatedIdv || (parseFloat(idv) || 0)
   const odBase = showOD ? effectiveIdv * (result.odRate / 100) : 0
+
+  const isAddonField = f => f.section === 'addon' || (!f.section && f.section !== 'od' && f.section !== 'tp')
+  const dynamicTpTotal = (result.dynamicCustomFields || []).filter(f => f.section === 'tp').reduce((sum, f) => sum + f.amount, 0)
+
+  const odRows = [
+    ['Final IDV (after depreciation)', `₹${fmtD(effectiveIdv)}`],
+    [vehicleType === 'pcv' ? 'Vehicle Basic OD' : `Basic OD @ ${result.odRate}%`, `₹${fmtD(odBase)}`],
+    ...(vehicleType === 'gcv' && result.details?.gcvExtraUnits > 0 ? [['Extra Weight > 12000 Premium', `₹${fmtD(result.details.gcvExtraPremium)}`]] : []),
+    ...(result.geoExtentAmount > 0 ? [['Geographical Extent', `₹${fmtD(result.geoExtentAmount)}`]] : []),
+    ...(result.cngKitOdAmount > 0 ? [['CNG/LPG Kit', `₹${fmtD(result.cngKitOdAmount)}`]] : []),
+    ...(result.imt23Amount > 0 ? [['IMT 23 Loading (15%)', `₹${fmtD(result.imt23Amount)}`]] : []),
+    ...(vehicleType === 'pcv' && result.addODVal > 0 ? [['Add. OD (Passenger Capacity)', `₹${fmtD(result.addODVal)}`]] : []),
+    ...(result.dynamicCustomFields || []).filter(f => f.section === 'od').map(f => [f.label, `₹${fmtD(f.amount)}`]),
+    ['OD before discounts', `₹${fmtD(result.odBeforeDiscount)}`, 'strong'],
+    ...((result.odDiscountVal || 0) > 0 ? [[`OD Discount (${result.odDiscountVal}%)`, `− ₹${fmtD(result.odDiscountAmount)}`, 'minus']] : []),
+    ...(ncb > 0 ? [[`NCB (${ncb}%)`, `− ₹${fmtD(result.ncbAmount)}`, 'minus']] : []),
+    ...(result.loadingAmount > 0 ? [[`Loading @ ${result.loadingDiscount}%`, `+ ₹${fmtD(result.loadingAmount)}`]] : []),
+  ]
+
+  const tpRows = [
+    [isBundle ? (vehicleType === 'two_wheeler' ? '5-Year TP Premium' : '3-Year TP Premium') : '1-Year TP Premium', `₹${fmtD(result.tpPremium + result.restrictedTPPDDiscount)}`],
+    ...(result.restrictedTPPDDiscount > 0 ? [['Restricted TPPD Discount', `− ₹${fmtD(result.restrictedTPPDDiscount)}`, 'minus']] : []),
+    ...(result.llPdAmount > 0 ? [['LL to Paid Driver', `₹${fmtD(result.llPdAmount)}`]] : []),
+    ...(result.paOdAmount > 0 ? [['PA to Owner Driver', `₹${fmtD(result.paOdAmount)}`]] : []),
+    ...(result.llEmployeeAmount > 0 ? [['LL to Employee', `₹${fmtD(result.llEmployeeAmount)}`]] : []),
+    ...(result.paUnnamedAmount > 0 ? [['PA to Unnamed Passenger', `₹${fmtD(result.paUnnamedAmount)}`]] : []),
+    ...(result.geoExtentTPAmount > 0 && (vehicleType === 'gcv' || vehicleType === 'pcv') ? [['Geographical Extent (TP)', `₹${fmtD(result.geoExtentTPAmount)}`]] : []),
+    ...(result.cngKitTpAmount > 0 ? [['CNG/LPG Kit (TP)', `₹${fmtD(result.cngKitTpAmount)}`]] : []),
+    ...(result.dynamicCustomFields || []).filter(f => f.section === 'tp').map(f => [f.label, `₹${fmtD(f.amount)}`]),
+  ]
+  const tpTotal = result.tpPremium + (result.geoExtentTPAmount || 0) + (result.cngKitTpAmount || 0) + result.llPdAmount + result.paOdAmount + result.llEmployeeAmount + result.paUnnamedAmount + dynamicTpTotal
+
+  const addonRows = [
+    ...(result.zeroDepAmount > 0 ? [['Zero Depreciation', `₹${fmtD(result.zeroDepAmount)}`]] : []),
+    ...(result.tyreCoverAmount > 0 ? [['Other Addons (Rate)', `₹${fmtD(result.tyreCoverAmount)}`]] : []),
+    ...(result.rsaAmount > 0 ? [['Roadside Assistance', `₹${fmtD(result.rsaAmount)}`]] : []),
+    ...(result.otherAddonAmount > 0 ? [['Other Addon', `₹${fmtD(result.otherAddonAmount)}`]] : []),
+    ...(result.dynamicCustomFields || []).filter(isAddonField).map(f => [f.label, `₹${fmtD(f.amount)}`]),
+  ]
+  const addonTotal = result.zeroDepAmount + result.tyreCoverAmount + result.rsaAmount + result.otherAddonAmount + (result.dynamicCustomFields || []).filter(isAddonField).reduce((sum, f) => sum + f.amount, 0)
+
+  const premiumBeforeGst = result.odPremium + result.loadingAmount + tpTotal + addonTotal
+  const policyLabel = policyType === 'od' ? 'Own Damage' : policyType === 'tp' ? 'Third Party' : policyType === 'comprehensive' ? 'Comprehensive' : 'Bundle'
 
   const shareQuotation = () => {
     const quoteId = `BBQ-${Math.floor(100000 + Math.random() * 900000)}`
@@ -222,9 +287,7 @@ const ResultBox = ({
       if (result.cngKitOdAmount > 0) tableRows.push({ desc: 'CNG/LPG Kit', rate: '5%', amount: result.cngKitOdAmount })
       if (result.imt23Amount > 0) tableRows.push({ desc: 'IMT 23 Loading (15% of sum)', rate: '15%', amount: result.imt23Amount })
       if (vehicleType === 'pcv' && result.addODVal > 0) tableRows.push({ desc: 'Add. OD (Passenger Capacity)', rate: '-', amount: result.addODVal })
-      (result.dynamicCustomFields || []).filter(f => f.section === 'od').forEach(f => {
-        tableRows.push({ desc: f.label, rate: '-', amount: f.amount })
-      })
+      tableRows.push(...(result.dynamicCustomFields || []).filter(f => f.section === 'od').map(f => ({ desc: f.label, rate: '-', amount: f.amount })))
       tableRows.push({ desc: 'Final OD before discounts', rate: '-', amount: result.odBeforeDiscount, type: 'subtotal' })
       if (result.odDiscountVal > 0) tableRows.push({ desc: 'Insurer OD Discount', rate: `-${result.odDiscountVal}%`, amount: -(result.odDiscountAmount || 0), type: 'discount' })
       if (ncb > 0) tableRows.push({ desc: 'No Claim Bonus (NCB) Discount', rate: `-${ncb}%`, amount: -(result.ncbAmount || 0), type: 'discount' })
@@ -241,22 +304,18 @@ const ResultBox = ({
       if (result.paUnnamedAmount > 0) tableRows.push({ desc: 'PA to Unnamed Passenger', rate: '-', amount: result.paUnnamedAmount })
       if (result.geoExtentTPAmount > 0 && (vehicleType === 'gcv' || vehicleType === 'pcv')) tableRows.push({ desc: 'Geographical Extent (TP)', rate: '-', amount: result.geoExtentTPAmount })
       if (result.cngKitTpAmount > 0) tableRows.push({ desc: 'CNG/LPG Kit (TP)', rate: '-', amount: result.cngKitTpAmount })
-      (result.dynamicCustomFields || []).filter(f => f.section === 'tp').forEach(f => {
-        tableRows.push({ desc: f.label, rate: '-', amount: f.amount })
-      })
+      tableRows.push(...(result.dynamicCustomFields || []).filter(f => f.section === 'tp').map(f => ({ desc: f.label, rate: '-', amount: f.amount })))
     }
 
     if (result.rsaAmount > 0) tableRows.push({ desc: 'Roadside Assistance (RSA)', rate: '-', amount: result.rsaAmount })
     if (result.otherAddonAmount > 0) tableRows.push({ desc: 'Other Addon Coverage', rate: '-', amount: result.otherAddonAmount })
     if (result.zeroDepAmount > 0) tableRows.push({ desc: 'Zero Depreciation', rate: '-', amount: result.zeroDepAmount })
     if (result.tyreCoverAmount > 0) tableRows.push({ desc: 'Other Addons (Rate)', rate: '-', amount: result.tyreCoverAmount })
-    (result.dynamicCustomFields || []).filter(f => f.section === 'addon' || (!f.section && f.section !== 'od' && f.section !== 'tp')).forEach(f => {
-      tableRows.push({ desc: f.label, rate: '-', amount: f.amount })
-    })
+    tableRows.push(...(result.dynamicCustomFields || []).filter(f => f.section === 'addon' || (!f.section && f.section !== 'od' && f.section !== 'tp')).map(f => ({ desc: f.label, rate: '-', amount: f.amount })))
 
 
 
-    const netPremiumVal = result.odPremium + result.tpPremium + (result.geoExtentTPAmount || 0) + (result.cngKitTpAmount || 0) + result.llPdAmount + result.paOdAmount + result.llEmployeeAmount + result.rsaAmount + result.otherAddonAmount + result.paUnnamedAmount + result.zeroDepAmount + result.tyreCoverAmount + (result.loadingAmount || 0)
+    const netPremiumVal = premiumBeforeGst
 
     tableRows.push({ desc: 'Premium Before Taxes', rate: '-', amount: netPremiumVal, type: 'total' })
 
@@ -359,162 +418,65 @@ const ResultBox = ({
   }
 
   return (
-    <div className='border-t border-slate-200 pt-5 space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-500'>
-      <div className='space-y-3'>
-        <h3 className='text-xs font-black text-slate-800 uppercase tracking-widest border-b border-slate-200 pb-2'>Premium Breakup</h3>
+    <div className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm'>
+      {/* Total */}
+      <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-4 py-4 text-white'>
+        <p className='text-xs font-medium text-slate-300'>Total Payable Premium</p>
+        <p className='mt-0.5 text-3xl font-bold tracking-tight tabular-nums'>₹{fmt(result.totalPremium)}</p>
+        <p className='mt-1 text-xs text-slate-300'>
+          {policyLabel} · {gstEnabled ? (result.gstTpRate === 5 ? 'incl. 5% + 18% GST' : 'incl. 18% GST') : 'excl. GST'}
+        </p>
+      </div>
 
-        {/* Own Damage */}
+      {/* Breakup */}
+      <div className='divide-y divide-slate-100'>
         {showOD && (
-          <div className='rounded-xl bg-gradient-to-r from-blue-50 to-indigo-50/50 border border-blue-100 p-3 space-y-2'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <svg className='h-3.5 w-3.5 text-blue-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-                <p className='text-[10px] sm:text-[11px] font-black text-slate-800 uppercase tracking-wider'>Own Damage (OD)</p>
-              </div>
-              <p className='text-[9px] sm:text-[10px] font-bold text-blue-600'>Rate: {result.odRate}%</p>
-            </div>
-            {[
-              ['Final IDV (after depreciation)', `₹${fmtD(effectiveIdv)}`],
-              [vehicleType === 'pcv' ? 'Vehicle Basic OD' : 'Basic OD Premium', `₹${fmtD(odBase)}`],
-              ...(vehicleType === 'gcv' && result.details?.gcvExtraUnits > 0 ? [
-                [`Extra Weight > 12000 Premium`, `₹${fmtD(result.details.gcvExtraPremium)}`],
-              ] : []),
-              ...(result.geoExtentAmount > 0 ? [['Geographical Extent', `₹${fmtD(result.geoExtentAmount)}`]] : []),
-              ...(result.cngKitOdAmount > 0 ? [['CNG/LPG Kit', `₹${fmtD(result.cngKitOdAmount)}`]] : []),
-              ...(result.imt23Amount > 0 ? [['IMT 23 Loading (15% of sum)', `₹${fmtD(result.imt23Amount)}`]] : []),
-              ...(vehicleType === 'pcv' && result.addODVal > 0 ? [
-                [`Add. OD (Passenger Capacity)`, `₹${fmtD(result.addODVal)}`],
-              ] : []),
-              ...(result.dynamicCustomFields || []).filter(f => f.section === 'od').map(f => [f.label, `₹${fmtD(f.amount)}`]),
-              ['Final OD before discounts', `₹${fmtD(result.odBeforeDiscount)}`, 'font-black text-amber-700 bg-amber-50 rounded-lg px-3 py-2 -mx-1.5 text-sm'],
-              ...((result.odDiscountVal || 0) > 0 ? [[`OD Discount (${result.odDiscountVal}%)`, `- ₹${fmtD(result.odDiscountAmount)}`]] : []),
-              ...(ncb > 0 ? [[`NCB Discount (${ncb}%)`, `- ₹${fmtD(result.ncbAmount)}`]] : []),
-              ...(result.loadingAmount > 0 ? [[`Loading Discount @ ${result.loadingDiscount}%`, `+ ₹${fmtD(result.loadingAmount)}`]] : []),
-              ['Final OD Premium', `₹${fmtD(result.odPremium + result.loadingAmount)}`, 'font-black text-blue-700'],
-            ].map(([label, value, cls], i) => {
-              const isTotal = label === 'Final OD Premium'
-              return (
-                <div key={i} className={`flex items-center justify-between ${i === 0 ? '' : 'border-t border-blue-100/50 pt-1.5'} ${isTotal ? 'rounded-lg bg-blue-100/80 px-3 py-2 -mx-2 border-t border-blue-200/70 mt-1.5' : ''}`}>
-                  <p className={`text-[10px] sm:text-[11px] ${isTotal ? 'font-black text-blue-900' : 'font-bold text-slate-500'}`}>{label}</p>
-                  <p className={`${isTotal ? 'text-sm sm:text-base font-black text-blue-700' : 'text-[10px] sm:text-[11px] font-bold text-slate-800'}`}>{value}</p>
-                </div>
-              )
-            })}
-          </div>
+          <Group title='Own Damage' dot='bg-blue-500' rows={odRows} totalLabel='OD Premium' total={result.odPremium + result.loadingAmount} />
         )}
-
-        {/* Liability / Third Party */}
         {showTP && (
-          <div className='rounded-xl bg-gradient-to-r from-rose-50 to-pink-50/50 border border-rose-100 p-3 space-y-2'>
-            <div className='flex items-center justify-between'>
-              <div className='flex items-center gap-2'>
-                <svg className='h-3.5 w-3.5 text-rose-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z' /></svg>
-                <p className='text-[10px] sm:text-[11px] font-black text-slate-800 uppercase tracking-wider'>Third Party & Liability</p>
-              </div>
-            </div>
-            {[
-              ...(isBundle ? [[vehicleType === 'two_wheeler' ? '5-Year TP Premium' : '3-Year TP Premium', `₹${fmtD(result.tpPremium + result.restrictedTPPDDiscount)}`]] : [['1-Year TP Premium', `₹${fmtD(result.tpPremium + result.restrictedTPPDDiscount)}`]]),
-              ...(result.restrictedTPPDDiscount > 0 ? [['Restricted TPPD Discount', `- ₹${fmtD(result.restrictedTPPDDiscount)}`]] : []),
-              ...(result.llPdAmount > 0 ? [['LL to Paid Driver', `₹${fmtD(result.llPdAmount)}`]] : []),
-              ...(result.paOdAmount > 0 ? [['PA to Owner Driver', `₹${fmtD(result.paOdAmount)}`]] : []),
-              ...(result.llEmployeeAmount > 0 ? [['LL to Employee (other than Paid Driver)', `₹${fmtD(result.llEmployeeAmount)}`]] : []),
-              ...(result.paUnnamedAmount > 0 ? [['PA to Unnamed Passenger', `₹${fmtD(result.paUnnamedAmount)}`]] : []),
-              ...(result.geoExtentTPAmount > 0 && (vehicleType === 'gcv' || vehicleType === 'pcv') ? [['Geographical Extent (TP)', `₹${fmtD(result.geoExtentTPAmount)}`]] : []),
-              ...(result.cngKitTpAmount > 0 ? [['CNG/LPG Kit (TP)', `₹${fmtD(result.cngKitTpAmount)}`]] : []),
-              ...(result.dynamicCustomFields || []).filter(f => f.section === 'tp').map(f => [f.label, `₹${fmtD(f.amount)}`]),
-            ].map(([label, value], i) => (
-              <div key={i} className='flex items-center justify-between'>
-                <p className='text-[9px] sm:text-[10px] font-bold text-slate-500'>{label}</p>
-                <p className='text-[10px] sm:text-[11px] font-bold text-slate-800'>{value}</p>
-              </div>
-            ))}
-            <div className='flex items-center justify-between rounded-lg bg-rose-100/80 px-3 py-2 -mx-2 border-t border-rose-200/70 mt-1.5'>
-              <p className='text-[10px] sm:text-[11px] font-black text-rose-900'>Total TP & Liability Premium</p>
-              <p className='text-sm sm:text-base font-black text-rose-700'>₹{fmtD(result.tpPremium + (result.geoExtentTPAmount || 0) + (result.cngKitTpAmount || 0) + result.llPdAmount + result.paOdAmount + result.llEmployeeAmount + result.paUnnamedAmount + (result.dynamicCustomFields || []).filter(f => f.section === 'tp').reduce((sum, f) => sum + f.amount, 0))}</p>
-            </div>
-          </div>
+          <Group title='Third Party & Liability' dot='bg-rose-500' rows={tpRows} totalLabel='TP & Liability' total={tpTotal} />
+        )}
+        {addonRows.length > 0 && (
+          <Group title='Add-on Covers' dot='bg-amber-500' rows={addonRows} totalLabel='Add-ons' total={addonTotal} />
         )}
 
-        {/* Add-on Coverages */}
-        {(result.rsaAmount > 0 || result.otherAddonAmount > 0 || result.geoExtentAmount > 0 || result.zeroDepAmount > 0 || result.tyreCoverAmount > 0 || (result.dynamicCustomFields && result.dynamicCustomFields.filter(f => f.section === 'addon' || (!f.section && f.section !== 'od' && f.section !== 'tp')).length > 0)) && (
-          <div className='rounded-xl bg-gradient-to-r from-amber-50 to-yellow-50/50 border border-amber-100 p-3 space-y-2'>
-            <div className='flex items-center gap-2'>
-              <svg className='h-3.5 w-3.5 text-amber-500' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M11.42 15.17l-5.25 3.04 1-5.5L3 8.75l5.5-.83L11.42 3l2.92 4.92 5.5.83-4.17 3.96 1 5.5z' /></svg>
-              <p className='text-[10px] sm:text-[11px] font-black text-slate-800 uppercase tracking-wider'>Add-on Coverages</p>
-            </div>
-            {[
-              ...(result.rsaAmount > 0 ? [['Roadside Assistance (RSA)', `₹${fmtD(result.rsaAmount)}`]] : []),
-              ...(result.otherAddonAmount > 0 ? [['Other Addon Coverage', `₹${fmtD(result.otherAddonAmount)}`]] : []),
-              ...(result.zeroDepAmount > 0 ? [['Zero Depreciation', `₹${fmtD(result.zeroDepAmount)}`]] : []),
-              ...(result.tyreCoverAmount > 0 ? [['Other Addons (Rate)', `₹${fmtD(result.tyreCoverAmount)}`]] : []),
-              ...(result.dynamicCustomFields || []).filter(f => f.section === 'addon' || (!f.section && f.section !== 'od' && f.section !== 'tp')).map(f => [f.label, `₹${fmtD(f.amount)}`]),
-            ].map(([label, value], i) => (
-              <div key={i} className='flex items-center justify-between'>
-                <p className='text-[9px] sm:text-[10px] font-bold text-slate-500'>{label}</p>
-                <p className='text-[10px] sm:text-[11px] font-bold text-slate-800'>{value}</p>
-              </div>
-            ))}
-          </div>
-        )}
-
-
-
-
-        {/* Totals */}
-        <div className='rounded-xl bg-slate-50 border border-slate-200 p-3 space-y-2'>
-          <div className='flex items-center justify-between text-xs'>
-            <p className='font-bold text-slate-500'>Total before GST</p>
-            <p className='font-black text-slate-800'>₹{fmtD(result.odPremium + result.tpPremium + (result.geoExtentTPAmount || 0) + (result.cngKitTpAmount || 0) + result.llPdAmount + result.paOdAmount + result.llEmployeeAmount + result.rsaAmount + result.otherAddonAmount + result.paUnnamedAmount + result.zeroDepAmount + result.tyreCoverAmount + (result.loadingAmount || 0))}</p>
+        <div className='space-y-1.5 px-4 py-3 text-xs'>
+          <div className='flex justify-between'>
+            <span className='text-slate-500'>Premium before GST</span>
+            <span className='font-medium tabular-nums text-slate-800'>₹{fmtD(premiumBeforeGst)}</span>
           </div>
           {result.gstTpRate === 5 ? (
             <>
-              <div className='flex items-center justify-between text-xs'>
-                <p className='font-bold text-slate-500'>GST on TP @ 5%</p>
-                <p className='font-black text-slate-800'>₹{fmtD(result.gstTp)}</p>
+              <div className='flex justify-between'>
+                <span className='text-slate-500'>GST on TP @ 5%</span>
+                <span className='font-medium tabular-nums text-slate-800'>₹{fmtD(result.gstTp)}</span>
               </div>
-              <div className='flex items-center justify-between text-xs'>
-                <p className='font-bold text-slate-500'>GST on Other @ 18%</p>
-                <p className='font-black text-slate-800'>₹{fmtD(result.gstNonTp)}</p>
+              <div className='flex justify-between'>
+                <span className='text-slate-500'>GST on Other @ 18%</span>
+                <span className='font-medium tabular-nums text-slate-800'>₹{fmtD(result.gstNonTp)}</span>
               </div>
             </>
           ) : (
-            <div className='flex items-center justify-between text-xs'>
-              <p className='font-bold text-slate-500'>GST {gstEnabled ? '(18%)' : '(0%)'}</p>
-              <p className='font-black text-slate-800'>₹{fmtD(result.gst)}</p>
+            <div className='flex justify-between'>
+              <span className='text-slate-500'>GST {gstEnabled ? '(18%)' : '(0%)'}</span>
+              <span className='font-medium tabular-nums text-slate-800'>₹{fmtD(result.gst)}</span>
             </div>
           )}
+          <div className='flex justify-between border-t border-slate-200 pt-2 text-sm'>
+            <span className='font-bold text-slate-900'>Total Payable</span>
+            <span className='font-bold tabular-nums text-blue-700'>₹{fmt(result.totalPremium)}</span>
+          </div>
         </div>
       </div>
 
-      <div className='flex items-center justify-between rounded-2xl bg-gradient-to-br from-emerald-600 via-green-600 to-teal-600 p-4 sm:p-5 text-white shadow-xl shadow-indigo-200'>
-        <div className='space-y-1'>
-          <p className='text-[9px] sm:text-[10px] font-bold uppercase tracking-widest opacity-80'>Final Payable Premium</p>
-          <p className='text-2xl sm:text-3xl font-black tracking-tight drop-shadow-sm'>₹{fmt(result.totalPremium)}</p>
-          <p className='text-[8px] opacity-60'>
-            {gstEnabled ? (result.gstTpRate === 5 ? 'incl. 5% + 18% GST' : 'incl. 18% GST') : 'excl. GST'} • {
-              policyType === 'od' ? 'Own Damage' :
-              policyType === 'tp' ? 'Third Party' :
-              policyType === 'comprehensive' ? 'Comprehensive' : 'Bundle'
-            }
-          </p>
-        </div>
-        <div className='flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-sm'>
-          <svg className='h-6 w-6' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' />
-          </svg>
-        </div>
-      </div>
-
-      <div className='rounded-xl bg-slate-50/80 border border-slate-200 p-3 sm:p-4'>
+      <div className='border-t border-slate-200 bg-gray-50 p-4'>
         <button
           onClick={() => {
             setShowCompanyModal(true); setModalStep(1); setDropdownOpen(false); setSearchQuery('')
           }}
-          className='w-full flex items-center justify-center gap-3 rounded-2xl bg-gradient-to-r from-blue-600 to-indigo-600 py-4 text-white font-black text-sm uppercase tracking-widest hover:from-blue-700 hover:to-indigo-700 active:scale-[0.98] transition-all shadow-lg shadow-indigo-200'
+          className='flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-800 hover:to-blue-700 active:scale-[0.98]'
         >
-          <svg className='h-5 w-5' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
-            <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M19.5 14.25v-2.625a3.375 3.375 0 00-3.375-3.375h-1.5A1.125 1.125 0 0113.5 7.125v-1.5a3.375 3.375 0 00-3.375-3.375H8.25m0 12.75h7.5m-7.5 3H12M10.5 2.25H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 00-9-9z' />
-          </svg>
+          <FaFileLines className='h-4 w-4' />
           Preview Quotation
         </button>
       </div>

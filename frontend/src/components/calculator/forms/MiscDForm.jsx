@@ -17,23 +17,23 @@ const MiscDForm = ({
   currentYear,
 }) => (
   <div className='space-y-4'>
-    <div className='rounded-xl bg-slate-100 border border-slate-200 p-3'>
-      <p className='text-[9px] font-bold text-slate-700'>Misc-D Class — OD Rate: 1.05% of IDV</p>
+    <div className='rounded-lg bg-slate-50 border border-slate-200 px-3 py-2.5'>
+      <p className='text-xs font-semibold text-slate-800'>Misc-D Class — OD Rate: 1.05% of IDV</p>
     </div>
     <div>
-      <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>Vehicle Category</label>
+      <label className='mb-1.5 block text-xs font-semibold text-slate-600'>Vehicle Category</label>
       <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
         {TARIFF.misc_d.subtypes.map(st => (
           <button key={st.id} onClick={() => setSubtype(st.id)}
-            className={`rounded-xl border-2 px-4 py-2.5 text-left transition-all flex justify-between items-center ${subtype === st.id ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-            <span className='text-[11px] sm:text-xs font-black text-slate-800'>{st.label}</span>
-            <span className='text-[10px] font-bold text-blue-600'>TP: ₹{fmt(st.tp)}</span>
+            className={`rounded-lg border px-3 py-2.5 text-left transition flex justify-between items-center ${subtype === st.id ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-slate-300 bg-white hover:border-slate-400'}`}>
+            <span className='text-sm font-semibold text-slate-900'>{st.label}</span>
+            <span className='text-xs font-semibold text-blue-600'>TP: ₹{fmt(st.tp)}</span>
           </button>
         ))}
       </div>
     </div>
     <CoverageSelector coverageType={coverageType} setCoverageType={setCoverageType} />
-    <div className='grid grid-cols-1 sm:grid-cols-3 gap-3'>
+    <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
       <ZoneSelector zone={zone} setZone={setZone} zones={['C', 'B', 'A']} />
       <ManufacturingYearInput manufacturingYear={manufacturingYear} setManufacturingYear={setManufacturingYear} currentYear={currentYear} />
       <AgeSelector vehicleAge={vehicleAge} setVehicleAge={setVehicleAge} />

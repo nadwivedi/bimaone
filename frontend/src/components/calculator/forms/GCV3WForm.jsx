@@ -32,36 +32,36 @@ const GCV3WForm = ({
   return (
     <div className='space-y-4'>
       <div>
-        <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>Fuel Type</label>
+        <label className='mb-1.5 block text-xs font-semibold text-slate-600'>Fuel Type</label>
         <div className='grid grid-cols-2 gap-2'>
-          <button onClick={() => handleFuelToggle(false)} className={`rounded-2xl border-2 p-3 text-left transition-all ${!isElectric ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-            <p className='text-[11px] font-black text-slate-900'>
+          <button onClick={() => handleFuelToggle(false)} className={`rounded-lg border p-3 text-left transition ${!isElectric ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-slate-300 bg-white hover:border-slate-400'}`}>
+            <p className='text-sm font-semibold text-slate-900'>
               <FaGasPump className='inline-block h-4 w-4 mr-1 -mt-0.5 text-amber-500' />
               Petrol / Diesel / CNG
             </p>
-            <p className='text-[9px] text-blue-600 font-bold'>TP: ₹{fmt(petrolTP)}</p>
+            <p className='text-xs font-semibold text-blue-600'>TP: ₹{fmt(petrolTP)}</p>
           </button>
-          <button onClick={() => handleFuelToggle(true)} className={`rounded-2xl border-2 p-3 text-left transition-all ${isElectric ? 'border-blue-500 bg-blue-50' : 'border-slate-200 bg-white hover:border-slate-300'}`}>
-            <p className='text-[11px] font-black text-slate-900'>
+          <button onClick={() => handleFuelToggle(true)} className={`rounded-lg border p-3 text-left transition ${isElectric ? 'border-blue-500 bg-blue-50 ring-1 ring-blue-500' : 'border-slate-300 bg-white hover:border-slate-400'}`}>
+            <p className='text-sm font-semibold text-slate-900'>
               <FaBolt className='inline-block h-4 w-4 mr-1 -mt-0.5 text-yellow-500' />
               Electric
             </p>
-            <p className='text-[9px] text-blue-600 font-bold'>TP: ₹{fmt(electricTP)}</p>
+            <p className='text-xs font-semibold text-blue-600'>TP: ₹{fmt(electricTP)}</p>
           </button>
         </div>
       </div>
       <CoverageSelector coverageType={coverageType} setCoverageType={setCoverageType} />
-      <div className={`grid grid-cols-1 ${!isElectric ? 'sm:grid-cols-5' : 'sm:grid-cols-3'} gap-3`}>
+      <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
         <ZoneSelector zone={zone} setZone={setZone} zones={['A', 'B', 'C']} />
         <ManufacturingYearInput manufacturingYear={manufacturingYear} setManufacturingYear={setManufacturingYear} currentYear={currentYear} />
         <AgeSelector vehicleAge={vehicleAge} setVehicleAge={setVehicleAge} />
         {!isElectric && (
           <div>
-            <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>CNG/LPG Kit</label>
+            <label className='mb-1.5 block text-xs font-semibold text-slate-600'>CNG/LPG Kit</label>
             <select
               value={cngKit}
               onChange={e => setCngKit(e.target.value)}
-              className='w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer transition-all'
+              className='h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer'
             >
               <option value="no">No</option>
               <option value="yes">Yes (+₹60 TP, +5% OD)</option>
@@ -70,11 +70,11 @@ const GCV3WForm = ({
         )}
         {!isElectric && (
           <div>
-            <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>IMT 23 Cover</label>
+            <label className='mb-1.5 block text-xs font-semibold text-slate-600'>IMT 23 Cover</label>
             <select
               value={imt23}
               onChange={e => setImt23(e.target.value)}
-              className='w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer transition-all'
+              className='h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer'
             >
               <option value="no">No</option>
               <option value="yes">Yes (+15% OD)</option>

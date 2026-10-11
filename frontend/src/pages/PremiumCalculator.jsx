@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { FaArrowLeft, FaGasPump } from 'react-icons/fa6'
+import { FaArrowLeft, FaCalculator, FaClipboardList, FaPuzzlePiece, FaShieldHalved, FaTriangleExclamation } from 'react-icons/fa6'
 import VEHICLE_CATEGORIES from '../components/calculator/vehicleCategories'
 import VehicleTypeGrid from '../components/calculator/VehicleTypeGrid'
 import PrivateCarForm from '../components/calculator/forms/PrivateCarForm'
@@ -15,6 +15,30 @@ import CALCULATORS from '../components/calculator/calculations'
 import {
   NCBSelector, ODDiscountInput,
 } from '../components/calculator/SharedFields'
+
+const LABEL = 'mb-1.5 block text-xs font-semibold text-slate-600'
+const FIELD = 'h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-400'
+
+const SECTION_TONES = {
+  blue: { head: 'from-blue-50 to-indigo-50 border-blue-100', icon: 'bg-blue-600' },
+  amber: { head: 'from-amber-50 to-yellow-50 border-amber-100', icon: 'bg-amber-500' },
+  rose: { head: 'from-rose-50 to-pink-50 border-rose-100', icon: 'bg-rose-500' },
+}
+
+const FormSection = ({ icon: Icon, tone, title, subtitle, children }) => (
+  <section className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm'>
+    <div className={`flex items-center gap-3 border-b bg-gradient-to-r px-4 py-3 ${SECTION_TONES[tone].head}`}>
+      <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-white ${SECTION_TONES[tone].icon}`}>
+        <Icon className='h-3.5 w-3.5' />
+      </span>
+      <div>
+        <h2 className='text-sm font-bold text-slate-900'>{title}</h2>
+        <p className='text-xs text-slate-500'>{subtitle}</p>
+      </div>
+    </div>
+    <div className='p-4'>{children}</div>
+  </section>
+)
 
 const PremiumCalculator = () => {
   const [step, setStep] = useState(1)
@@ -387,14 +411,12 @@ const PremiumCalculator = () => {
 
     return (
       <div key={field.id}>
-        <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>
-          {displayLabel}
-        </label>
+        <label className={LABEL}>{displayLabel}</label>
         {field.fieldType === 'percent_of_od' ? (
           <select
             value={customFieldValues[field.id] || 'no'}
             onChange={e => setCustomFieldValues(prev => ({ ...prev, [field.id]: e.target.value }))}
-            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer transition-all'
+            className='h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 cursor-pointer'
           >
             <option value="no">No</option>
             <option value="yes">{yesOptionText}</option>
@@ -405,7 +427,7 @@ const PremiumCalculator = () => {
             value={customFieldValues[field.id] ?? ''}
             onChange={e => setCustomFieldValues(prev => ({ ...prev, [field.id]: e.target.value }))}
             placeholder={`e.g. ${field.rate || 0}`}
-            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300'
+            className='h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-400'
           />
         )}
       </div>
@@ -415,211 +437,193 @@ const PremiumCalculator = () => {
 
   return (
     <>
-      <div className='min-h-screen bg-[radial-gradient(circle_at_top,_#f0f9ff,_#f8fafc_45%,_#ffffff_100%)] px-0 pb-10 pt-4 sm:px-4 md:px-6'>
-        <div className='w-full'>
-
-          {step === 1 && (
-            <div className='mb-4'>
-              <h1 className='text-center sm:text-left text-base sm:text-xl md:text-2xl font-black text-slate-900 tracking-tight'>Premium Calculator</h1>
-              <p className='text-center sm:text-left mt-0.5 text-[7px] sm:text-[9px] md:text-[11px] font-bold uppercase tracking-widest text-slate-400'>Indian Motor Tariff Rates • WEF 1st June 2022</p>
+      <div className='min-h-screen bg-slate-50'>
+        <main className='w-full space-y-4 px-3 pt-4 pb-8 lg:px-6 lg:pt-5'>
+          {/* Header */}
+          <section className='overflow-hidden rounded-2xl bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-4 py-4 text-white shadow-sm md:px-6 md:py-5'>
+            <div className='flex items-center justify-between gap-3'>
+              <div className='flex min-w-0 items-center gap-3'>
+                <span className='flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/15 ring-1 ring-white/20'>
+                  {step === 2 && selectedCategory?.image
+                    ? <img src={selectedCategory.image} alt='' className='h-10 w-10 object-contain' />
+                    : <FaCalculator className='h-5 w-5 text-blue-200' />}
+                </span>
+                <div className='min-w-0'>
+                  <h1 className='truncate text-lg font-bold md:text-xl'>
+                    {step === 2 && selectedCategory ? selectedCategory.label : 'Premium Calculator'}
+                  </h1>
+                  <p className='truncate text-xs text-slate-300 md:text-sm'>
+                    {step === 2 && selectedCategory ? selectedCategory.desc : 'Indian Motor Tariff rates · WEF 1 June 2022'}
+                  </p>
+                </div>
+              </div>
+              {step === 2 && (
+                <button
+                  onClick={() => { setStep(1); setResult(null) }}
+                  className='flex shrink-0 items-center gap-2 rounded-lg bg-white/10 px-3 py-2 text-sm font-semibold text-white ring-1 ring-white/20 transition hover:bg-white/20'
+                >
+                  <FaArrowLeft className='h-3.5 w-3.5' />
+                  <span className='hidden sm:inline'>Change vehicle</span>
+                  <span className='sm:hidden'>Change</span>
+                </button>
+              )}
             </div>
-          )}
+          </section>
 
           {step === 1 && <VehicleTypeGrid handleVehicleSelect={handleVehicleSelect} />}
 
           {step === 2 && selectedCategory && (
-            <div className='animate-in fade-in slide-in-from-right-6 duration-300'>
-              <div className='rounded-[32px] border border-slate-200 bg-white p-3 sm:p-7 shadow-[0_28px_60px_-34px_rgba(15,23,42,0.25)]'>
-                <div className='mb-5 flex items-center gap-3'>
-                  <button
-                    onClick={() => { setStep(1); setResult(null) }}
-                    className='flex h-8 w-8 items-center justify-center rounded-xl border-2 border-slate-200 bg-white text-slate-500 hover:bg-slate-100 hover:text-slate-700 transition-all active:scale-90'
-                  >
-                    <FaArrowLeft className='h-3.5 w-3.5' />
-                  </button>
-                  <div>
-                    <div className='flex items-center gap-2'>
-                      {selectedCategory.icon && <span className='flex items-center'>{selectedCategory.icon}</span>}
-                      <h2 className='text-sm sm:text-base font-black text-slate-800'>{selectedCategory.label}</h2>
+            <div className='grid gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start'>
+              <div className='space-y-4'>
+                <FormSection icon={FaClipboardList} tone='blue' title='Vehicle & Policy' subtitle='Vehicle details, IDV and discounts'>
+                  {renderForm()}
+
+                  {/* OD Section Custom Fields */}
+                  {activeCustomFields.filter(f => f.section === 'od').length > 0 && (
+                    <div className='mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 md:grid-cols-3'>
+                      {activeCustomFields.filter(f => f.section === 'od').map(renderDynamicFieldInput)}
                     </div>
-                    <p className='text-[9px] text-slate-400 font-medium mt-0.5 ml-9'>{selectedCategory.desc}</p>
-                  </div>
-                </div>
+                  )}
+                </FormSection>
 
-                <div className='space-y-6'>
-                  <div className='rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 p-[2px] shadow-lg shadow-indigo-200'>
-                    <div className='rounded-2xl bg-white p-5 sm:p-6 space-y-4'>
-                      <p className='flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400'>
-                        <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z' /></svg>
-                        Own Damage & Premium Details
-                      </p>
-                      {renderForm()}
+                {!isTpOnly && (
+                  <FormSection icon={FaPuzzlePiece} tone='amber' title='Add-on Covers' subtitle='Optional — leave blank if not needed'>
+                    <div className='grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4'>
+                      <div>
+                        <label className={LABEL}>Zero Depreciation (%)</label>
+                        <input type='number' value={zeroDep} onChange={e => setZeroDep(e.target.value)} placeholder='e.g. 20' min={0} max={100} className={FIELD} />
+                      </div>
+                      <div>
+                        <label className={LABEL}>Other Addons (Rate %)</label>
+                        <input type='number' value={tyreCover} onChange={e => setTyreCover(e.target.value)} placeholder='e.g. 2' min={0} max={100} className={FIELD} />
+                      </div>
+                      <div>
+                        <label className={LABEL}>Roadside Assistance (₹)</label>
+                        <input type='number' value={rsa} onChange={e => setRsa(e.target.value)} placeholder='e.g. 250' className={FIELD} />
+                      </div>
+                      <div>
+                        <label className={LABEL}>Other Addon (₹)</label>
+                        <input type='number' value={otherAddon} onChange={e => setOtherAddon(e.target.value)} placeholder='e.g. 500' className={FIELD} />
+                      </div>
 
-                      {/* OD Section Custom Fields */}
-                      {activeCustomFields.filter(f => f.section === 'od').length > 0 && (
-                        <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-slate-100'>
-                          {activeCustomFields.filter(f => f.section === 'od').map(renderDynamicFieldInput)}
+                      {/* Addon Section Custom Fields */}
+                      {activeCustomFields.filter(f => f.section === 'addon' || (!f.section && f.section !== 'tp' && f.section !== 'od')).map(renderDynamicFieldInput)}
+                    </div>
+                  </FormSection>
+                )}
+
+                {!isOdOnly && (
+                  <FormSection icon={FaShieldHalved} tone='rose' title='Third Party & Liability' subtitle='Legal liability and personal accident covers'>
+                    <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
+                      <div>
+                        <label className={LABEL}>LL to Paid Driver (₹)</label>
+                        <select
+                          value={llPaidDriver && !['0', '50', '100', '150', '200', '250', '300'].includes(llPaidDriver) ? llPaidDriver : (llPaidDriver || '0')}
+                          onChange={e => {
+                            if (e.target.value === 'custom') { setLlPdTempValue(''); setShowLlPdModal(true); return }
+                            setLlPaidDriver(e.target.value)
+                          }}
+                          className={`${FIELD} cursor-pointer`}>
+                          <option value='0'>0</option>
+                          <option value='50'>50</option>
+                          <option value='100'>100</option>
+                          <option value='150'>150</option>
+                          <option value='200'>200</option>
+                          <option value='250'>250</option>
+                          <option value='300'>300</option>
+                          {llPaidDriver && !['0', '50', '100', '150', '200', '250', '300'].includes(llPaidDriver) && <option value={llPaidDriver}>₹{llPaidDriver}</option>}
+                          <option value='custom'>Other</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className={LABEL}>PA to Owner Driver (₹)</label>
+                        <input type='number' value={paOwnerDriver} onChange={e => setPaOwnerDriver(e.target.value)} placeholder='e.g. 100' className={FIELD} />
+                      </div>
+                      {(vehicleType === 'private_car' || vehicleType === 'two_wheeler') && (
+                        <div>
+                          <label className={LABEL}>PA to Unnamed Passenger (₹)</label>
+                          <input type='number' value={paUnnamedPassenger} onChange={e => setPaUnnamedPassenger(e.target.value)} placeholder='e.g. 25' className={FIELD} />
                         </div>
                       )}
-                    </div>
-                  </div>
-
-                  {!isTpOnly && (
-                  <div className='rounded-2xl bg-gradient-to-br from-amber-500 to-yellow-600 p-[2px] shadow-lg shadow-amber-200'>
-                    <div className='rounded-2xl bg-white p-5 sm:p-6 space-y-4'>
-                      <p className='flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400'>
-                        <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M11.42 15.17l-5.25 3.04 1-5.5L3 8.75l5.5-.83L11.42 3l2.92 4.92 5.5.83-4.17 3.96 1 5.5z' /></svg>
-                        Add-on Coverages
-                      </p>
-                      <div className='grid grid-cols-2 sm:grid-cols-4 gap-3'>
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>Zero Depreciation (%)</label>
-                          <input type='number' value={zeroDep} onChange={e => setZeroDep(e.target.value)} placeholder='e.g. 20' min={0} max={100}
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300' />
-                        </div>
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>Other Addons (Rate)</label>
-                          <input type='number' value={tyreCover} onChange={e => setTyreCover(e.target.value)} placeholder='e.g. 2' min={0} max={100}
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300' />
-                        </div>
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>Roadside Assistance (₹)</label>
-                          <input type='number' value={rsa} onChange={e => setRsa(e.target.value)} placeholder='e.g. 250'
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300' />
-                        </div>
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>Other Addon (₹)</label>
-                          <input type='number' value={otherAddon} onChange={e => setOtherAddon(e.target.value)} placeholder='e.g. 500'
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300' />
-                        </div>
-
-                        {/* Addon Section Custom Fields */}
-                        {activeCustomFields.filter(f => f.section === 'addon' || (!f.section && f.section !== 'tp' && f.section !== 'od')).map(renderDynamicFieldInput)}
+                      <div>
+                        <label className={LABEL}>Restricted TPPD</label>
+                        <select value={restrictedTPPD} onChange={e => setRestrictedTPPD(e.target.value)} className={`${FIELD} cursor-pointer`}>
+                          <option value="no">No</option>
+                          <option value="yes">Yes ({vehicleType === 'gcv' ? '₹200' : vehicleType === 'gcv_3w' ? '₹150' : vehicleType === 'private_car' ? '₹100' : '₹50'}/yr discount)</option>
+                        </select>
                       </div>
+                      {vehicleType !== 'private_car' && vehicleType !== 'two_wheeler' && (
+                        <div>
+                          <label className={LABEL}>LL to Employee (₹)</label>
+                          <input type='number' value={llToEmployee} onChange={e => setLlToEmployee(e.target.value)} placeholder='e.g. 50' className={FIELD} />
+                        </div>
+                      )}
 
+                      {/* Third Party (TP) Section Custom Fields */}
+                      {activeCustomFields.filter(f => f.section === 'tp').map(renderDynamicFieldInput)}
                     </div>
+                  </FormSection>
+                )}
+              </div>
+
+              {/* Premium summary – sticky on desktop */}
+              <div className='lg:sticky lg:top-4'>
+                {result ? (
+                  <ResultBox
+                    result={result}
+                    policyType={policyType}
+                    vehicleType={vehicleType}
+                    isElectric={isElectric}
+                    cc={cc}
+                    kwPower={kwPower}
+                    idv={idv}
+                    ncb={ncb}
+                    odDiscount={odDiscount}
+                    zone={zone}
+                    vehicleAge={vehicleAge}
+                    manufacturingYear={manufacturingYear}
+                    selectedCategory={selectedCategory}
+                    subtype={subtype}
+                    gvw={gvw}
+                    gstEnabled={true}
+                    bundleOdTerm={bundleOdTerm}
+                    bundleTpTerm={bundleTpTerm}
+                  />
+                ) : (
+                  <div className='rounded-xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center'>
+                    <span className='mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-50 text-blue-600'>
+                      <FaCalculator className='h-5 w-5' />
+                    </span>
+                    <p className='mt-3 text-sm font-semibold text-slate-800'>Your premium will appear here</p>
+                    <p className='mt-1 text-xs text-slate-500'>Select the RTO zone and vehicle age to start.</p>
                   </div>
-                  )}
-
-                  {!isOdOnly && (
-                  <div className='rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 p-[2px] shadow-lg shadow-rose-200'>
-                    <div className='rounded-2xl bg-white p-5 sm:p-6 space-y-4'>
-                      <p className='flex items-center gap-1.5 text-[9px] sm:text-[10px] font-black uppercase tracking-widest text-slate-400'>
-                        <svg className='h-3.5 w-3.5' fill='none' stroke='currentColor' viewBox='0 0 24 24'><path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2.5} d='M12 9v3.75m9-.75a9 9 0 11-18 0 9 9 0 0118 0zm-9 3.75h.008v.008H12v-.008z' /></svg>
-                        Liability / Third Party
-                      </p>
-                      <div className='grid grid-cols-1 sm:grid-cols-4 gap-3'>
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>LL to Paid Driver (₹)</label>
-                          <select
-                            value={llPaidDriver && !['0', '50', '100', '150', '200', '250', '300'].includes(llPaidDriver) ? llPaidDriver : (llPaidDriver || '0')}
-                            onChange={e => {
-                              if (e.target.value === 'custom') { setLlPdTempValue(''); setShowLlPdModal(true); return }
-                              setLlPaidDriver(e.target.value)
-                            }}
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer transition-all'>
-                            <option value='0'>0</option>
-                            <option value='50'>50</option>
-                            <option value='100'>100</option>
-                            <option value='150'>150</option>
-                            <option value='200'>200</option>
-                            <option value='250'>250</option>
-                            <option value='300'>300</option>
-                            {llPaidDriver && !['0', '50', '100', '150', '200', '250', '300'].includes(llPaidDriver) && <option value={llPaidDriver}>₹{llPaidDriver}</option>}
-                            <option value='custom'>Other</option>
-                          </select>
-                        </div>
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>PA to Owner Driver (₹)</label>
-                          <input type='number' value={paOwnerDriver} onChange={e => setPaOwnerDriver(e.target.value)} placeholder='e.g. 100'
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300' />
-                        </div>
-                        {(vehicleType === 'private_car' || vehicleType === 'two_wheeler') && (
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>PA to Unnamed Psgr (₹)</label>
-                          <input type='number' value={paUnnamedPassenger} onChange={e => setPaUnnamedPassenger(e.target.value)} placeholder='e.g. 25'
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300' />
-                        </div>
-                        )}
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>Restricted TPPD</label>
-                          <select
-                            value={restrictedTPPD}
-                            onChange={e => setRestrictedTPPD(e.target.value)}
-                            className='w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 appearance-none cursor-pointer transition-all'
-                          >
-                            <option value="no">No</option>
-                            <option value="yes">Yes ({vehicleType === 'gcv' ? '₹200' : vehicleType === 'gcv_3w' ? '₹150' : vehicleType === 'private_car' ? '₹100' : '₹50'}/yr discount)</option>
-                          </select>
-                        </div>
-                        {vehicleType !== 'private_car' && vehicleType !== 'two_wheeler' && (
-                        <div>
-                          <label className='mb-1.5 block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>LL to Employee (₹)</label>
-                          <input type='number' value={llToEmployee} onChange={e => setLlToEmployee(e.target.value)} placeholder='e.g. 50'
-                            className='w-full rounded-2xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300' />
-                        </div>
-                        )}
-
-                        {/* Third Party (TP) Section Custom Fields */}
-                        {activeCustomFields.filter(f => f.section === 'tp').map(renderDynamicFieldInput)}
-                      </div>
-                      <div className='flex items-center gap-3 pt-2'>
-                        <span className='text-[9px] sm:text-[10px] font-bold uppercase tracking-wider text-slate-500'>GST (18%) included</span>
-                      </div>
-                    </div>
-                  </div>
-                  )}
-
-
-                  {result && (
-                    <ResultBox
-                      result={result}
-                      policyType={policyType}
-                      vehicleType={vehicleType}
-                      isElectric={isElectric}
-                      cc={cc}
-                      kwPower={kwPower}
-                      idv={idv}
-                      ncb={ncb}
-                      odDiscount={odDiscount}
-                      zone={zone}
-                      vehicleAge={vehicleAge}
-                      manufacturingYear={manufacturingYear}
-                      selectedCategory={selectedCategory}
-                      subtype={subtype}
-                      gvw={gvw}
-                      gstEnabled={true}
-                      bundleOdTerm={bundleOdTerm}
-                      bundleTpTerm={bundleTpTerm}
-                    />
-                  )}
-                </div>
+                )}
               </div>
             </div>
           )}
 
-          <p className='mt-4 text-center text-[8px] text-slate-400 px-4'>
-            <svg className='inline-block h-3 w-3 mr-1 -mt-0.5 text-amber-500' fill='none' stroke='currentColor' viewBox='0 0 24 24' strokeWidth={2}><path d='M12 9v2m0 4h.01M10.29 3.86l-8.1 14c-.6 1.04.15 2.14 1.21 2.14h16.2c1.06 0 1.81-1.1 1.21-2.14l-8.1-14c-.6-1.04-1.82-1.04-2.42 0z' /></svg>
-            For indicative purposes only. Premiums may vary based on insurer loading, add-ons & discounts. Ref: IRDAI website irdai.gov.in
+          <p className='flex items-start justify-center gap-1.5 px-2 text-center text-xs text-slate-500'>
+            <FaTriangleExclamation className='mt-0.5 h-3 w-3 shrink-0 text-amber-500' />
+            For indicative purposes only. Premiums may vary based on insurer loading, add-ons &amp; discounts. Ref: irdai.gov.in
           </p>
-        </div>
+        </main>
       </div>
 
       {showLlPdModal && (
         <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm transition-opacity animate-fade-in'>
-          <div className='mx-4 w-72 rounded-2xl bg-white p-6 shadow-xl'>
-            <p className='mb-3 text-sm font-bold text-slate-700'>Enter LL to Paid Driver (₹)</p>
+          <div className='mx-4 w-80 rounded-xl bg-white p-5 shadow-xl'>
+            <p className='mb-3 text-sm font-semibold text-slate-800'>Enter LL to Paid Driver (₹)</p>
             <input
               type='number'
               value={llPdTempValue}
               onChange={e => setLlPdTempValue(e.target.value)}
               placeholder='e.g. 75'
-              className='mb-4 w-full rounded-xl border border-slate-200 bg-white px-4 py-2.5 text-sm font-bold text-slate-900 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-300 transition-all'
+              className='mb-4 h-10 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm font-medium text-slate-900 transition focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 placeholder:text-slate-400'
               autoFocus
             />
             <div className='flex justify-end gap-2'>
-              <button onClick={() => setShowLlPdModal(false)} className='rounded-xl px-4 py-2 text-sm font-bold text-slate-500 transition-all hover:bg-slate-100'>Cancel</button>
-              <button onClick={() => { if (llPdTempValue !== '') setLlPaidDriver(llPdTempValue); setShowLlPdModal(false) }} className='rounded-xl bg-blue-500 px-4 py-2 text-sm font-bold text-white transition-all hover:bg-blue-600'>Apply</button>
+              <button onClick={() => setShowLlPdModal(false)} className='rounded-lg px-4 py-2 text-sm font-semibold text-slate-600 transition hover:bg-slate-100'>Cancel</button>
+              <button onClick={() => { if (llPdTempValue !== '') setLlPaidDriver(llPdTempValue); setShowLlPdModal(false) }} className='rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 px-4 py-2 text-sm font-semibold text-white transition hover:from-blue-800 hover:to-blue-700'>Apply</button>
             </div>
           </div>
         </div>
