@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { FaFileLines } from 'react-icons/fa6'
+import { TbCalculator, TbFileText } from 'react-icons/tb'
 import { fmt, fmtD } from './helpers'
 import PdfPreviewModal from './PdfPreviewModal'
 import UpgradePopup from '../UpgradePopup'
@@ -418,18 +418,21 @@ const ResultBox = ({
   }
 
   return (
-    <div className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm'>
-      {/* Total */}
-      <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-3 py-3 text-white sm:px-4 sm:py-4'>
-        <p className='text-[11px] font-medium text-slate-300 sm:text-xs'>Total Payable Premium</p>
-        <p className='mt-0.5 text-2xl font-bold tracking-tight tabular-nums sm:text-3xl'>₹{fmt(result.totalPremium)}</p>
-        <p className='mt-1 text-[11px] text-slate-300 sm:text-xs'>
+    <div className='space-y-3'>
+      {/* Estimated premium */}
+      <div className='rounded-xl border border-blue-100 bg-blue-50/50 px-4 py-4 text-center'>
+        <span className='mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-white text-blue-600 shadow-sm ring-1 ring-blue-100'>
+          <TbCalculator className='h-5 w-5' />
+        </span>
+        <p className='mt-2 text-xs font-medium text-slate-600 sm:text-sm'>Estimated Premium</p>
+        <p className='mt-0.5 text-2xl font-bold tracking-tight tabular-nums text-[#0f1f4b] sm:text-3xl'>₹{fmt(result.totalPremium)}</p>
+        <p className='mt-1 text-[11px] text-slate-500 sm:text-xs'>
           {policyLabel} · {gstEnabled ? (result.gstTpRate === 5 ? 'incl. 5% + 18% GST' : 'incl. 18% GST') : 'excl. GST'}
         </p>
       </div>
 
       {/* Breakup */}
-      <div className='divide-y divide-slate-100'>
+      <div className='divide-y divide-slate-100 overflow-hidden rounded-xl border border-slate-200'>
         {showOD && (
           <Group title='Own Damage' dot='bg-blue-500' rows={odRows} totalLabel='OD Premium' total={result.odPremium + result.loadingAmount} />
         )}
@@ -469,17 +472,15 @@ const ResultBox = ({
         </div>
       </div>
 
-      <div className='border-t border-slate-200 bg-gray-50 p-3 sm:p-4'>
-        <button
-          onClick={() => {
-            setShowCompanyModal(true); setModalStep(1); setDropdownOpen(false); setSearchQuery('')
-          }}
-          className='flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 py-2.5 text-[13px] font-semibold sm:py-3 sm:text-sm text-white shadow-sm transition hover:from-blue-800 hover:to-blue-700 active:scale-[0.98]'
-        >
-          <FaFileLines className='h-4 w-4' />
-          Preview Quotation
-        </button>
-      </div>
+      <button
+        onClick={() => {
+          setShowCompanyModal(true); setModalStep(1); setDropdownOpen(false); setSearchQuery('')
+        }}
+        className='flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 py-2.5 text-[13px] font-semibold text-white shadow-sm transition hover:from-blue-800 hover:to-blue-700 active:scale-[0.98] sm:py-3 sm:text-sm'
+      >
+        <TbFileText className='h-[18px] w-[18px]' />
+        Preview Quotation
+      </button>
 
       {/* Insurance Company Selection Modal */}
       {showCompanyModal && (

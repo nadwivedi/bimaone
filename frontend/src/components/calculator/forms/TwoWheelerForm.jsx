@@ -1,3 +1,4 @@
+import { TbEngine, TbBolt } from 'react-icons/tb'
 import { PolicyTypeSelector, ZoneSelector, ManufacturingYearInput, AgeSelector, FuelToggle, NumberField } from '../SharedFields'
 
 const TwoWheelerForm = ({
@@ -19,8 +20,8 @@ const TwoWheelerForm = ({
       <ZoneSelector zone={zone} setZone={setZone} zones={['A', 'B']} />
       <AgeSelector vehicleAge={vehicleAge} setVehicleAge={setVehicleAge} />
       {!isElectric
-        ? <NumberField label='Engine CC' value={cc} onChange={setCc} placeholder='e.g. 125' hint='≤75 / 76–150 / 151–350 / >350 CC' />
-        : <NumberField label='Motor Power (KW)' value={kwPower} onChange={setKwPower} placeholder='e.g. 5' hint='<3 / 3–7 / 7–16 / >16 KW' />}
+        ? <NumberField label='Engine Capacity (CC)' icon={TbEngine} value={cc} onChange={setCc} placeholder='e.g. 125' hint='≤75 / 76–150 / 151–350 / >350 CC' />
+        : <NumberField label='Motor Power (KW)' icon={TbBolt} value={kwPower} onChange={setKwPower} placeholder='e.g. 5' hint='<3 / 3–7 / 7–16 / >16 KW' />}
       <ManufacturingYearInput manufacturingYear={manufacturingYear} setManufacturingYear={setManufacturingYear} currentYear={currentYear} />
     </div>
   </div>

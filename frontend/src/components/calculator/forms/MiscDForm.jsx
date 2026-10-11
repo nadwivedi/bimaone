@@ -1,3 +1,4 @@
+import { TbTractor } from 'react-icons/tb'
 import TARIFF from '../tariffData'
 import { fmt } from '../helpers'
 import { CoverageSelector, ZoneSelector, ManufacturingYearInput, AgeSelector, SubtypeList, TariffNote } from '../SharedFields'
@@ -13,7 +14,7 @@ const MiscDForm = ({
   <div className='space-y-4'>
     <TariffNote>Misc-D class · OD rate 1.05% of IDV</TariffNote>
     <SubtypeList
-      label='Vehicle Category'
+      label='Vehicle Category' icon={TbTractor}
       value={subtype}
       onChange={setSubtype}
       items={TARIFF.misc_d.subtypes.map(st => ({ id: st.id, title: st.label, aside: `TP ₹${fmt(st.tp)}` }))}

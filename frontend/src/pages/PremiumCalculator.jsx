@@ -1,5 +1,8 @@
 import { useState, useEffect } from 'react'
-import { FaArrowLeft, FaCalculator, FaTriangleExclamation } from 'react-icons/fa6'
+import {
+  TbArrowLeft, TbCalculator, TbShieldCheck, TbPuzzle, TbTruck, TbCirclePlus,
+  TbSteeringWheel, TbUserShield, TbUsers, TbShieldHalf, TbBriefcase, TbAdjustmentsHorizontal,
+} from 'react-icons/tb'
 import VEHICLE_CATEGORIES from '../components/calculator/vehicleCategories'
 import VehicleTypeGrid from '../components/calculator/VehicleTypeGrid'
 import PrivateCarForm from '../components/calculator/forms/PrivateCarForm'
@@ -12,32 +15,35 @@ import PCV3WForm from '../components/calculator/forms/PCV3WForm'
 import MiscDForm from '../components/calculator/forms/MiscDForm'
 import ResultBox from '../components/calculator/ResultBox'
 import CALCULATORS from '../components/calculator/calculations'
-import { IDVSection, NumberField, PresetSelect } from '../components/calculator/SharedFields'
-import { LABEL, FIELD, SELECT } from '../components/calculator/styles'
-
-const SECTION_TONES = {
-  blue: { head: 'from-blue-50 to-indigo-50 border-blue-100', badge: 'bg-blue-600' },
-  emerald: { head: 'from-emerald-50 to-teal-50 border-emerald-100', badge: 'bg-emerald-600' },
-  amber: { head: 'from-amber-50 to-yellow-50 border-amber-100', badge: 'bg-amber-500' },
-  rose: { head: 'from-rose-50 to-pink-50 border-rose-100', badge: 'bg-rose-500' },
-}
-
-const FormSection = ({ step, tone, title, subtitle, children }) => (
-  <section className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm'>
-    <div className={`flex items-center gap-2.5 border-b bg-gradient-to-r px-3 py-2.5 sm:gap-3 sm:px-4 sm:py-3 ${SECTION_TONES[tone].head}`}>
-      <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white sm:h-7 sm:w-7 sm:text-xs ${SECTION_TONES[tone].badge}`}>
-        {step}
-      </span>
-      <div className='min-w-0'>
-        <h2 className='text-[13px] font-bold text-slate-900 sm:text-sm'>{title}</h2>
-        <p className='truncate text-[11px] text-slate-500 sm:text-xs'>{subtitle}</p>
-      </div>
-    </div>
-    <div className='p-3 sm:p-4'>{children}</div>
-  </section>
-)
+import FormSection from '../components/calculator/FormSection'
+import SummaryPanel, { EmptyEstimate } from '../components/calculator/SummaryPanel'
+import { ShieldHero } from '../components/calculator/Illustrations'
+import { IDVSection, NumberField, PresetSelect, FieldLabel, TariffNote } from '../components/calculator/SharedFields'
+import { FIELD, SELECT } from '../components/calculator/styles'
 
 const LL_PD_PRESETS = ['0', '50', '100', '150', '200', '250', '300'].map(v => ({ value: v, label: `₹${v}` }))
+
+/** Add-on cover card: icon + title, with the rate/amount input underneath. */
+const AddonCard = ({ icon: Icon, title, sub, suffix, value, onChange, placeholder }) => {
+  const active = value !== '' && value !== '0' && value !== undefined
+  return (
+    <div className={`rounded-xl border bg-white p-2.5 transition sm:p-3 ${active ? 'border-blue-300 ring-1 ring-blue-100' : 'border-slate-200'}`}>
+      <div className='flex items-center gap-2 sm:gap-2.5'>
+        <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg sm:h-9 sm:w-9 ${active ? 'bg-blue-600 text-white' : 'bg-blue-50 text-blue-600'}`}>
+          <Icon className='h-[18px] w-[18px] sm:h-5 sm:w-5' />
+        </span>
+        <div className='min-w-0'>
+          <p className='text-[12px] font-semibold leading-tight text-slate-800 sm:text-[13px]'>{title}</p>
+          <p className='truncate text-[10px] text-slate-500 sm:text-[11px]'>{sub}</p>
+        </div>
+      </div>
+      <div className='relative mt-2'>
+        <input type='number' inputMode='decimal' min={0} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} className={`${FIELD} pr-8`} />
+        <span className='pointer-events-none absolute right-2.5 top-1/2 -translate-y-1/2 text-xs font-medium text-slate-400'>{suffix}</span>
+      </div>
+    </div>
+  )
+}
 
 const PremiumCalculator = () => {
   const [step, setStep] = useState(1)
@@ -407,7 +413,7 @@ const PremiumCalculator = () => {
 
     return (
       <div key={field.id}>
-        <label className={LABEL}>{displayLabel}</label>
+        <FieldLabel icon={TbAdjustmentsHorizontal}>{displayLabel}</FieldLabel>
         {field.fieldType === 'percent_of_od' ? (
           <select
             value={customFieldValues[field.id] || 'no'}
@@ -435,119 +441,135 @@ const PremiumCalculator = () => {
   let sectionNo = 2
   const addonStep = !isTpOnly ? ++sectionNo : null
   const liabilityStep = !isOdOnly ? ++sectionNo : null
+  const addonCustomFields = activeCustomFields.filter(f => f.section === 'addon' || (!f.section && f.section !== 'tp' && f.section !== 'od'))
 
   return (
-    <div className='min-h-screen bg-slate-50'>
+    <div className='min-h-screen bg-[#f4f7fd]'>
       <main className='w-full space-y-3 px-3 pt-3 pb-8 sm:space-y-4 sm:pt-4 lg:px-6 lg:pt-5'>
         {/* Header */}
-        <section className='overflow-hidden rounded-2xl bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-3 py-3 text-white shadow-sm sm:px-4 sm:py-4 md:px-6 md:py-5'>
-          <div className='flex items-center justify-between gap-3'>
-            <div className='flex min-w-0 items-center gap-2.5 sm:gap-3'>
-              <span className='flex h-9 w-9 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white/15 ring-1 ring-white/20 sm:h-11 sm:w-11'>
-                {step === 2 && selectedCategory?.image
-                  ? <img src={selectedCategory.image} alt='' className='h-8 w-8 object-contain sm:h-10 sm:w-10' />
-                  : <FaCalculator className='h-4 w-4 text-blue-200 sm:h-5 sm:w-5' />}
-              </span>
-              <div className='min-w-0'>
-                <h1 className='truncate text-base font-bold sm:text-lg md:text-xl'>
-                  {step === 2 && selectedCategory ? selectedCategory.label : 'Premium Calculator'}
-                </h1>
-                <p className='truncate text-[11px] text-slate-300 sm:text-xs md:text-sm'>
-                  {step === 2 && selectedCategory ? selectedCategory.desc : 'Indian Motor Tariff rates · WEF 1 June 2022'}
-                </p>
-              </div>
+        <section className='relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm sm:px-5 sm:py-4 md:px-6'>
+          <div className='pointer-events-none absolute -right-10 -top-16 h-48 w-48 rounded-full bg-blue-50 blur-2xl' />
+          <div className='relative flex items-center gap-3 sm:gap-4'>
+            <span className='flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-blue-50 text-blue-600 ring-4 ring-blue-50/60 sm:h-16 sm:w-16'>
+              <TbCalculator className='h-5 w-5 sm:h-8 sm:w-8' />
+            </span>
+            <div className='min-w-0 flex-1'>
+              <h1 className='text-[17px] font-bold leading-tight text-[#0f1f4b] sm:text-2xl'>Insurance Premium Calculator</h1>
+              <p className='mt-0.5 text-[11px] leading-snug text-slate-500 sm:mt-1 sm:text-sm'>
+                Get an instant premium estimate as per Indian Motor Tariff. Fill in a few details to see the full breakup.
+              </p>
             </div>
-            {step === 2 && (
-              <button
-                onClick={() => { setStep(1); setResult(null) }}
-                className='flex shrink-0 items-center gap-1.5 rounded-lg bg-white/10 px-2.5 py-1.5 text-xs font-semibold text-white ring-1 ring-white/20 transition hover:bg-white/20 sm:gap-2 sm:px-3 sm:py-2 sm:text-sm'
-              >
-                <FaArrowLeft className='h-3 w-3 sm:h-3.5 sm:w-3.5' />
-                <span className='hidden sm:inline'>Change vehicle</span>
-                <span className='sm:hidden'>Change</span>
-              </button>
-            )}
+            <ShieldHero className='hidden h-24 w-auto shrink-0 sm:block lg:h-28' />
           </div>
         </section>
 
-        {step === 1 && <VehicleTypeGrid handleVehicleSelect={handleVehicleSelect} />}
+        <div className='grid gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_340px] lg:items-start xl:grid-cols-[minmax(0,1fr)_360px]'>
+          <div className='space-y-3 sm:space-y-4'>
+            {step === 1 && <VehicleTypeGrid handleVehicleSelect={handleVehicleSelect} />}
 
-        {step === 2 && selectedCategory && (
-          <div className='grid gap-3 sm:gap-4 lg:grid-cols-[minmax(0,1fr)_380px] lg:items-start'>
-            <div className='space-y-3 sm:space-y-4'>
-              <FormSection step={1} tone='blue' title='Vehicle Details' subtitle='Fuel, policy type, zone and vehicle specs'>
-                {renderForm()}
+            {step === 2 && selectedCategory && (
+              <>
+                <FormSection
+                  step={1}
+                  tone='blue'
+                  title='Vehicle Details'
+                  subtitle='Fuel, policy type, zone and vehicle specs'
+                  action={(
+                    <button
+                      onClick={() => { setStep(1); setResult(null) }}
+                      className='flex shrink-0 items-center gap-1.5 rounded-lg border border-blue-200 bg-white py-1 pl-1 pr-2 text-left shadow-sm transition hover:border-blue-400 sm:gap-2 sm:pr-3'
+                      title='Change vehicle'
+                    >
+                      {selectedCategory.image
+                        ? <img src={selectedCategory.image} alt='' className='h-7 w-7 rounded-md object-contain sm:h-8 sm:w-8' />
+                        : <span className='flex h-7 w-7 items-center justify-center'>{selectedCategory.icon}</span>}
+                      <span className='hidden text-xs font-semibold text-[#0f1f4b] sm:block'>{selectedCategory.label}</span>
+                      <span className='flex items-center gap-0.5 text-[11px] font-semibold text-blue-600 sm:text-xs'>
+                        <TbArrowLeft className='h-3 w-3' />Change
+                      </span>
+                    </button>
+                  )}
+                >
+                  {renderForm()}
 
-                {/* OD Section Custom Fields */}
-                {activeCustomFields.filter(f => f.section === 'od').length > 0 && (
-                  <div className='mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 md:grid-cols-3'>
-                    {activeCustomFields.filter(f => f.section === 'od').map(renderDynamicFieldInput)}
-                  </div>
-                )}
-              </FormSection>
-
-              <FormSection step={2} tone='emerald' title='IDV & Discounts' subtitle='Insured value, depreciation, NCB and loading'>
-                <IDVSection
-                  idv={idv} setIdv={setIdv}
-                  depreciation={depreciation} setDepreciation={setDepreciation}
-                  ncb={ncb} setNcb={setNcb}
-                  odDiscount={odDiscount} setOdDiscount={setOdDiscount}
-                  loadingDiscount={loadingDiscount} setLoadingDiscount={setLoadingDiscount}
-                  showNcb={!isTpOnly}
-                  showOdDiscount={!isTpOnly}
-                />
-              </FormSection>
-
-              {!isTpOnly && (
-                <FormSection step={addonStep} tone='amber' title='Add-on Covers' subtitle='Optional — leave blank if not needed'>
-                  <div className='grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-4'>
-                    <NumberField label='Zero Dep (%)' value={zeroDep} onChange={setZeroDep} placeholder='e.g. 0.2' min={0} max={100} />
-                    <NumberField label='Other Addons (%)' value={tyreCover} onChange={setTyreCover} placeholder='e.g. 0.1' min={0} max={100} />
-                    <NumberField label='Roadside Assist (₹)' value={rsa} onChange={setRsa} placeholder='e.g. 250' />
-                    <NumberField label='Other Addon (₹)' value={otherAddon} onChange={setOtherAddon} placeholder='e.g. 500' />
-
-                    {/* Addon Section Custom Fields */}
-                    {activeCustomFields.filter(f => f.section === 'addon' || (!f.section && f.section !== 'tp' && f.section !== 'od')).map(renderDynamicFieldInput)}
-                  </div>
-                </FormSection>
-              )}
-
-              {!isOdOnly && (
-                <FormSection step={liabilityStep} tone='rose' title='Third Party & Liability' subtitle='Legal liability and personal accident covers'>
-                  <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
-                    <PresetSelect
-                      label='LL to Paid Driver'
-                      value={llPaidDriver || '0'}
-                      onChange={setLlPaidDriver}
-                      presets={LL_PD_PRESETS}
-                      format={v => `₹${v}`}
-                      modalTitle='Enter LL to Paid Driver (₹)'
-                      modalPlaceholder='e.g. 75'
-                    />
-                    <NumberField label='PA Owner Driver (₹)' value={paOwnerDriver} onChange={setPaOwnerDriver} placeholder='e.g. 320' />
-                    {(vehicleType === 'private_car' || vehicleType === 'two_wheeler') && (
-                      <NumberField label='PA Unnamed Psgr (₹)' value={paUnnamedPassenger} onChange={setPaUnnamedPassenger} placeholder='e.g. 25' />
-                    )}
-                    <div>
-                      <label className={LABEL}>Restricted TPPD</label>
-                      <select value={restrictedTPPD} onChange={e => setRestrictedTPPD(e.target.value)} className={SELECT}>
-                        <option value="no">No</option>
-                        <option value="yes">Yes ({vehicleType === 'gcv' ? '₹200' : vehicleType === 'gcv_3w' ? '₹150' : vehicleType === 'private_car' ? '₹100' : '₹50'}/yr off)</option>
-                      </select>
+                  {/* OD Section Custom Fields */}
+                  {activeCustomFields.filter(f => f.section === 'od').length > 0 && (
+                    <div className='mt-4 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4 md:grid-cols-3'>
+                      {activeCustomFields.filter(f => f.section === 'od').map(renderDynamicFieldInput)}
                     </div>
-                    {vehicleType !== 'private_car' && vehicleType !== 'two_wheeler' && (
-                      <NumberField label='LL to Employee (₹)' value={llToEmployee} onChange={setLlToEmployee} placeholder='e.g. 50' />
-                    )}
-
-                    {/* Third Party (TP) Section Custom Fields */}
-                    {activeCustomFields.filter(f => f.section === 'tp').map(renderDynamicFieldInput)}
-                  </div>
+                  )}
                 </FormSection>
-              )}
-            </div>
 
-            {/* Premium summary – sticky on desktop */}
-            <div className='lg:sticky lg:top-4'>
+                <FormSection step={2} tone='violet' title='IDV & Discounts' subtitle='Insured value, depreciation, NCB and loading'>
+                  <IDVSection
+                    idv={idv} setIdv={setIdv}
+                    depreciation={depreciation} setDepreciation={setDepreciation}
+                    ncb={ncb} setNcb={setNcb}
+                    odDiscount={odDiscount} setOdDiscount={setOdDiscount}
+                    loadingDiscount={loadingDiscount} setLoadingDiscount={setLoadingDiscount}
+                    showNcb={!isTpOnly}
+                    showOdDiscount={!isTpOnly}
+                  />
+                </FormSection>
+
+                {!isTpOnly && (
+                  <FormSection step={addonStep} tone='emerald' title='Add-on Covers' subtitle='Optional — enhance the policy with extra protection'>
+                    <div className='grid grid-cols-2 gap-2 sm:gap-3 xl:grid-cols-4'>
+                      <AddonCard icon={TbShieldCheck} title='Zero Depreciation' sub='Rate on IDV' suffix='%' value={zeroDep} onChange={setZeroDep} placeholder='e.g. 0.2' />
+                      <AddonCard icon={TbPuzzle} title='Other Add-ons' sub='Rate on IDV' suffix='%' value={tyreCover} onChange={setTyreCover} placeholder='e.g. 0.1' />
+                      <AddonCard icon={TbTruck} title='Roadside Assistance' sub='24/7 support' suffix='₹' value={rsa} onChange={setRsa} placeholder='e.g. 250' />
+                      <AddonCard icon={TbCirclePlus} title='Other Add-on' sub='Fixed amount' suffix='₹' value={otherAddon} onChange={setOtherAddon} placeholder='e.g. 500' />
+                    </div>
+                    {addonCustomFields.length > 0 && (
+                      <div className='mt-3 grid grid-cols-2 gap-3 md:grid-cols-3'>
+                        {addonCustomFields.map(renderDynamicFieldInput)}
+                      </div>
+                    )}
+                  </FormSection>
+                )}
+
+                {!isOdOnly && (
+                  <FormSection step={liabilityStep} tone='amber' title='Third Party & Liability' subtitle='Legal liability and personal accident covers'>
+                    <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
+                      <PresetSelect
+                        label='LL to Paid Driver'
+                        icon={TbSteeringWheel}
+                        value={llPaidDriver || '0'}
+                        onChange={setLlPaidDriver}
+                        presets={LL_PD_PRESETS}
+                        format={v => `₹${v}`}
+                        modalTitle='Enter LL to Paid Driver (₹)'
+                        modalPlaceholder='e.g. 75'
+                      />
+                      <NumberField label='PA to Owner Driver (₹)' icon={TbUserShield} value={paOwnerDriver} onChange={setPaOwnerDriver} placeholder='e.g. 320' />
+                      {(vehicleType === 'private_car' || vehicleType === 'two_wheeler') && (
+                        <NumberField label='PA Unnamed Passenger (₹)' icon={TbUsers} value={paUnnamedPassenger} onChange={setPaUnnamedPassenger} placeholder='e.g. 25' />
+                      )}
+                      <div>
+                        <FieldLabel icon={TbShieldHalf}>Restricted TPPD</FieldLabel>
+                        <select value={restrictedTPPD} onChange={e => setRestrictedTPPD(e.target.value)} className={SELECT}>
+                          <option value="no">No</option>
+                          <option value="yes">Yes ({vehicleType === 'gcv' ? '₹200' : vehicleType === 'gcv_3w' ? '₹150' : vehicleType === 'private_car' ? '₹100' : '₹50'}/yr off)</option>
+                        </select>
+                      </div>
+                      {vehicleType !== 'private_car' && vehicleType !== 'two_wheeler' && (
+                        <NumberField label='LL to Employee (₹)' icon={TbBriefcase} value={llToEmployee} onChange={setLlToEmployee} placeholder='e.g. 50' />
+                      )}
+
+                      {/* Third Party (TP) Section Custom Fields */}
+                      {activeCustomFields.filter(f => f.section === 'tp').map(renderDynamicFieldInput)}
+                    </div>
+                  </FormSection>
+                )}
+              </>
+            )}
+
+            <TariffNote>The premium is indicative and may vary based on insurer loading, add-ons and discounts. Ref: irdai.gov.in</TariffNote>
+          </div>
+
+          {/* Premium summary – sticky on desktop */}
+          <div className={`lg:sticky lg:top-4 ${step === 1 ? 'hidden lg:block' : ''}`}>
+            <SummaryPanel hasResult={!!result}>
               {result ? (
                 <ResultBox
                   result={result}
@@ -569,23 +591,10 @@ const PremiumCalculator = () => {
                   bundleOdTerm={bundleOdTerm}
                   bundleTpTerm={bundleTpTerm}
                 />
-              ) : (
-                <div className='rounded-xl border border-dashed border-slate-300 bg-white px-5 py-8 text-center sm:py-10'>
-                  <span className='mx-auto flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-600 sm:h-12 sm:w-12'>
-                    <FaCalculator className='h-4 w-4 sm:h-5 sm:w-5' />
-                  </span>
-                  <p className='mt-3 text-[13px] font-semibold text-slate-800 sm:text-sm'>Your premium will appear here</p>
-                  <p className='mt-1 text-[11px] text-slate-500 sm:text-xs'>Select the RTO zone and vehicle age to start.</p>
-                </div>
-              )}
-            </div>
+              ) : <EmptyEstimate />}
+            </SummaryPanel>
           </div>
-        )}
-
-        <p className='flex items-start justify-center gap-1.5 px-2 text-center text-[11px] text-slate-500 sm:text-xs'>
-          <FaTriangleExclamation className='mt-0.5 h-3 w-3 shrink-0 text-amber-500' />
-          For indicative purposes only. Premiums may vary based on insurer loading, add-ons &amp; discounts. Ref: irdai.gov.in
-        </p>
+        </div>
       </main>
     </div>
   )

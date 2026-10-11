@@ -1,3 +1,4 @@
+import { TbEngine, TbBolt, TbGasStation, TbUsers } from 'react-icons/tb'
 import { CoverageSelector, ZoneSelector, ManufacturingYearInput, AgeSelector, FuelToggle, NumberField, YesNoField, TariffNote } from '../SharedFields'
 
 const TaxiForm = ({
@@ -20,10 +21,10 @@ const TaxiForm = ({
       <ZoneSelector zone={zone} setZone={setZone} zones={['A', 'B']} />
       <AgeSelector vehicleAge={vehicleAge} setVehicleAge={setVehicleAge} />
       {!isElectric
-        ? <NumberField label='Engine CC' value={cc} onChange={setCc} placeholder='e.g. 1200' hint='≤1000 / 1001–1500 / >1500 CC' />
-        : <NumberField label='Motor Power (KW)' value={kwPower} onChange={setKwPower} placeholder='e.g. 40' hint='<30 / 30–65 / >65 KW' />}
-      <NumberField label='Passengers (excl. driver)' value={passengers} onChange={setPassengers} placeholder='e.g. 4' min={0} max={6} />
-      {!isElectric && <YesNoField label='CNG/LPG Kit' value={cngKit} onChange={setCngKit} yesLabel='Yes (+₹60 TP, +5% OD)' />}
+        ? <NumberField label='Engine Capacity (CC)' icon={TbEngine} value={cc} onChange={setCc} placeholder='e.g. 1200' hint='≤1000 / 1001–1500 / >1500 CC' />
+        : <NumberField label='Motor Power (KW)' icon={TbBolt} value={kwPower} onChange={setKwPower} placeholder='e.g. 40' hint='<30 / 30–65 / >65 KW' />}
+      <NumberField label='Passengers (excl. driver)' icon={TbUsers} value={passengers} onChange={setPassengers} placeholder='e.g. 4' min={0} max={6} />
+      {!isElectric && <YesNoField label='CNG/LPG Kit' icon={TbGasStation} value={cngKit} onChange={setCngKit} yesLabel='Yes (+₹60 TP, +5% OD)' />}
       <ManufacturingYearInput manufacturingYear={manufacturingYear} setManufacturingYear={setManufacturingYear} currentYear={currentYear} />
     </div>
   </div>

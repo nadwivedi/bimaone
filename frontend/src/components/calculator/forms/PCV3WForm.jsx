@@ -1,3 +1,4 @@
+import { TbGasStation, TbUsers } from 'react-icons/tb'
 import TARIFF from '../tariffData'
 import { fmt } from '../helpers'
 import { CoverageSelector, ZoneSelector, ManufacturingYearInput, AgeSelector, SubtypeList, NumberField, YesNoField } from '../SharedFields'
@@ -26,8 +27,8 @@ const PCV3WForm = ({
       <div className='grid grid-cols-2 gap-3 md:grid-cols-3'>
         <ZoneSelector zone={zone} setZone={setZone} zones={['A', 'B', 'C']} />
         <AgeSelector vehicleAge={vehicleAge} setVehicleAge={setVehicleAge} />
-        <NumberField label='Passengers' value={passengers} onChange={setPassengers} placeholder='e.g. 3' min={0} />
-        {!isElectric3W && <YesNoField label='CNG/LPG Kit' value={cngKit} onChange={setCngKit} yesLabel='Yes (+₹60 TP, +5% OD)' />}
+        <NumberField label='Passengers' icon={TbUsers} value={passengers} onChange={setPassengers} placeholder='e.g. 3' min={0} />
+        {!isElectric3W && <YesNoField label='CNG/LPG Kit' icon={TbGasStation} value={cngKit} onChange={setCngKit} yesLabel='Yes (+₹60 TP, +5% OD)' />}
         <ManufacturingYearInput manufacturingYear={manufacturingYear} setManufacturingYear={setManufacturingYear} currentYear={currentYear} />
       </div>
     </div>
