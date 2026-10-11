@@ -11,20 +11,20 @@ import { getInsuranceCompanies, subscribeInsuranceCompanies } from '../../utils/
 const API_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
 
 const Group = ({ title, dot, rows, totalLabel, total }) => (
-  <div className='px-4 py-3'>
-    <p className='mb-2 flex items-center gap-2 text-xs font-bold text-slate-900'>
+  <div className='px-3 py-3 sm:px-4'>
+    <p className='mb-2 flex items-center gap-2 text-[12px] font-bold text-slate-900 sm:text-xs'>
       <span className={`h-2 w-2 rounded-full ${dot}`} />
       {title}
     </p>
     <div className='space-y-1.5'>
       {rows.map(([label, value, kind], i) => (
-        <div key={i} className={`flex items-baseline justify-between gap-3 text-xs ${kind === 'strong' ? 'border-t border-dashed border-slate-200 pt-1.5' : ''}`}>
+        <div key={i} className={`flex items-baseline justify-between gap-3 text-[11px] sm:text-xs ${kind === 'strong' ? 'border-t border-dashed border-slate-200 pt-1.5' : ''}`}>
           <span className={kind === 'strong' ? 'font-semibold text-slate-700' : 'text-slate-500'}>{label}</span>
           <span className={`shrink-0 tabular-nums ${kind === 'minus' ? 'font-medium text-emerald-600' : kind === 'strong' ? 'font-semibold text-slate-900' : 'font-medium text-slate-800'}`}>{value}</span>
         </div>
       ))}
     </div>
-    <div className='mt-2 flex items-baseline justify-between rounded-lg bg-slate-50 px-3 py-2 text-sm'>
+    <div className='mt-2 flex items-baseline justify-between rounded-lg bg-slate-50 px-3 py-2 text-[13px] sm:text-sm'>
       <span className='font-semibold text-slate-700'>{totalLabel}</span>
       <span className='font-bold tabular-nums text-slate-900'>₹{fmtD(total)}</span>
     </div>
@@ -420,10 +420,10 @@ const ResultBox = ({
   return (
     <div className='overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm'>
       {/* Total */}
-      <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-4 py-4 text-white'>
-        <p className='text-xs font-medium text-slate-300'>Total Payable Premium</p>
-        <p className='mt-0.5 text-3xl font-bold tracking-tight tabular-nums'>₹{fmt(result.totalPremium)}</p>
-        <p className='mt-1 text-xs text-slate-300'>
+      <div className='bg-gradient-to-r from-[#1f2a3c] via-[#27374f] to-[#314866] px-3 py-3 text-white sm:px-4 sm:py-4'>
+        <p className='text-[11px] font-medium text-slate-300 sm:text-xs'>Total Payable Premium</p>
+        <p className='mt-0.5 text-2xl font-bold tracking-tight tabular-nums sm:text-3xl'>₹{fmt(result.totalPremium)}</p>
+        <p className='mt-1 text-[11px] text-slate-300 sm:text-xs'>
           {policyLabel} · {gstEnabled ? (result.gstTpRate === 5 ? 'incl. 5% + 18% GST' : 'incl. 18% GST') : 'excl. GST'}
         </p>
       </div>
@@ -440,7 +440,7 @@ const ResultBox = ({
           <Group title='Add-on Covers' dot='bg-amber-500' rows={addonRows} totalLabel='Add-ons' total={addonTotal} />
         )}
 
-        <div className='space-y-1.5 px-4 py-3 text-xs'>
+        <div className='space-y-1.5 px-3 py-3 text-[11px] sm:px-4 sm:text-xs'>
           <div className='flex justify-between'>
             <span className='text-slate-500'>Premium before GST</span>
             <span className='font-medium tabular-nums text-slate-800'>₹{fmtD(premiumBeforeGst)}</span>
@@ -462,19 +462,19 @@ const ResultBox = ({
               <span className='font-medium tabular-nums text-slate-800'>₹{fmtD(result.gst)}</span>
             </div>
           )}
-          <div className='flex justify-between border-t border-slate-200 pt-2 text-sm'>
+          <div className='flex justify-between border-t border-slate-200 pt-2 text-[13px] sm:text-sm'>
             <span className='font-bold text-slate-900'>Total Payable</span>
             <span className='font-bold tabular-nums text-blue-700'>₹{fmt(result.totalPremium)}</span>
           </div>
         </div>
       </div>
 
-      <div className='border-t border-slate-200 bg-gray-50 p-4'>
+      <div className='border-t border-slate-200 bg-gray-50 p-3 sm:p-4'>
         <button
           onClick={() => {
             setShowCompanyModal(true); setModalStep(1); setDropdownOpen(false); setSearchQuery('')
           }}
-          className='flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 py-3 text-sm font-semibold text-white shadow-sm transition hover:from-blue-800 hover:to-blue-700 active:scale-[0.98]'
+          className='flex w-full items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-blue-700 to-blue-600 py-2.5 text-[13px] font-semibold sm:py-3 sm:text-sm text-white shadow-sm transition hover:from-blue-800 hover:to-blue-700 active:scale-[0.98]'
         >
           <FaFileLines className='h-4 w-4' />
           Preview Quotation
